@@ -1,0 +1,7 @@
+*.iml
+.idea
+
+env
+.env
+venv
+.venv
