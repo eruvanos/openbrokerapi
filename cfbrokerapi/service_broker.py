@@ -22,11 +22,11 @@ class ProvisionDetails:
 
 class ProvisionedServiceSpec:
     def __init__(self,
-                 is_async: bool,
+                 # is_async: bool,
                  dashboard_url: str,
                  operation_data: str
                  ):
-        self.is_async = is_async
+        self.is_async = False
         self.dashboard_url = dashboard_url
         self.operation_data = operation_data
 
@@ -42,11 +42,11 @@ class DeprovisionDetails:
 
 class DeprovisionServiceSpec:
     def __init__(self,
-                 is_async: str,
-                 operation_data: str
+                 # is_async: str,
+                 operation: str
                  ):
-        self.is_async = is_async
-        self.operation_data = operation_data
+        # self.is_async = is_async
+        self.operation = operation
 
 
 class UpdateDetails:

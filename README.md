@@ -27,11 +27,11 @@ as per the Service Broker API specification.
 
 * [x] implement: catalog
 * [x] implement: provisioning
-* [ ] implement: deprovisioning
+* [x] implement: deprovisioning
+* [ ] integration test
 * [ ] implement: bind
 * [ ] implement: unbind
 * [ ] implement: update
-* [ ] integration test
 * [ ] secure endpoints with  basic auth
 * [ ] support async
 * [ ] Add "Getting started" to Readme
