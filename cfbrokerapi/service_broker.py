@@ -9,7 +9,10 @@ class ProvisionDetails:
                  plan_id: str,
                  organization_guid: str,
                  space_guid: str,
-                 parameters: dict):
+                 parameters=None):
+        if parameters is None:
+            parameters = {}
+
         self.service_id = service_id
         self.plan_id = plan_id
         self.organization_guid = organization_guid
