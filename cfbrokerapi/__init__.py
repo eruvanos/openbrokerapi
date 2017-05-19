@@ -1,13 +1,15 @@
+from http import HTTPStatus
+
 import jsonpickle
 from flask import Flask, json, request, Response, jsonify
 from werkzeug.exceptions import *
 
 from cfbrokerapi import errors
-from cfbrokerapi.response import ProvisioningResponse
+from cfbrokerapi.response import ProvisioningResponse, DeprovisionResponse
 from cfbrokerapi.service_broker import ServiceBroker, ProvisionDetails, DeprovisionDetails
 
 
-def serve(service_broker: ServiceBroker, port=5000):
+def _create_app(service_broker):
     app = Flask(__name__)
 
     def versiontuple(v):
@@ -50,10 +52,10 @@ def serve(service_broker: ServiceBroker, port=5000):
         """
         -> accepts_incomplete: boolean (support async)
         -> body: ProvisionDetails
-    
+
         :param instance_id:
         return:
-        
+
         * 201 Created
         * 200 OK - Already exists like it should be
         * 202 Accepted - async/poll
@@ -68,20 +70,19 @@ def serve(service_broker: ServiceBroker, port=5000):
             return BadRequest(str(e))
 
         try:
-            result = service_broker.provision(instance_id, provision_details, False)
-            code = 201
+            result, http_code = service_broker.provision(instance_id, provision_details, False)
         except errors.ErrInstanceAlreadyExists:
-            code = 200
+            return jsonify(), HTTPStatus.CONFLICT
         except errors.ErrAsyncRequired:
             return jsonify(
                 error="AsyncRequired",
                 description="This service plan requires client support for asynchronous service operations."
-            ), 422
+            ), HTTPStatus.UNPROCESSABLE_ENTITY
 
         return Response(
-            jsonpickle.dumps(ProvisioningResponse(result.dashboard_url, ""), unpicklable=False),
+            jsonpickle.dumps(ProvisioningResponse(result.dashboard_url, result.operation), unpicklable=False),
             mimetype='application/json',
-            status=code
+            status=http_code
         )
 
     # @app.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
@@ -96,8 +97,7 @@ def serve(service_broker: ServiceBroker, port=5000):
         -> service_id: string
         -> plan_id -> string
         -> accepts_incomplete= True\False
-    
-    
+
         :param instance_id:
         return:
         * 200 OK
@@ -117,7 +117,7 @@ def serve(service_broker: ServiceBroker, port=5000):
             return BadRequest(str(e))
 
         try:
-            result = service_broker.provision(instance_id, deprovision_details, False)
+            result = service_broker.deprovision(instance_id, deprovision_details, False)
         except errors.ErrInstanceDoesNotExist:
             return jsonify(), 410
         except errors.ErrAsyncRequired:
@@ -126,9 +126,17 @@ def serve(service_broker: ServiceBroker, port=5000):
                 description="This service plan requires client support for asynchronous service operations."
             ), 422
 
-        return Response(
-            jsonpickle.dumps(result, unpicklable=False),
-            mimetype='application/json'
-        )
+        if result.is_async:
+            return Response(
+                jsonpickle.dumps(DeprovisionResponse(result.operation), unpicklable=False),
+                mimetype='application/json',
+                status=202
+            )
+        else:
+            return jsonify({}), 200
 
-    app.run('0.0.0.0', port, True)
+    return app
+
+
+def serve(service_broker: ServiceBroker, port=5000):
+    _create_app(service_broker).run('0.0.0.0', port, True)

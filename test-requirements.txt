@@ -1,0 +1,4 @@
+nose2
+flask-testing
+Werkzeug
+requests

@@ -24,11 +24,11 @@ class ProvisionedServiceSpec:
     def __init__(self,
                  # is_async: bool,
                  dashboard_url: str,
-                 operation_data: str
+                 operation: str
                  ):
         self.is_async = False
         self.dashboard_url = dashboard_url
-        self.operation_data = operation_data
+        self.operation = operation
 
 
 class DeprovisionDetails:
@@ -42,10 +42,10 @@ class DeprovisionDetails:
 
 class DeprovisionServiceSpec:
     def __init__(self,
-                 # is_async: str,
+                 is_async: bool,
                  operation: str
                  ):
-        # self.is_async = is_async
+        self.is_async = is_async
         self.operation = operation
 
 
@@ -75,7 +75,16 @@ class ServiceBroker:
         raise NotImplementedError()
 
     def provision(self, instance_id: str, service_details: ProvisionDetails,
-                  async_allowed: bool) -> ProvisionedServiceSpec:
+                  async_allowed: bool) -> (ProvisionedServiceSpec, int):
+        """
+            Further reading https://docs.cloudfoundry.org/services/api.html#provisioning
+        
+            Returns:
+            
+            * http.HTTPStatus.CREATED -> Created
+            * http.HTTPStatus.OK -> Already Exists
+            
+        """
         raise NotImplementedError()
 
     def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool) -> UpdateServiceSpec:
