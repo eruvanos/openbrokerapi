@@ -28,12 +28,15 @@ as per the Service Broker API specification.
 * [x] implement: catalog
 * [x] implement: provisioning
 * [x] implement: deprovisioning
-* [ ] integration test
+* [x] start testing
 * [ ] implement: bind
 * [ ] implement: unbind
 * [ ] implement: update
-* [ ] secure endpoints with  basic auth
+* [ ] secure endpoints with basic auth
 * [ ] support async
 * [ ] Add "Getting started" to Readme
 * [ ] refactor modules
 * [ ] available via pip3 (without git url)
+  * [x] setup setup.py
+  * [x] register on pypi test
+  * [ ] register on pypi
