@@ -1,30 +1,21 @@
 from http import HTTPStatus
 
-import jsonpickle
-from flask import Flask, json, request, Response, jsonify
+from flask import Flask, json, request, jsonify
 from werkzeug.exceptions import *
 
 from cfbrokerapi import errors
-from cfbrokerapi.response import ProvisioningResponse, DeprovisionResponse
-from cfbrokerapi.service_broker import ServiceBroker, ProvisionDetails, DeprovisionDetails
+from .response import CatalogResponse
+from .response import EmptyResponse
+from .response import ProvisioningResponse, DeprovisionResponse
+from .service_broker import BindDetails
+from .service_broker import ServiceBroker, ProvisionDetails, DeprovisionDetails
 
 
-def _create_app(service_broker):
+def _create_app(service_broker, print_requests=False):
     app = Flask(__name__)
 
     def versiontuple(v):
         return tuple(map(int, (v.split("."))))
-
-    min_version = versiontuple("2.0")
-
-    def print_request():
-        print("--- Request -------------------------------")
-        print("--- header")
-        for k, v in request.headers:
-            print(k, ":", v)
-        print("--- body")
-        print(request.data)
-        print("-------------------------------")
 
     def check_version():
         version = request.headers.get("X-Broker-Api-Version", None)
@@ -33,8 +24,23 @@ def _create_app(service_broker):
         if min_version > versiontuple(version):
             return PreconditionFailed()
 
-    app.before_request(print_request)
+    min_version = versiontuple("2.0")
     app.before_request(check_version)
+
+    if print_requests:
+        def print_request():
+            print("--- Request -------------------------------")
+            print("--- header")
+            for k, v in request.headers:
+                print(k, ":", v)
+            print("--- body")
+            print(request.data)
+            print("-------------------------------")
+
+        app.before_request(print_request)
+
+    def to_json_response(obj):
+        return jsonify({k: v for k, v in obj.__dict__.items() if v is not None})
 
     @app.route("/v2/catalog", methods=['GET'])
     def catalog():
@@ -42,10 +48,7 @@ def _create_app(service_broker):
         :return: Catalog of broker (List of services) 
         """
         services = service_broker.catalog()
-        return Response(
-            jsonpickle.dumps({'services': services}, unpicklable=False),
-            mimetype='application/json'
-        )
+        return to_json_response(CatalogResponse(services))
 
     @app.route("/v2/service_instances/<instance_id>", methods=['PUT'])
     def provision(instance_id):
@@ -70,7 +73,7 @@ def _create_app(service_broker):
             return BadRequest(str(e))
 
         try:
-            result, http_code = service_broker.provision(instance_id, provision_details, False)
+            result = service_broker.provision(instance_id, provision_details, False)
         except errors.ErrInstanceAlreadyExists:
             return jsonify(), HTTPStatus.CONFLICT
         except errors.ErrAsyncRequired:
@@ -79,17 +82,33 @@ def _create_app(service_broker):
                 description="This service plan requires client support for asynchronous service operations."
             ), HTTPStatus.UNPROCESSABLE_ENTITY
 
-        return Response(
-            jsonpickle.dumps(ProvisioningResponse(result.dashboard_url, result.operation), unpicklable=False),
-            mimetype='application/json',
-            status=http_code
-        )
+        return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.CREATED
 
     # @app.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
     # def update(instance_id):
     #     """
     #     """
     #     return
+
+    @app.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['PUT'])
+    def bind(instance_id, binding_id):
+        try:
+            details = json.loads(request.data)
+            binding_details: BindDetails = BindDetails(**details)
+        except KeyError as e:
+            return BadRequest(str(e))
+
+        try:
+            result = service_broker.bind(instance_id, binding_id, binding_details)
+        except errors.ErrBindingAlreadyExists:
+            return jsonify(), HTTPStatus.CONFLICT
+        except errors.ErrAppGuidNotProvided:
+            return jsonify(
+                error="RequiresApp",
+                description="This service supports generation of credentials through binding an application only."
+            ), HTTPStatus.UNPROCESSABLE_ENTITY
+
+        return to_json_response(result), HTTPStatus.CREATED
 
     @app.route("/v2/service_instances/<instance_id>", methods=['DELETE'])
     def deprovision(instance_id):
@@ -127,16 +146,12 @@ def _create_app(service_broker):
             ), 422
 
         if result.is_async:
-            return Response(
-                jsonpickle.dumps(DeprovisionResponse(result.operation), unpicklable=False),
-                mimetype='application/json',
-                status=202
-            )
+            return to_json_response(DeprovisionResponse(result.operation)), 202
         else:
-            return jsonify({}), 200
+            return jsonify(EmptyResponse()), HTTPStatus.OK
 
     return app
 
 
-def serve(service_broker: ServiceBroker, port=5000):
-    _create_app(service_broker).run('0.0.0.0', port, True)
+def serve(service_broker: ServiceBroker, port=5000, print_requests=False):
+    _create_app(service_broker, print_requests).run('0.0.0.0', port, True)

@@ -29,14 +29,22 @@ as per the Service Broker API specification.
 * [x] implement: provisioning
 * [x] implement: deprovisioning
 * [x] start testing
-* [ ] implement: bind
+* [x] implement: bind
 * [ ] implement: unbind
 * [ ] implement: update
-* [ ] secure endpoints with basic auth
 * [ ] support async
+* [ ] secure endpoints with basic auth
 * [ ] Add "Getting started" to Readme
 * [ ] refactor modules
+* [ ] support VolumeMounts
 * [ ] available via pip3 (without git url)
   * [x] setup setup.py
   * [x] register on pypi test
   * [ ] register on pypi
+
+## Not Supported
+
+* Provisioning
+  * Response: 200 - If service already exists, a 409-Conflict will be returned
+* Bind
+  * Response: 200 - If binding already exists, a 409-Conflict will be returned 

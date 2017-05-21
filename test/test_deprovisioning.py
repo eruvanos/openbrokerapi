@@ -5,12 +5,11 @@ from flask_testing import TestCase
 from werkzeug.wrappers import Response
 
 from cfbrokerapi import _create_app, errors
-from cfbrokerapi.service_broker import DeprovisionServiceSpec
+from cfbrokerapi.service_broker import DeprovisionServiceSpec, ServiceBroker
 
 
 class DeprovisioningTest(TestCase):
     def create_app(self):
-        from cfbrokerapi.service_broker import ServiceBroker
         self.broker: ServiceBroker = Mock()
 
         app = _create_app(service_broker=self.broker)
