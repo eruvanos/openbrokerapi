@@ -30,7 +30,7 @@ as per the Service Broker API specification.
 * [x] implement: deprovisioning
 * [x] start testing
 * [x] implement: bind
-* [ ] implement: unbind
+* [x] implement: unbind
 * [ ] implement: update
 * [ ] support async
 * [ ] secure endpoints with basic auth

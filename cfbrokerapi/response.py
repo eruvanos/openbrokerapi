@@ -3,7 +3,7 @@ from typing import List
 from cfbrokerapi.catalog import Service
 
 
-class EmptyResponse(dict):
+class EmptyResponse:
     pass
 
 

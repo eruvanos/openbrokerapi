@@ -158,5 +158,5 @@ class ServiceBroker:
     def bind(self, instance_id: str, binding_id: str, details: BindDetails) -> Binding:
         raise NotImplementedError()
 
-        # def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails):
-        #     raise NotImplementedError()
+    def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails):
+        raise NotImplementedError()
