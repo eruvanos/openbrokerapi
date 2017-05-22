@@ -12,7 +12,7 @@ def get_long_description():
 
 setup(
     name='openbrokerapi',
-    version='0.1.dev3',
+    version='0.1',
     packages=find_packages(),
     install_requires=['flask'],
     test_suite="test",
@@ -21,7 +21,7 @@ setup(
     author="Maic Siemering",
     author_email="eruvanos@ewetel.net",
     license="MIT",
-    description="A python package for the V2 CF Service Broker API",
+    description="A python package for the V2 CF Service Broker API and Open Broker API",
     long_description=get_long_description(),
     url="https://github.com/eruvanos/openbrokerapi",
     keywords=["cloudfoundry", "cfbrokerapi", "openbrokerapi", "servicebroker", "flask"],
@@ -30,11 +30,10 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',

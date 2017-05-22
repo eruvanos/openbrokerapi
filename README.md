@@ -1,4 +1,4 @@
-from flask.app import Flask# CF Broker Lib
+# Service Broker API
 
 A Python package for building Service Brokers.
 
