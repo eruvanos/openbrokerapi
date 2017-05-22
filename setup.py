@@ -12,7 +12,7 @@ def get_long_description():
 
 setup(
     name='openbrokerapi',
-    version='0.1',
+    version='0.2.dev0',
     packages=find_packages(),
     install_requires=['flask'],
     test_suite="test",
