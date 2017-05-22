@@ -1,24 +1,14 @@
-import base64
 import http
 import json
-from unittest.mock import Mock
 
-from flask_testing import TestCase
 from werkzeug.wrappers import Response
 
-from openbrokerapi import _create_app, errors, BrokerCredentials
-from openbrokerapi.service_broker import ProvisionedServiceSpec, ServiceBroker
+from test import BrokerTestCase
+from openbrokerapi import errors
+from openbrokerapi.service_broker import ProvisionedServiceSpec
 
 
-class ProvisioningTest(TestCase):
-    auth_header = 'Basic ' + base64.b64encode(b":").decode("ascii")
-
-    def create_app(self):
-        self.broker: ServiceBroker = Mock()
-
-        app = _create_app(self.broker, BrokerCredentials("", ""))
-        return app
-
+class ProvisioningTest(BrokerTestCase):
     def test_returns_201_if_created(self):
         self.broker.provision.return_value = ProvisionedServiceSpec("dash_url", "operation_str")
 

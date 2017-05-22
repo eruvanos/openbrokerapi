@@ -1,23 +1,13 @@
-import base64
 import http
-from unittest.mock import Mock
 
-from flask_testing import TestCase
 from werkzeug.wrappers import Response
 
-from openbrokerapi import _create_app, errors, BrokerCredentials
-from openbrokerapi.service_broker import DeprovisionServiceSpec, ServiceBroker
+from test import BrokerTestCase
+from openbrokerapi import errors
+from openbrokerapi.service_broker import DeprovisionServiceSpec
 
 
-class DeprovisioningTest(TestCase):
-    auth_header = 'Basic ' + base64.b64encode(b":").decode("ascii")
-
-    def create_app(self):
-        self.broker: ServiceBroker = Mock()
-
-        app = _create_app(self.broker, BrokerCredentials("", ""))
-        return app
-
+class DeprovisioningTest(BrokerTestCase):
     def test_returns_200_if_deleted(self):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 

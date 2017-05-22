@@ -85,7 +85,7 @@ class BindDetails:
                  plan_id: str,
                  app_guid: str = None,
                  bind_resource: BindResource = None,
-                 parameters: dict= None
+                 parameters: dict = None
                  ):
         self.app_guid = app_guid
         self.plan_id = plan_id
@@ -142,21 +142,74 @@ class UnbindDetails:
 
 class ServiceBroker:
     def catalog(self) -> List[Service]:
+        """
+        Returns the Catalog of all services that are provided by this broker.
+        
+        :return: List[Service] 
+        """
         raise NotImplementedError()
 
     def provision(self, instance_id: str, service_details: ProvisionDetails,
                   async_allowed: bool) -> ProvisionedServiceSpec:
+        """
+        Further readings `CF Broker API#Provisioning <https://docs.cloudfoundry.org/services/api.html#provisioning>`_
+        
+        :param instance_id: Instance id provided by the platform
+        :param service_details: Details about the service to create
+        :param async_allowed: Client allows async creation
+        :return: ProvisionedServiceSpec
+        :raises ErrInstanceAlreadyExists: If instance already exists
+        :raises ErrAsyncRequired: If async is required but not supported
+        """
         raise NotImplementedError()
 
     def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool) -> UpdateServiceSpec:
+        """
+        Further readings `CF Broker API#Update <https://docs.cloudfoundry.org/services/api.html#updating_service_instance>`_
+        
+        :param instance_id: Instance id provided by the platform
+        :param details: Details about the service to update
+        :param async_allowed: Client allows async creation
+        :return: UpdateServiceSpec
+        :raises ErrAsyncRequired: If async is required but not supported
+        """
         raise NotImplementedError()
 
     def deprovision(self, instance_id: str, details: DeprovisionDetails,
                     async_allowed: bool) -> DeprovisionServiceSpec:
+        """
+        Further readings `CF Broker API#Deprovisioning <https://docs.cloudfoundry.org/services/api.html#deprovisioning>`_
+
+        :param instance_id: Instance id provided by the platform
+        :param details: Details about the service to delete
+        :param async_allowed: Client allows async creation
+        :return: DeprovisionServiceSpec
+        :raises ErrInstanceDoesNotExist: If instance does not exists
+        :raises ErrAsyncRequired: If async is required but not supported
+        """
         raise NotImplementedError()
 
     def bind(self, instance_id: str, binding_id: str, details: BindDetails) -> Binding:
+        """
+        Further readings `CF Broker API#Binding <https://docs.cloudfoundry.org/services/api.html#binding>`_
+
+        :param instance_id: Instance id provided by the platform
+        :param binding_id: Binding id provided by the platform
+        :param details: Details about the binding to create
+        :return: Binding
+        :raises ErrBindingAlreadyExists: If binding already exists
+        :raises ErrAppGuidNotProvided: If AppGuid is required but not provided
+        """
         raise NotImplementedError()
 
     def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails):
+        """
+        Further readings `CF Broker API#Unbinding <https://docs.cloudfoundry.org/services/api.html#unbinding>`_
+
+        :param instance_id: Instance id provided by the platform
+        :param binding_id: Binding id provided by the platform
+        :param details: Details about the binding to delete
+        :return: UnbindDetails
+        :raises ErrBindingAlreadyExists: If binding already exists
+        """
         raise NotImplementedError()
