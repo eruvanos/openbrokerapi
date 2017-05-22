@@ -65,9 +65,9 @@ class UpdateDetails:
 class UpdateServiceSpec:
     def __init__(self,
                  is_async: bool,
-                 operation_data: str):
+                 operation: str):
         self.is_async = is_async
-        self.operation_data = operation_data
+        self.operation = operation
 
 
 class BindResource:

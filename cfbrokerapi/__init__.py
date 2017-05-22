@@ -3,9 +3,9 @@ from http import HTTPStatus
 from flask import Flask, json, request, jsonify
 from werkzeug.exceptions import *
 
-from cfbrokerapi import errors
+from . import errors
 from .response import *
-from .service_broker import ServiceBroker, ProvisionDetails, DeprovisionDetails, BindDetails, UnbindDetails
+from .service_broker import *
 
 
 def _create_app(service_broker, print_requests=False):
@@ -67,11 +67,26 @@ def _create_app(service_broker, print_requests=False):
 
         return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.CREATED
 
-    # @app.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
-    # def update(instance_id):
-    #     """
-    #     """
-    #     return
+    @app.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
+    def update(instance_id):
+        try:
+            details = json.loads(request.data)
+            update_details: UpdateDetails = UpdateDetails(**details)
+        except TypeError as e:
+            return BadRequest(str(e))
+
+        try:
+            result = service_broker.update(instance_id, update_details, False)
+        except errors.ErrAsyncRequired:
+            return to_json_response(ErrorResponse(
+                error="AsyncRequired",
+                description="This service plan requires client support for asynchronous service operations."
+            )), HTTPStatus.UNPROCESSABLE_ENTITY
+
+        if result.is_async:
+            return to_json_response(UpdateResponse(result.operation)), HTTPStatus.ACCEPTED
+        else:
+            return to_json_response(EmptyResponse()), HTTPStatus.OK
 
     @app.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['PUT'])
     def bind(instance_id, binding_id):

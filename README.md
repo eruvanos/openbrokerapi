@@ -31,10 +31,10 @@ as per the Service Broker API specification.
 * [x] start testing
 * [x] implement: bind
 * [x] implement: unbind
-* [ ] implement: update
-* [ ] support async
+* [x] implement: update
 * [ ] secure endpoints with basic auth
 * [ ] Add "Getting started" to Readme
+* [ ] support async
 * [ ] refactor modules
 * [ ] support VolumeMounts
 * [ ] available via pip3 (without git url)
