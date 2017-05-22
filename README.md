@@ -32,7 +32,7 @@ as per the Service Broker API specification.
 * [x] implement: bind
 * [x] implement: unbind
 * [x] implement: update
-* [ ] secure endpoints with basic auth
+* [x] secure endpoints with basic auth
 * [ ] Add "Getting started" to Readme
 * [ ] support async
 * [ ] refactor modules

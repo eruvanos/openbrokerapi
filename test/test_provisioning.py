@@ -1,3 +1,4 @@
+import base64
 import http
 import json
 from unittest.mock import Mock
@@ -5,15 +6,17 @@ from unittest.mock import Mock
 from flask_testing import TestCase
 from werkzeug.wrappers import Response
 
-from cfbrokerapi import _create_app, errors
+from cfbrokerapi import _create_app, errors, BrokerCredentials
 from cfbrokerapi.service_broker import ProvisionedServiceSpec, ServiceBroker
 
 
 class ProvisioningTest(TestCase):
+    auth_header = 'Basic ' + base64.b64encode(b":").decode("ascii")
+
     def create_app(self):
         self.broker: ServiceBroker = Mock()
 
-        app = _create_app(service_broker=self.broker)
+        app = _create_app(self.broker, BrokerCredentials("", ""))
         return app
 
     def test_returns_201_if_created(self):
@@ -28,7 +31,8 @@ class ProvisioningTest(TestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00'
+                'X-Broker-Api-Version': '2.00',
+                'Authorization': self.auth_header
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.CREATED)
@@ -49,7 +53,8 @@ class ProvisioningTest(TestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00'
+                'X-Broker-Api-Version': '2.00',
+                'Authorization': self.auth_header
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.CONFLICT)
@@ -67,7 +72,8 @@ class ProvisioningTest(TestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00'
+                'X-Broker-Api-Version': '2.00',
+                'Authorization': self.auth_header
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
@@ -75,3 +81,12 @@ class ProvisioningTest(TestCase):
             error="AsyncRequired",
             description="This service plan requires client support for asynchronous service operations."
         ))
+
+    def test_returns_401_if_request_not_contain_auth_header(self):
+        response: Response = self.client.put(
+            "/v2/service_instances/abc",
+            headers={
+                'X-Broker-Api-Version': '2.00',
+            })
+
+        self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
