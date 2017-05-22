@@ -6,8 +6,7 @@ from flask_testing import TestCase
 from werkzeug.wrappers import Response
 
 from cfbrokerapi import _create_app, errors
-from cfbrokerapi.service_broker import ProvisionedServiceSpec, ServiceBroker
-from service_broker import UpdateServiceSpec
+from cfbrokerapi.service_broker import ServiceBroker, UpdateServiceSpec
 
 
 class ProvisioningTest(TestCase):
@@ -97,5 +96,5 @@ class ProvisioningTest(TestCase):
         self.assertEquals(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEquals(response.json, dict(
             error="AsyncRequired",
-            description= "This service plan requires client support for asynchronous service operations."
+            description="This service plan requires client support for asynchronous service operations."
         ))
