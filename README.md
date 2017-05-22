@@ -1,15 +1,17 @@
 # CF Broker Lib
 
-A Python package for building V2 Cloud Foundry Service Brokers.
+A Python package for building Service Brokers.
 
-[Following CF Broker API](https://docs.cloudfoundry.org/services/api.html)
+Following [CF Service Broker API](https://docs.cloudfoundry.org/services/api.html)
+and
+[Open Service Broker API](https://www.openservicebrokerapi.org/)
 
 ## Installation
 
 This package is available for Python 3.5+.
 
 ```bash
-pip3 install cfbrokerapi
+pip3 install openbrokerapi
 ```
 
 ## Getting started
@@ -37,7 +39,7 @@ class CustomServiceBroker(ServiceBroker):
         pass    
 
 # Simpely start the server
-cfbrokerapi.serve(CustomServiceBroker(), BrokerCredentials("basicUser", "Password"), port=5000)
+openbrokerapi.serve(CustomServiceBroker(), BrokerCredentials("basicUser", "Password"), port=5000)
 ```
 
 ## Error Types
@@ -57,4 +59,4 @@ as per the Service Broker API specification.
 
 ## Bugs or Issues
 
-Please report bugs, issues or feature requests to [Github Issues](https://github.com/eruvanos/cfbrokerapi/issues)
+Please report bugs, issues or feature requests to [Github Issues](https://github.com/eruvanos/openbrokerapi/issues)

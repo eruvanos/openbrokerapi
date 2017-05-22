@@ -11,7 +11,7 @@ def get_long_description():
 
 
 setup(
-    name='cfbrokerapi',
+    name='openbrokerapi',
     version='0.1.dev3',
     packages=find_packages(),
     install_requires=['flask'],
@@ -23,8 +23,8 @@ setup(
     license="MIT",
     description="A python package for the V2 CF Service Broker API",
     long_description=get_long_description(),
-    url="https://github.com/eruvanos/cfbrokerapi",
-    keywords="cloudfoundry servicebroker openservicebroker api",
+    url="https://github.com/eruvanos/openbrokerapi",
+    keywords="cloudfoundry cfbrokerapi openbrokerapi servicebroker flask",
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha

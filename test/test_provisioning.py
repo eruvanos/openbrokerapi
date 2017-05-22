@@ -6,8 +6,8 @@ from unittest.mock import Mock
 from flask_testing import TestCase
 from werkzeug.wrappers import Response
 
-from cfbrokerapi import _create_app, errors, BrokerCredentials
-from cfbrokerapi.service_broker import ProvisionedServiceSpec, ServiceBroker
+from openbrokerapi import _create_app, errors, BrokerCredentials
+from openbrokerapi.service_broker import ProvisionedServiceSpec, ServiceBroker
 
 
 class ProvisioningTest(TestCase):

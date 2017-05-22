@@ -1,6 +1,6 @@
 from typing import List
 
-from cfbrokerapi.catalog import Service
+from openbrokerapi.catalog import Service
 
 
 class ProvisionDetails:
