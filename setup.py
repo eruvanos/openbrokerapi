@@ -24,7 +24,7 @@ setup(
     description="A python package for the V2 CF Service Broker API",
     long_description=get_long_description(),
     url="https://github.com/eruvanos/openbrokerapi",
-    keywords="cloudfoundry cfbrokerapi openbrokerapi servicebroker flask",
+    keywords=["cloudfoundry", "cfbrokerapi", "openbrokerapi", "servicebroker", "flask"],
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha
