@@ -4,10 +4,47 @@ from werkzeug.wrappers import Response
 
 from test import BrokerTestCase
 from openbrokerapi import errors
-from openbrokerapi.service_broker import DeprovisionServiceSpec
+from openbrokerapi.service_broker import DeprovisionServiceSpec, DeprovisionDetails
 
 
 class DeprovisioningTest(BrokerTestCase):
+
+    def test_deprovisioning_is_called_with_the_right_values(self):
+        self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
+
+        _ = self.client.delete(
+            "/v2/service_instances/here_instance_id?service_id=service-id-here&plan_id=plan-id-here&accepts_incomplete=true",
+            headers={
+                'X-Broker-Api-Version': '2.00',
+                'Authorization': self.auth_header
+            })
+
+        actual_instance_id, actual_details, actual_async_allowed = self.broker.deprovision.call_args[0]
+        self.assertEqual(actual_instance_id, "here_instance_id")
+
+        self.assertIsInstance(actual_details, DeprovisionDetails)
+        self.assertEqual(actual_details.plan_id, "plan-id-here")
+        self.assertEqual(actual_details.service_id, "service-id-here")
+        self.assertEqual(actual_async_allowed, True)
+
+    def test_deprovisioning_called_just_with_required_fields(self):
+        self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
+
+        _ = self.client.delete(
+            "/v2/service_instances/here_instance_id?service_id=service-id-here&plan_id=plan-id-here",
+            headers={
+                'X-Broker-Api-Version': '2.00',
+                'Authorization': self.auth_header
+            })
+
+        actual_instance_id, actual_details, actual_async_allowed = self.broker.deprovision.call_args[0]
+        self.assertEqual(actual_instance_id, "here_instance_id")
+
+        self.assertIsInstance(actual_details, DeprovisionDetails)
+        self.assertEqual(actual_details.plan_id, "plan-id-here")
+        self.assertEqual(actual_details.service_id, "service-id-here")
+        self.assertEqual(actual_async_allowed, False)
+
     def test_returns_200_if_deleted(self):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 

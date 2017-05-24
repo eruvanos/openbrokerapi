@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from openbrokerapi.catalog import Service
@@ -10,9 +11,6 @@ class ProvisionDetails:
                  organization_guid: str,
                  space_guid: str,
                  parameters=None):
-        if parameters is None:
-            parameters = {}
-
         self.service_id = service_id
         self.plan_id = plan_id
         self.organization_guid = organization_guid
@@ -22,11 +20,11 @@ class ProvisionDetails:
 
 class ProvisionedServiceSpec:
     def __init__(self,
-                 # is_async: bool,
+                 is_async: bool,
                  dashboard_url: str,
                  operation: str
                  ):
-        self.is_async = False
+        self.is_async = is_async
         self.dashboard_url = dashboard_url
         self.operation = operation
 
@@ -49,17 +47,29 @@ class DeprovisionServiceSpec:
         self.operation = operation
 
 
+class PreviousValues:
+    def __init__(self,
+                 plan_id: str,
+                 service_id: str,
+                 organization_id: str,
+                 space_id: str):
+        self.plan_id = plan_id
+        self.service_id = service_id
+        self.organization_id = organization_id
+        self.space_id = space_id
+
+
 class UpdateDetails:
     def __init__(self,
                  service_id: str,
-                 plan_id: str,
-                 parameters: str,
-                 previous_values: str
+                 plan_id: str = None,
+                 parameters=None,
+                 previous_values: dict = None
                  ):
         self.service_id = service_id
         self.plan_id = plan_id
         self.parameters = parameters
-        self.previous_values = previous_values
+        self.previous_values: PreviousValues = PreviousValues(**previous_values) if previous_values else None
 
 
 class UpdateServiceSpec:
@@ -84,14 +94,14 @@ class BindDetails:
                  service_id: str,
                  plan_id: str,
                  app_guid: str = None,
-                 bind_resource: BindResource = None,
+                 bind_resource: dict = None,
                  parameters: dict = None
                  ):
         self.app_guid = app_guid
         self.plan_id = plan_id
         self.service_id = service_id
-        self.bind_resource = bind_resource
         self.parameters = parameters
+        self.bind_resource = BindResource(**bind_resource) if bind_resource else None
 
 
 class SharedDevice:
@@ -138,6 +148,21 @@ class UnbindDetails:
                  ):
         self.plan_id = plan_id
         self.service_id = service_id
+
+
+class OperationState(Enum):
+    IN_PROGRESS = "in progress"
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+
+
+class LastOperation:
+    def __init__(self,
+                 state: OperationState,
+                 description: str
+                 ):
+        self.state: str = state.value
+        self.description = description
 
 
 class ServiceBroker:
@@ -211,5 +236,15 @@ class ServiceBroker:
         :param details: Details about the binding to delete
         :return: UnbindDetails
         :raises ErrBindingAlreadyExists: If binding already exists
+        """
+        raise NotImplementedError()
+
+    def last_operation(self, instance_id: str, operation_data: str) -> LastOperation:
+        """
+        Further readings `CF Broker API#LastOperation <https://docs.cloudfoundry.org/services/api.html#polling>`_
+        
+        :param instance_id: Instance id provided by the platform
+        :param operation_data: Operation data received from async operation
+        :return: LastOperation
         """
         raise NotImplementedError()

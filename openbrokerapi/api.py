@@ -88,13 +88,15 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
     @requires_auth
     def provision(instance_id):
         try:
+            accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
+
             details = json.loads(request.data)
             provision_details: ProvisionDetails = ProvisionDetails(**details)
         except TypeError as e:
             return BadRequest(str(e))
 
         try:
-            result = service_broker.provision(instance_id, provision_details, False)
+            result = service_broker.provision(instance_id, provision_details, accepts_incomplete)
         except errors.ErrInstanceAlreadyExists:
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
         except errors.ErrAsyncRequired:
@@ -103,7 +105,10 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
                 description="This service plan requires client support for asynchronous service operations."
             )), HTTPStatus.UNPROCESSABLE_ENTITY
 
-        return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.CREATED
+        if result.is_async:
+            return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.ACCEPTED
+        else:
+            return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.CREATED
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
     @requires_auth
@@ -111,11 +116,13 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
         try:
             details = json.loads(request.data)
             update_details: UpdateDetails = UpdateDetails(**details)
+
+            accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
         except TypeError as e:
             return BadRequest(str(e))
 
         try:
-            result = service_broker.update(instance_id, update_details, False)
+            result = service_broker.update(instance_id, update_details, accepts_incomplete)
         except errors.ErrAsyncRequired:
             return to_json_response(ErrorResponse(
                 error="AsyncRequired",
@@ -172,7 +179,7 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
 
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
-            accepts_incomplete = request.args.get("accepts_incomplete", False)
+            accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
 
             deprovision_details = DeprovisionDetails(plan_id, service_id)
 
@@ -193,6 +200,18 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
             return to_json_response(DeprovisionResponse(result.operation)), HTTPStatus.ACCEPTED
         else:
             return to_json_response(EmptyResponse()), HTTPStatus.OK
+
+    @openbroker.route("/v2/service_instances/<instance_id>/last_operation", methods=['GET'])
+    @requires_auth
+    def last_operation(instance_id):
+        # Not required
+        # service_id = request.args.get("service_id", None)
+        # plan_id = request.args.get("plan_id", None)
+
+        operation_data = request.args.get("operation", None)
+        result = service_broker.last_operation(instance_id, operation_data)
+
+        return to_json_response(result), HTTPStatus.OK
 
     return openbroker
 
