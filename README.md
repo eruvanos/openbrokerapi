@@ -14,6 +14,12 @@ This package is available for Python 3.5+.
 pip3 install openbrokerapi
 ```
 
+Or install the development version from github:
+
+```bash
+pip3 install git+https://github.com/eruvanos/openbrokerapi.git
+```
+
 ## Getting started
 
 ```python
@@ -39,7 +45,10 @@ class CustomServiceBroker(service_broker.ServiceBroker):
         pass
 
     def deprovision(self, instance_id: str, details: DeprovisionDetails, async_allowed: bool) -> DeprovisionServiceSpec:
-        pass    
+        pass
+    
+    def last_operation(self, instance_id: str, operation_data: str) -> LastOperation:
+        pass
 
 # Simpely start the server
 serve(CustomServiceBroker(), BrokerCredentials("", ""))
@@ -74,3 +83,20 @@ as per the Service Broker API specification.
 ## Bugs or Issues
 
 Please report bugs, issues or feature requests to [Github Issues](https://github.com/eruvanos/openbrokerapi/issues)
+
+
+## Release Notes
+
+###### v0.2dev
+* improve testing
+* fix: Bind and update getting dict instead of expected objects
+* support async for provision, update, deprovision
+
+###### v0.1
+* initial version
+* supported operations
+  * provision
+  * update
+  * bind
+  * unbind
+  * deprovision
