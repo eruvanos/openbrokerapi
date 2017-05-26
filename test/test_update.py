@@ -70,6 +70,45 @@ class UpdateTest(BrokerTestCase):
         self.assertIsNone(actual_details.parameters)
         self.assertIsNone(actual_details.previous_values)
 
+    def test_update_ignores_unknown_parameters(self):
+        self.broker.update.return_value = UpdateServiceSpec(False, "operation")
+
+        _ = self.client.patch(
+            "/v2/service_instances/here-service-instance-id?accepts_incomplete=true",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "unknown": "unknown",
+                "parameters": {
+                    "parameter1": 1
+                },
+                "previous_values": {
+                    "unknown": "unknown",
+                    "plan_id": "old-plan-guid-here",
+                    "service_id": "service-guid-here",
+                    "organization_id": "org-guid-here",
+                    "space_id": "space-guid-here"
+                }
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.00',
+                'Authorization': self.auth_header
+            })
+
+        actual_service_id, actual_details, actual_async = self.broker.update.call_args[0]
+        self.assertEqual(actual_service_id, "here-service-instance-id")
+        self.assertEqual(actual_async, True)
+
+        self.assertIsInstance(actual_details, UpdateDetails)
+        self.assertIsInstance(actual_details.previous_values, PreviousValues)
+        self.assertEqual(actual_details.service_id, "service-guid-here")
+        self.assertEqual(actual_details.plan_id, "plan-guid-here")
+        self.assertEqual(actual_details.parameters, dict(parameter1=1))
+        self.assertEqual(actual_details.previous_values.plan_id, "old-plan-guid-here")
+        self.assertEqual(actual_details.previous_values.service_id, "service-guid-here")
+        self.assertEqual(actual_details.previous_values.organization_id, "org-guid-here")
+        self.assertEqual(actual_details.previous_values.space_id, "space-guid-here")
+
     def test_returns_200_if_updated(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 

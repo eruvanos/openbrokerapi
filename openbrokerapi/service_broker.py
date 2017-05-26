@@ -10,7 +10,8 @@ class ProvisionDetails:
                  plan_id: str,
                  organization_guid: str,
                  space_guid: str,
-                 parameters=None):
+                 parameters=None,
+                 **kwargs):
         self.service_id = service_id
         self.plan_id = plan_id
         self.organization_guid = organization_guid
@@ -52,7 +53,8 @@ class PreviousValues:
                  plan_id: str,
                  service_id: str,
                  organization_id: str,
-                 space_id: str):
+                 space_id: str,
+                 **kwargs):
         self.plan_id = plan_id
         self.service_id = service_id
         self.organization_id = organization_id
@@ -64,7 +66,8 @@ class UpdateDetails:
                  service_id: str,
                  plan_id: str = None,
                  parameters=None,
-                 previous_values: dict = None
+                 previous_values: dict = None,
+                 **kwargs
                  ):
         self.service_id = service_id
         self.plan_id = plan_id
@@ -83,7 +86,8 @@ class UpdateServiceSpec:
 class BindResource:
     def __init__(self,
                  app_guid: str = None,
-                 route: str = None
+                 route: str = None,
+                 **kwargs
                  ):
         self.app_guid = app_guid
         self.route = route
@@ -95,7 +99,8 @@ class BindDetails:
                  plan_id: str,
                  app_guid: str = None,
                  bind_resource: dict = None,
-                 parameters: dict = None
+                 parameters: dict = None,
+                 **kwargs
                  ):
         self.app_guid = app_guid
         self.plan_id = plan_id

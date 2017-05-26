@@ -5,7 +5,7 @@ from flask.wrappers import Response
 from test import BrokerTestCase
 
 
-class ProvisioningTest(BrokerTestCase):
+class PrecheckTest(BrokerTestCase):
     def test_returns_401_if_request_not_contain_auth_header(self):
         response: Response = self.client.put(
             "/v2/service_instances/abc",

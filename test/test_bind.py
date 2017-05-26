@@ -61,7 +61,7 @@ class BindTest(BrokerTestCase):
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
-                "plan_id": "plan-guid-here",
+                "plan_id": "plan-guid-here"
             }),
             headers={
                 'X-Broker-Api-Version': '2.00',
@@ -79,6 +79,38 @@ class BindTest(BrokerTestCase):
         self.assertIsNone(actual_details.app_guid)
         self.assertIsNone(actual_details.parameters)
         self.assertIsNone(actual_details.bind_resource)
+
+    def test_bind_ignores_unknown_parameters(self):
+        self.broker.bind.return_value = Binding(
+            credentials=expected_credentials
+        )
+
+        _ = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "unknown": "unknown",
+                "bind_resource": {
+                    "unknown": "unknown"
+                },
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.00',
+                'Authorization': self.auth_header
+            })
+
+        actual_instance_id, actual_binding_id, actual_details = self.broker.bind.call_args[0]
+        self.assertEqual(actual_instance_id, "here-instance_id")
+        self.assertEqual(actual_binding_id, "here-binding_id")
+
+        self.assertIsInstance(actual_details, BindDetails)
+        self.assertEqual(actual_details.service_id, "service-guid-here")
+        self.assertEqual(actual_details.plan_id, "plan-guid-here")
+
+        self.assertIsNone(actual_details.app_guid)
+        self.assertIsNone(actual_details.parameters)
+        self.assertIsNotNone(actual_details.bind_resource)
 
     def test_returns_200_if_binding_has_been_created(self):
         self.broker.bind.return_value = Binding(
