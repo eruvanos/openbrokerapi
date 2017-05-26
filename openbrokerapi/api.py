@@ -1,9 +1,9 @@
+import logging
 from functools import wraps
 from http import HTTPStatus
 
 from flask import Blueprint
 from flask import json, request, jsonify, Response
-from werkzeug.exceptions import *
 
 from openbrokerapi import errors
 from openbrokerapi.response import *
@@ -16,13 +16,15 @@ class BrokerCredentials:
         self.password = password
 
 
-def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCredentials, print_requests=False):
+def get_blueprint(service_broker: ServiceBroker,
+                  broker_credentials: BrokerCredentials,
+                  logger: logging.Logger):
     """
     Returns the blueprint with service broker api.
     
     :param service_broker: Service broker used to handle requests
-    :param credentials: Username and password that will be required to communicate service broker
-    :param print_requests: Will print incoming requests for debugging
+    :param broker_credentials: Username and password that will be required to communicate with service broker
+    :param logger: Used for api logs. This will not influence Flasks logging behavior.
     :return: Blueprint to register with Flask app instance
     """
     openbroker = Blueprint('open_broker', __name__)
@@ -30,14 +32,18 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
     def version_tuple(v):
         return tuple(map(int, (v.split("."))))
 
+    min_version = version_tuple("2.0")
+
     def check_version():
         version = request.headers.get("X-Broker-Api-Version", None)
         if not version:
-            return BadRequest()
+            return to_json_response(ErrorResponse(description="No X-Broker-Api-Version found.")), HTTPStatus.BAD_REQUEST
         if min_version > version_tuple(version):
-            return PreconditionFailed()
+            return to_json_response(ErrorResponse(
+                description="Service broker requires version %d.%d+." % min_version)
+            ), HTTPStatus.PRECONDITION_FAILED
 
-    min_version = version_tuple("2.0")
+    logger.debug("Apply check_version filter for version %s" % str(min_version))
     openbroker.before_request(check_version)
 
     def check_auth(username, password):
@@ -60,20 +66,26 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
 
         return decorated
 
-    if print_requests:
-        def print_request():
-            print("--- Request -------------------")
-            print("--- header")
-            for k, v in request.headers:
-                print(k, ":", v)
-            print("--- body")
-            print(request.data)
-            print("-------------------------------")
+    def print_request():
+        logger.debug("--- Request Start -------------------")
+        logger.debug("--- Header")
+        for k, v in request.headers:
+            logger.debug("%s:%s", k, v)
+        logger.debug("--- Body")
+        logger.debug(request.data)
+        logger.debug("--- Request Ende -------------------")
 
-        openbroker.before_request(print_request)
+    openbroker.before_request(print_request)
 
     def to_json_response(obj):
         return jsonify({k: v for k, v in obj.__dict__.items() if v is not None})
+
+    @openbroker.errorhandler(Exception)
+    def error_handler(e):
+        logger.exception(e)
+        return to_json_response(ErrorResponse(
+            description=str(e)
+        )), HTTPStatus.INTERNAL_SERVER_ERROR
 
     @openbroker.route("/v2/catalog", methods=['GET'])
     @requires_auth
@@ -93,13 +105,15 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
             details = json.loads(request.data)
             provision_details: ProvisionDetails = ProvisionDetails(**details)
         except TypeError as e:
-            return BadRequest(str(e))
+            return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
             result = service_broker.provision(instance_id, provision_details, accepts_incomplete)
-        except errors.ErrInstanceAlreadyExists:
+        except errors.ErrInstanceAlreadyExists as e:
+            logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
-        except errors.ErrAsyncRequired:
+        except errors.ErrAsyncRequired as e:
+            logger.exception(e)
             return to_json_response(ErrorResponse(
                 error="AsyncRequired",
                 description="This service plan requires client support for asynchronous service operations."
@@ -119,11 +133,13 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
 
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
         except TypeError as e:
-            return BadRequest(str(e))
+            logger.exception(e)
+            return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
             result = service_broker.update(instance_id, update_details, accepts_incomplete)
-        except errors.ErrAsyncRequired:
+        except errors.ErrAsyncRequired as e:
+            logger.exception(e)
             return to_json_response(ErrorResponse(
                 error="AsyncRequired",
                 description="This service plan requires client support for asynchronous service operations."
@@ -141,13 +157,16 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
             details = json.loads(request.data)
             binding_details: BindDetails = BindDetails(**details)
         except KeyError as e:
-            return BadRequest(str(e))
+            logger.exception(e)
+            return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
             result = service_broker.bind(instance_id, binding_id, binding_details)
-        except errors.ErrBindingAlreadyExists:
+        except errors.ErrBindingAlreadyExists as e:
+            logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
-        except errors.ErrAppGuidNotProvided:
+        except errors.ErrAppGuidNotProvided as e:
+            logger.exception(e)
             return to_json_response(ErrorResponse(
                 error="RequiresApp",
                 description="This service supports generation of credentials through binding an application only."
@@ -163,11 +182,13 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
             service_id = request.args["service_id"]
             unbind_details: UnbindDetails = UnbindDetails(plan_id, service_id)
         except KeyError as e:
-            return BadRequest(str(e))
+            logger.exception(e)
+            return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
             service_broker.unbind(instance_id, binding_id, unbind_details)
-        except errors.ErrBindingDoesNotExist:
+        except errors.ErrBindingDoesNotExist as e:
+            logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
 
         return to_json_response(EmptyResponse()), HTTPStatus.OK
@@ -176,7 +197,6 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
     @requires_auth
     def deprovision(instance_id):
         try:
-
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
@@ -184,13 +204,16 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
             deprovision_details = DeprovisionDetails(plan_id, service_id)
 
         except KeyError as e:
-            return BadRequest(str(e))
+            logger.exception(e)
+            return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
             result = service_broker.deprovision(instance_id, deprovision_details, accepts_incomplete)
-        except errors.ErrInstanceDoesNotExist:
+        except errors.ErrInstanceDoesNotExist as e:
+            logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
-        except errors.ErrAsyncRequired:
+        except errors.ErrAsyncRequired as e:
+            logger.exception(e)
             return to_json_response(ErrorResponse(
                 error="AsyncRequired",
                 description="This service plan requires client support for asynchronous service operations."
@@ -216,19 +239,28 @@ def get_blueprint(service_broker: ServiceBroker, broker_credentials: BrokerCrede
     return openbroker
 
 
-def serve(service_broker: ServiceBroker, credentials: BrokerCredentials, port=5000, debug=False):
+def serve(service_broker: ServiceBroker,
+          credentials: BrokerCredentials,
+          logger: logging.Logger = logging.root,
+          port=5000,
+          debug=False):
     """
     Starts flask with the given broker
     
     :param service_broker: Service broker used to handle requests
-    :param credentials: Username and password that will be required to communicate service broker
+    :param credentials: Username and password that will be required to communicate with service broker
+    :param logger: Used for api logs. This will not influence Flasks logging behavior
     :param port: Port
-    :param debug: Enables debugging
+    :param debug: Enables debugging in flask app
     """
+
     from flask import Flask
     app = Flask(__name__)
 
-    blueprint = get_blueprint(service_broker, credentials, debug)
+    blueprint = get_blueprint(service_broker, credentials, logger)
+
+    logger.debug("Register openbrokerapi blueprint")
     app.register_blueprint(blueprint)
 
+    logger.info("Start Flask on 0.0.0.0:$s" % port)
     app.run('0.0.0.0', port, debug)

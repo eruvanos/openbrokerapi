@@ -23,9 +23,10 @@ pip3 install git+https://github.com/eruvanos/openbrokerapi.git
 ## Getting started
 
 ```python
+from flask import Flask
 from openbrokerapi import service_broker
 from openbrokerapi.api import *
-from flask import Flask
+from openbrokerapi.log_util import *
 
 # Implement a service broker by overriding methods of ServiceBroker
 class CustomServiceBroker(service_broker.ServiceBroker):
@@ -55,7 +56,8 @@ serve(CustomServiceBroker(), BrokerCredentials("", ""))
 
 # or register blueprint to your own FlaskApp instance
 app = Flask(__name__)
-openbroker_bp = get_blueprint(CustomServiceBroker(), BrokerCredentials("",""))
+logger = basic_config() #  Use root logger with a basic configuration provided by openbrokerapi.log_utils
+openbroker_bp = get_blueprint(CustomServiceBroker(), BrokerCredentials("",""), logger)
 app.register_blueprint(openbroker_bp)
 app.run("0.0.0.0")
 ```
@@ -91,6 +93,9 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 * improve testing
 * fix: Bind and update getting dict instead of expected objects
 * support async for provision, update, deprovision
+* Handle unexpected exception with global error_handler (responding with 500)
+* get_blueprint() now expects a logger
+* add log_utils with basic_config()
 
 ###### v0.1
 * initial version

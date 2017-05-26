@@ -152,12 +152,3 @@ class ProvisioningTest(BrokerTestCase):
             error="AsyncRequired",
             description="This service plan requires client support for asynchronous service operations."
         ))
-
-    def test_returns_401_if_request_not_contain_auth_header(self):
-        response: Response = self.client.put(
-            "/v2/service_instances/abc",
-            headers={
-                'X-Broker-Api-Version': '2.00',
-            })
-
-        self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)

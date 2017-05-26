@@ -9,8 +9,8 @@ class EmptyResponse:
 
 class ErrorResponse:
     def __init__(self,
-                 error: str,
-                 description: str):
+                 error: str = None,
+                 description: str = None):
         self.error = error
         self.description = description
 
