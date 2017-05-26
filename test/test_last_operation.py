@@ -2,9 +2,8 @@ import http
 
 from werkzeug.wrappers import Response
 
-from openbrokerapi.service_broker import LastOperation
-from service_broker import OperationState
 from test import BrokerTestCase
+from openbrokerapi.service_broker import LastOperation, OperationState
 
 
 class LastOperationTest(BrokerTestCase):
