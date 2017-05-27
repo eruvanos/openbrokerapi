@@ -89,6 +89,8 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 
 ## Release Notes
 
+###### v0.3dev
+
 ###### v0.2
 * improve testing
 * fix: Bind and update getting dict instead of expected objects
