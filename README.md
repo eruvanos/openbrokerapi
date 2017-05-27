@@ -89,7 +89,7 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 
 ## Release Notes
 
-###### v0.2dev
+###### v0.2
 * improve testing
 * fix: Bind and update getting dict instead of expected objects
 * support async for provision, update, deprovision
