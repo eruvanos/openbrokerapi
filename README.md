@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/eruvanos/openbrokerapi.svg?branch=master)](https://travis-ci.org/eruvanos/openbrokerapi)
+
 # Service Broker API
 
 A Python package for building Service Brokers.
