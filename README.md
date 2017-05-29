@@ -72,7 +72,6 @@ as per the Service Broker API specification.
 
 ## Planned
 
-* Support async tasks
 * Support VolumeMounts
 
 ## Not Planned To Support
@@ -94,7 +93,7 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 ###### v0.2
 * improve testing
 * fix: Bind and update getting dict instead of expected objects
-* support async for provision, update, deprovision
+* support async for provision, update and deprovision
 * Handle unexpected exception with global error_handler (responding with 500)
 * get_blueprint() now expects a logger
 * add log_utils with basic_config()
