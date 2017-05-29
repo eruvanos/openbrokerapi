@@ -5,16 +5,15 @@
 ./setup.py test
 ```
 
-## Register
+## Build
 ```
-./setup.py register
-./setup.py register -r testpypi
+./setup.py sdist bdist_wheel
 ```
 
 ## Upload
 ```
-./setup.py register sdist upload
-./setup.py register sdist upload -r testpypi
+twine upload -r testpypi
+twine upload
 ```
 
 ## Install from testpypi
