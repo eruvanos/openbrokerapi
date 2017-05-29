@@ -22,7 +22,7 @@ class BrokerTestCase(TestCase):
         app.register_blueprint(
             get_blueprint(self.broker,
                           BrokerCredentials("", ""),
-                          basic_config(level=logging.NOTSET)
+                          basic_config(level=logging.WARN)
                           )
         )
         return app
