@@ -37,8 +37,8 @@ class ServicePlan:
                  name: str,
                  description: str,
                  metadata: ServicePlanMetaData = None,
-                 free: bool = True,
-                 bindable: bool = False
+                 free: bool = None,
+                 bindable: bool = None
                  ):
         self.id = id
         self.name = name
@@ -55,11 +55,11 @@ class Service:
                  description: str,
                  bindable: bool,
                  plans: List[ServicePlan],
-                 tags: List[str] = (),
-                 requires: List[str]=(),
+                 tags: List[str] = None,
+                 requires: List[str]=None,
                  metadata: ServiceMetadata = None,
                  dashboard_client: ServiceDashboardClient = None,
-                 plan_updateable: bool = False
+                 plan_updateable: bool = None
                  ):
         self.id = id
         self.name = name
