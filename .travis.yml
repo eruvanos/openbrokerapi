@@ -6,5 +6,9 @@ python:
 install:
     - pip install -r requirements.txt
     - pip install -r test-requirements.txt
+    - pip install coveralls
 # command to run tests
-script: ./setup.py test
+script:
+  coverage run --source=openbrokerapi ./setup.py test
+after_success:
+  coveralls
