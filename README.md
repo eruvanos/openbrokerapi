@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/eruvanos/openbrokerapi.svg?branch=master)](https://travis-ci.org/eruvanos/openbrokerapi)
+[![Coverage Status](https://coveralls.io/repos/github/eruvanos/openbrokerapi/badge.svg?branch=master)](https://coveralls.io/github/eruvanos/openbrokerapi?branch=master)
 
 # Service Broker API
 
@@ -91,6 +92,10 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 ## Release Notes
 
 ###### v0.3dev
+* use LastOperationResponse for last_operation response
+* fix: catalog response was not convertible to json
+* fix: not required fields were still in catalog response
+* add missing tests for catalog endpoint
 
 ###### v0.2
 * improve testing
