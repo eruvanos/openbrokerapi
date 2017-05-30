@@ -2,33 +2,49 @@ from typing import List, Dict
 
 
 class ServiceMetadata:
-    def __init__(self):
-        self.displayName: str
-        self.imageUrl: str
-        self.longDescription: str
-        self.providerDisplayName: str
-        self.documentationUrl: str
-        self.supportUrl: str
+    def __init__(self,
+                 displayName: str,
+                 imageUrl: str,
+                 longDescription: str,
+                 providerDisplayName: str,
+                 documentationUrl: str,
+                 supportUrl: str):
+        self.displayName = displayName
+        self.imageUrl = imageUrl
+        self.longDescription = longDescription
+        self.providerDisplayName = providerDisplayName
+        self.documentationUrl = documentationUrl
+        self.supportUrl = supportUrl
 
 
 class ServiceDashboardClient:
-    def __init__(self):
-        self.id: str
-        self.secret: str
-        self.redirect_uri: str
+    def __init__(self,
+                 id: str,
+                 secret: str,
+                 redirect_uri: str
+                 ):
+        self.id = id
+        self.secret = secret
+        self.redirect_uri = redirect_uri
 
 
 class ServicePlanCost:
-    def __init__(self):
-        self.amount: Dict[str, int]
-        self.unit: str
+    def __init__(self,
+                 amount: Dict[str, int],
+                 unit: str):
+        self.amount = amount
+        self.unit = unit
 
 
 class ServicePlanMetaData:
-    def __init__(self):
-        self.displayName: str
-        self.bullets: List[str]
-        self.costs: List[ServicePlanCost]
+    def __init__(self,
+                 displayName: str,
+                 bullets: List[str],
+                 costs: List[ServicePlanCost]
+                 ):
+        self.displayName = displayName
+        self.bullets = bullets
+        self.costs = costs
 
 
 class ServicePlan:
@@ -56,11 +72,14 @@ class Service:
                  bindable: bool,
                  plans: List[ServicePlan],
                  tags: List[str] = None,
-                 requires: List[str]=None,
+                 requires: List[str] = None,
                  metadata: ServiceMetadata = None,
                  dashboard_client: ServiceDashboardClient = None,
                  plan_updateable: bool = None
                  ):
+        """
+        :param requires:  syslog_drain, route_forwarding or volume_mount
+        """
         self.id = id
         self.name = name
         self.description = description
