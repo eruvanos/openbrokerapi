@@ -166,7 +166,7 @@ class LastOperation:
                  state: OperationState,
                  description: str
                  ):
-        self.state: str = state.value
+        self.state = state
         self.description = description
 
 

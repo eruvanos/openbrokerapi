@@ -1,6 +1,7 @@
 from typing import List
 
 from openbrokerapi.catalog import Service
+from openbrokerapi.service_broker import OperationState
 
 
 class EmptyResponse:
@@ -37,13 +38,12 @@ class DeprovisionResponse:
     def __init__(self, operation: str):
         self.operation = operation
 
-
 class LastOperationResponse:
     def __init__(self,
-                 state: dict,  # LastOperationState,
+                 state: OperationState,
                  description: str
                  ):
-        self.state = state
+        self.state = state.value
         self.description = description
 
 

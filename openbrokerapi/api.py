@@ -234,7 +234,7 @@ def get_blueprint(service_broker: ServiceBroker,
         operation_data = request.args.get("operation", None)
         result = service_broker.last_operation(instance_id, operation_data)
 
-        return to_json_response(result), HTTPStatus.OK
+        return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
 
     return openbroker
 
