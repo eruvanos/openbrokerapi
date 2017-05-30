@@ -47,11 +47,6 @@ class ErrPlanChangeNotSupported(ServiceExeption):
         super().__init__("The requested plan migration cannot be performed")
 
 
-class ErrRawParamsInvalid(ServiceExeption):
-    def __init__(self):
-        super().__init__("The format of the parameters is not valid JSON")
-
-
 class ErrAppGuidNotProvided(ServiceExeption):
     def __init__(self):
         super().__init__("app_guid is a required field but was not provided")
