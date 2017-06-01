@@ -87,6 +87,8 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 
 ## Release Notes
 
+###### v0.3.dev2
+
 ###### v0.3.1
 * fix api.serve
 
