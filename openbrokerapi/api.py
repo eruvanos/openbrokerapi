@@ -279,5 +279,5 @@ def serve(service_broker: ServiceBroker,
     logger.debug("Register openbrokerapi blueprint")
     app.register_blueprint(blueprint)
 
-    logger.info("Start Flask on 0.0.0.0:$s" % port)
+    logger.info("Start Flask on 0.0.0.0:%s" % port)
     app.run('0.0.0.0', port, debug)

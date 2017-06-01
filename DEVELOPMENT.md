@@ -12,8 +12,8 @@
 
 ## Upload
 ```
-twine upload -r testpypi
-twine upload
+twine upload -r testpypi dist/*
+twine upload dist/*
 ```
 
 ## Install from testpypi

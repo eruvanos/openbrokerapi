@@ -87,6 +87,9 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 
 ## Release Notes
 
+###### v0.3.1
+* fix api.serve
+
 ###### v0.3
 * use LastOperationResponse for last_operation response
 * fix: catalog response was not convertible to json
