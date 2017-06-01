@@ -25,7 +25,7 @@ class ProvisioningTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -52,7 +52,7 @@ class ProvisioningTest(BrokerTestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -81,7 +81,7 @@ class ProvisioningTest(BrokerTestCase):
                 "unknown": "unknown"
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -109,7 +109,7 @@ class ProvisioningTest(BrokerTestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -131,7 +131,7 @@ class ProvisioningTest(BrokerTestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -153,7 +153,7 @@ class ProvisioningTest(BrokerTestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -172,7 +172,7 @@ class ProvisioningTest(BrokerTestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 

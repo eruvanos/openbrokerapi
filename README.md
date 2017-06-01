@@ -3,7 +3,7 @@
 
 # Service Broker API
 
-A Python package for building Service Brokers.
+A Python package for building Service Brokers supporting API version 2.10+.
 
 Following [CF Service Broker API](https://docs.cloudfoundry.org/services/api.html)
 and
@@ -11,7 +11,7 @@ and
 
 ## Installation
 
-This package is available for Python 3.5+.
+This package is available for Python 3.6+.
 
 ```bash
 pip3 install openbrokerapi
@@ -66,16 +66,12 @@ app.run("0.0.0.0")
 ```
 
 ## Error Types
-Brokerapi defines a handful of error types in errors.py
+Openbrokerapi defines a handful of error types in errors.py
 for some common error cases that your service broker may encounter.
 Raise these from your ServiceBroker methods where appropriate,
-and brokerapi will do the "right thing" (™), 
+and openbrokerapi will do the "right thing" (™), 
 and give Cloud Foundry an appropriate status code, 
 as per the Service Broker API specification.
-
-## Planned
-
-* Support VolumeMounts
 
 ## Not Planned To Support
 
@@ -91,11 +87,12 @@ Please report bugs, issues or feature requests to [Github Issues](https://github
 
 ## Release Notes
 
-###### v0.3dev
+###### v0.3
 * use LastOperationResponse for last_operation response
 * fix: catalog response was not convertible to json
 * fix: not required fields were still in catalog response
 * add missing tests for catalog endpoint
+* support for VolumeMounts is tested
 
 ###### v0.2
 * improve testing

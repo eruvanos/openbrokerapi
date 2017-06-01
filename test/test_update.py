@@ -28,7 +28,7 @@ class UpdateTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -55,7 +55,7 @@ class UpdateTest(BrokerTestCase):
                 "service_id": "service-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -91,7 +91,7 @@ class UpdateTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -125,7 +125,7 @@ class UpdateTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -148,7 +148,7 @@ class UpdateTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -173,7 +173,7 @@ class UpdateTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -187,7 +187,7 @@ class UpdateTest(BrokerTestCase):
         response: Response = self.client.patch(
             "/v2/service_instances/abc",
             headers={
-                'X-Broker-Api-Version': '2.00'
+                'X-Broker-Api-Version': '2.10'
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)

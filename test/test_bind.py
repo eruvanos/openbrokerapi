@@ -4,7 +4,7 @@ import json
 from werkzeug.wrappers import Response
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import Binding, BindDetails, BindResource
+from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice
 from test import BrokerTestCase
 
 expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
@@ -35,7 +35,7 @@ class BindTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -64,7 +64,7 @@ class BindTest(BrokerTestCase):
                 "plan_id": "plan-guid-here"
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -96,7 +96,7 @@ class BindTest(BrokerTestCase):
                 },
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -127,13 +127,59 @@ class BindTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.CREATED)
         self.assertEquals(response.json, dict(
             credentials=expected_credentials
+        ))
+
+    def test_supports_volume_mounts(self):
+        self.broker.bind.return_value = Binding(
+            volume_mounts=[
+                VolumeMount(
+                    driver="",
+                    container_dir="",
+                    mode="",
+                    device_type="",
+                    device=SharedDevice(
+                        volume_id="",
+                        mount_config=dict(config1="1")
+                    )
+                )
+            ]
+        )
+
+        response: Response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "bind_resource": {
+                    "app_guid": "app-guid-here"
+                }
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.11',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEquals(response.status_code, http.HTTPStatus.CREATED)
+        self.assertEquals(response.json, dict(
+            volume_mounts=[
+                dict(
+                    driver="",
+                    container_dir="",
+                    mode="",
+                    device_type="",
+                    device=dict(
+                        volume_id="",
+                        mount_config=dict(config1="1")
+                    )
+                )
+            ]
         ))
 
     def test_returns_409_if_binding_already_exists(self):
@@ -149,7 +195,7 @@ class BindTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -167,7 +213,7 @@ class BindTest(BrokerTestCase):
                 "bind_resource": {}
             }),
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -182,7 +228,7 @@ class BindTest(BrokerTestCase):
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({}),
             headers={
-                'X-Broker-Api-Version': '2.00'
+                'X-Broker-Api-Version': '2.10'
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)

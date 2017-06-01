@@ -15,7 +15,7 @@ class DeprovisioningTest(BrokerTestCase):
         _ = self.client.delete(
             "/v2/service_instances/here_instance_id?service_id=service-id-here&plan_id=plan-id-here&accepts_incomplete=true",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -33,7 +33,7 @@ class DeprovisioningTest(BrokerTestCase):
         _ = self.client.delete(
             "/v2/service_instances/here_instance_id?service_id=service-id-here&plan_id=plan-id-here",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -51,7 +51,7 @@ class DeprovisioningTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/abc?service_id=service-id-here&plan_id=plan-id-here",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -64,7 +64,7 @@ class DeprovisioningTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/abc?service_id=service-id-here&plan_id=plan-id-here",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -77,7 +77,7 @@ class DeprovisioningTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/abc?service_id=service-id-here&plan_id=plan-id-here",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -90,7 +90,7 @@ class DeprovisioningTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/abc?service_id=service-id-here&plan_id=plan-id-here",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -104,7 +104,7 @@ class DeprovisioningTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/abc",
             headers={
-                'X-Broker-Api-Version': '2.00'
+                'X-Broker-Api-Version': '2.10'
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)

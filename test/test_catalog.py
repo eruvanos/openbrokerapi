@@ -20,7 +20,7 @@ class CatalogTest(BrokerTestCase):
         _ = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -32,7 +32,7 @@ class CatalogTest(BrokerTestCase):
         _ = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })
@@ -82,7 +82,7 @@ class CatalogTest(BrokerTestCase):
         response = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })
@@ -136,7 +136,7 @@ class CatalogTest(BrokerTestCase):
         response = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })
@@ -161,7 +161,7 @@ class CatalogTest(BrokerTestCase):
         response = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })

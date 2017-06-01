@@ -10,7 +10,7 @@ class PrecheckTest(BrokerTestCase):
         response: Response = self.client.put(
             "/v2/service_instances/abc",
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
@@ -19,11 +19,11 @@ class PrecheckTest(BrokerTestCase):
         response: Response = self.client.put(
             "/v2/service_instances/abc",
             headers={
-                'X-Broker-Api-Version': '1.00',
+                'X-Broker-Api-Version': '2.9',
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.PRECONDITION_FAILED)
-        self.assertEquals(response.json, dict(description="Service broker requires version 2.0+."))
+        self.assertEquals(response.json, dict(description="Service broker requires version 2.10+."))
 
     def test_returns_400_if_request_not_contains_version_header(self):
         response: Response = self.client.put(
@@ -41,7 +41,7 @@ class PrecheckTest(BrokerTestCase):
             "/v2/service_instances/abc?plan_id=a&service_id=b",
             headers={
                 'Authorization': self.auth_header,
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)

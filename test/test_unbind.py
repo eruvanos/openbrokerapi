@@ -16,7 +16,7 @@ class UnbindTest(BrokerTestCase):
         _ = self.client.delete(
             "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -35,7 +35,7 @@ class UnbindTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -49,7 +49,7 @@ class UnbindTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
                 'Authorization': self.auth_header
             })
 
@@ -61,7 +61,7 @@ class UnbindTest(BrokerTestCase):
         response: Response = self.client.delete(
             "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
-                'X-Broker-Api-Version': '2.00',
+                'X-Broker-Api-Version': '2.10',
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
