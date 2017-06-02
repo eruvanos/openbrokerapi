@@ -2,17 +2,9 @@
 from setuptools import setup, find_packages
 
 
-def get_long_description():
-    try:
-        import pypandoc
-        return pypandoc.convert('README.md', 'rst')
-    except (IOError, ImportError, RuntimeError):
-        print('WARNING: Please install pypandoc and pandoc. Otherwise long description will not be available.')
-
-
 setup(
     name='openbrokerapi',
-    version='0.3.4',
+    version='0.3.5',
     packages=find_packages(),
     install_requires=['flask'],
     test_suite="test",
@@ -22,7 +14,7 @@ setup(
     author_email="eruvanos@ewetel.net",
     license="MIT",
     description="A python package for the V2 CF Service Broker API and Open Broker API (version 2.10+)",
-    long_description=get_long_description(),
+    long_description=open('README.rst').read(),
     url="https://github.com/eruvanos/openbrokerapi",
     keywords=["cloudfoundry", "cfbrokerapi", "openbrokerapi", "openservicebrokerapi", "servicebroker", "flask"],
     classifiers=[
