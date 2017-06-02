@@ -2,10 +2,14 @@ language: python
 python:
 - '3.6'
 - nightly
+addons:
+  apt:
+    packages:
+    - pandoc
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
-- pip install coveralls
+- pip install coveralls pypandoc
 script: coverage run --source=openbrokerapi ./setup.py test
 after_success: coveralls
 deploy:
