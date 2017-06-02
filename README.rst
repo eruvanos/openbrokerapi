@@ -99,20 +99,20 @@ Issues <https://github.com/eruvanos/openbrokerapi/issues>`__
 Release Notes
 -------------
 
-v0.3.2
+**v0.4.0**
   - remove unused response classes
 
-v0.3.1
+**v0.3.1**
   - fix api.serve
 
-v0.3
+**v0.3**
   - use LastOperationResponse for last\_operation response
   - fix: catalog response was not convertible to json
   - fix: not required fields were still in catalog response
   - add missing tests for catalog endpoint
   - support for VolumeMounts is tested
 
-v0.2
+**v0.2**
   - improve testing
   - fix: Bind and update getting dict instead of expected objects
   - support async for provision, update and deprovision
@@ -121,7 +121,7 @@ v0.2
   - get\_blueprint() now expects a logger
   - add log\_utils with basic\_config()
 
-v0.1
+**v0.1**
   -  initial version
   -  supported operations
   -  provision

@@ -8,7 +8,7 @@ addons:
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
-- pip install coveralls pypandoc
+- pip install coveralls
 script: coverage run --source=openbrokerapi ./setup.py test
 after_success: coveralls
 deploy:
