@@ -101,6 +101,9 @@ Release Notes
 
 **v0.4.0**
   - remove unused response classes
+  - ProvisionedServiceSpec: do not require optional fields
+  - DeprovisionServiceSpec: do not require optional fields
+  - LastOperation: do not require optional fields
 
 **v0.3.1**
   - fix api.serve

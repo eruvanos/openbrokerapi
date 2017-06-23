@@ -1,4 +1,5 @@
 from enum import Enum
+
 from typing import List
 
 from openbrokerapi.catalog import Service
@@ -22,8 +23,8 @@ class ProvisionDetails:
 class ProvisionedServiceSpec:
     def __init__(self,
                  is_async: bool,
-                 dashboard_url: str,
-                 operation: str
+                 dashboard_url: str = None,
+                 operation: str = None
                  ):
         self.is_async = is_async
         self.dashboard_url = dashboard_url
@@ -42,7 +43,7 @@ class DeprovisionDetails:
 class DeprovisionServiceSpec:
     def __init__(self,
                  is_async: bool,
-                 operation: str
+                 operation: str = None
                  ):
         self.is_async = is_async
         self.operation = operation
@@ -164,7 +165,7 @@ class OperationState(Enum):
 class LastOperation:
     def __init__(self,
                  state: OperationState,
-                 description: str
+                 description: str = None
                  ):
         self.state = state
         self.description = description
