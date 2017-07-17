@@ -79,7 +79,7 @@ class UpdateDetails:
 class UpdateServiceSpec:
     def __init__(self,
                  is_async: bool,
-                 operation: str):
+                 operation: str=None):
         self.is_async = is_async
         self.operation = operation
 
