@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from setuptools import setup, find_packages
 
-
 setup(
     name='openbrokerapi',
     version='0.3.6',
@@ -36,5 +35,9 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 3.6',
     ],
+    extras_require={
+        'docs': [
+            'sphinx >= 1.4',
+            'sphinx_rtd_theme']}
 
 )
