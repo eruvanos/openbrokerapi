@@ -4,7 +4,7 @@ class ServiceExeption(BaseException):
 
 class ErrInstanceAlreadyExists(ServiceExeption):
     def __init__(self):
-        super().__init__("instance <already exists")
+        super().__init__("instance already exists")
 
 
 class ErrInstanceDoesNotExist(ServiceExeption):
