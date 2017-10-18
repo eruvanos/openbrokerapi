@@ -19,9 +19,9 @@ class ServiceMetadata:
 
 class ServiceDashboardClient:
     def __init__(self,
-                 id: str,
-                 secret: str,
-                 redirect_uri: str
+                 redirect_uri: str,
+                 id: str = None,
+                 secret: str = None
                  ):
         self.id = id
         self.secret = secret
@@ -38,13 +38,21 @@ class ServicePlanCost:
 
 class ServicePlanMetaData:
     def __init__(self,
-                 displayName: str,
-                 bullets: List[str],
-                 costs: List[ServicePlanCost]
+                 displayName: str = None,
+                 bullets: List[str] = None,
+                 costs: List[ServicePlanCost] = None
                  ):
         self.displayName = displayName
         self.bullets = bullets
         self.costs = costs
+
+
+class Schemas:
+    def __init__(self,
+                 service_instance=None,
+                 service_binding=None):
+        self.service_instance: Dict = service_instance
+        self.service_binding: Dict = service_binding
 
 
 class ServicePlan:
@@ -54,7 +62,8 @@ class ServicePlan:
                  description: str,
                  metadata: ServicePlanMetaData = None,
                  free: bool = None,
-                 bindable: bool = None
+                 bindable: bool = None,
+                 schemas: Schemas = None
                  ):
         self.id = id
         self.name = name
@@ -62,6 +71,7 @@ class ServicePlan:
         self.metadata = metadata
         self.free = free
         self.bindable = bindable
+        self.schemas = schemas
 
 
 class Service:
@@ -75,7 +85,7 @@ class Service:
                  requires: List[str] = None,
                  metadata: ServiceMetadata = None,
                  dashboard_client: ServiceDashboardClient = None,
-                 plan_updateable: bool = None
+                 plan_updateable: bool = False
                  ):
         """
         :param requires:  syslog_drain, route_forwarding or volume_mount
