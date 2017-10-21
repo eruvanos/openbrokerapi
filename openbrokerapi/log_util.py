@@ -5,8 +5,8 @@ import sys
 def basic_config(logger: logging.Logger = logging.root, level=logging.INFO):
     """
     Configures a logger to log <=INFO to stdout and >INFO to stderr
-    
-    :param logger: Logger to configure, defaults to logging.root 
+
+    :param logger: Logger to configure, defaults to logging.root
     :param level: Defaults to INFO
     :return: configured logger (logger from parameters)
     """

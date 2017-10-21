@@ -21,7 +21,7 @@ def get_blueprint(service_broker: ServiceBroker,
                   logger: logging.Logger):
     """
     Returns the blueprint with service broker api.
-    
+
     :param service_broker: Service broker used to handle requests
     :param broker_credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior.
@@ -73,7 +73,7 @@ def get_blueprint(service_broker: ServiceBroker,
             logger.debug("%s:%s", k, v)
         logger.debug("--- Body")
         logger.debug(request.data)
-        logger.debug("--- Request Ende -------------------")
+        logger.debug("--- Request End ---------------------")
 
     openbroker.before_request(print_request)
 
@@ -108,7 +108,7 @@ def get_blueprint(service_broker: ServiceBroker,
     @requires_auth
     def catalog():
         """
-        :return: Catalog of broker (List of services) 
+        :return: Catalog of broker (List of services)
         """
         services = service_broker.catalog()
         return to_json_response(CatalogResponse(services))
@@ -263,7 +263,7 @@ def serve(service_broker: ServiceBroker,
           debug=False):
     """
     Starts flask with the given broker
-    
+
     :param service_broker: Service broker used to handle requests
     :param credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior

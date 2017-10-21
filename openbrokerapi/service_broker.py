@@ -174,8 +174,8 @@ class ServiceBroker:
     def catalog(self) -> List[Service]:
         """
         Returns the Catalog of all services that are provided by this broker.
-        
-        :return: List[Service] 
+
+        :return: List[Service]
         """
         raise NotImplementedError()
 
@@ -183,7 +183,7 @@ class ServiceBroker:
                   async_allowed: bool) -> ProvisionedServiceSpec:
         """
         Further readings `CF Broker API#Provisioning <https://docs.cloudfoundry.org/services/api.html#provisioning>`_
-        
+
         :param instance_id: Instance id provided by the platform
         :param service_details: Details about the service to create
         :param async_allowed: Client allows async creation
@@ -196,7 +196,7 @@ class ServiceBroker:
     def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool) -> UpdateServiceSpec:
         """
         Further readings `CF Broker API#Update <https://docs.cloudfoundry.org/services/api.html#updating_service_instance>`_
-        
+
         :param instance_id: Instance id provided by the platform
         :param details: Details about the service to update
         :param async_allowed: Client allows async creation
@@ -247,7 +247,7 @@ class ServiceBroker:
     def last_operation(self, instance_id: str, operation_data: str) -> LastOperation:
         """
         Further readings `CF Broker API#LastOperation <https://docs.cloudfoundry.org/services/api.html#polling>`_
-        
+
         :param instance_id: Instance id provided by the platform
         :param operation_data: Operation data received from async operation
         :return: LastOperation
