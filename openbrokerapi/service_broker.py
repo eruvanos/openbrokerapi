@@ -1,5 +1,4 @@
 from enum import Enum
-
 from typing import List
 
 from openbrokerapi.catalog import Service
@@ -51,10 +50,10 @@ class DeprovisionServiceSpec:
 
 class PreviousValues:
     def __init__(self,
-                 plan_id: str,
-                 service_id: str,
-                 organization_id: str,
-                 space_id: str,
+                 plan_id: str = None,
+                 service_id: str = None,
+                 organization_id: str = None,
+                 space_id: str = None,
                  **kwargs):
         self.plan_id = plan_id
         self.service_id = service_id
@@ -66,7 +65,7 @@ class UpdateDetails:
     def __init__(self,
                  service_id: str,
                  plan_id: str = None,
-                 parameters=None,
+                 parameters: dict = None,
                  previous_values: dict = None,
                  **kwargs
                  ):
@@ -79,7 +78,7 @@ class UpdateDetails:
 class UpdateServiceSpec:
     def __init__(self,
                  is_async: bool,
-                 operation: str=None):
+                 operation: str = None):
         self.is_async = is_async
         self.operation = operation
 
@@ -113,7 +112,7 @@ class BindDetails:
 class SharedDevice:
     def __init__(self,
                  volume_id: str,
-                 mount_config: dict
+                 mount_config: dict = None
                  ):
         self.volume_id = volume_id
         self.mount_config = mount_config
