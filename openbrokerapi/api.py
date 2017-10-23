@@ -32,7 +32,7 @@ def get_blueprint(service_broker: ServiceBroker,
     def version_tuple(v):
         return tuple(map(int, (v.split("."))))
 
-    min_version = version_tuple("2.10")
+    min_version = version_tuple("2.13")
 
     def check_version():
         version = request.headers.get("X-Broker-Api-Version", None)
