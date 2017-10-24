@@ -76,6 +76,11 @@ from your ServiceBroker methods where appropriate, and openbrokerapi
 will do the "right thing" (™), and give Cloud Foundry an appropriate
 status code, as per the Service Broker API specification.
 
+Internal Notes
+--------------
+
+- Context object from update 2.12 and 2.13 is ignored. This can change, when an update removes the redundant fields.
+
 Not Planned To Support
 ----------------------
 
