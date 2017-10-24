@@ -7,6 +7,8 @@ Changelog
   - ProvisionedServiceSpec: do not require optional fields
   - DeprovisionServiceSpec: do not require optional fields
   - LastOperation: do not require optional fields
+  - update to openbrokerapi 2.13 (minimal required)
+  - correct some required vs non required fields
 
 **v0.3.1**
   - fix api.serve

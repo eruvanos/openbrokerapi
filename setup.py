@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='openbrokerapi',
-    version='0.3.6',
+    version='0.4.0',
     packages=find_packages(),
     install_requires=['flask'],
     test_suite="test",
 
     # Metadata
     author="Maic Siemering",
-    author_email="eruvanos@ewetel.net",
+    author_email="maic@siemering.tech",
     license="MIT",
     description="A python package for the V2 CF Service Broker API and Open Broker API (version 2.10+)",
     long_description=open('README.rst').read(),
