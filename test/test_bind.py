@@ -35,7 +35,7 @@ class BindTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -64,7 +64,7 @@ class BindTest(BrokerTestCase):
                 "plan_id": "plan-guid-here"
             }),
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -96,7 +96,7 @@ class BindTest(BrokerTestCase):
                 },
             }),
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -127,7 +127,7 @@ class BindTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -162,7 +162,7 @@ class BindTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.11',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -195,7 +195,7 @@ class BindTest(BrokerTestCase):
                 }
             }),
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -213,7 +213,7 @@ class BindTest(BrokerTestCase):
                 "bind_resource": {}
             }),
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -228,7 +228,7 @@ class BindTest(BrokerTestCase):
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({}),
             headers={
-                'X-Broker-Api-Version': '2.10'
+                'X-Broker-Api-Version': '2.13'
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)

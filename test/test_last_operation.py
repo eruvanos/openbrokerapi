@@ -14,7 +14,7 @@ class LastOperationTest(BrokerTestCase):
         _ = self.client.get(
             "/v2/service_instances/here-instance_id/last_operation",
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -27,7 +27,7 @@ class LastOperationTest(BrokerTestCase):
         _ = self.client.get(
             "/v2/service_instances/here-instance_id/last_operation?%s" % query,
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -42,7 +42,7 @@ class LastOperationTest(BrokerTestCase):
         response: Response = self.client.get(
             "/v2/service_instances/here-instance_id/last_operation?%s" % query,
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 

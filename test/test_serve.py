@@ -24,7 +24,7 @@ class ServeTest(TestCase):
         time.sleep(2)
         response = requests.get("http://localhost:5000/v2/catalog",
                                 auth=("", ""),
-                                headers={'X-Broker-Api-Version': '2.10'})
+                                headers={'X-Broker-Api-Version': '2.13'})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), dict(services=[]))

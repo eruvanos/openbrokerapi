@@ -20,7 +20,7 @@ class CatalogTest(BrokerTestCase):
         _ = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
@@ -32,7 +32,7 @@ class CatalogTest(BrokerTestCase):
         _ = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })
@@ -82,7 +82,7 @@ class CatalogTest(BrokerTestCase):
         response = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })
@@ -136,7 +136,7 @@ class CatalogTest(BrokerTestCase):
         response = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })
@@ -150,6 +150,7 @@ class CatalogTest(BrokerTestCase):
                                       name="service_name",
                                       description="service_description",
                                       bindable=True,
+                                      plan_updateable=False,
                                       plans=[dict(id="p1", name="default", description="plan_description")]
                                   )
                               ]
@@ -161,7 +162,7 @@ class CatalogTest(BrokerTestCase):
         response = self.client.get(
             "/v2/catalog",
             headers={
-                'X-Broker-Api-Version': '2.10',
+                'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })
