@@ -12,7 +12,7 @@ setup(
     author="Maic Siemering",
     author_email="maic@siemering.tech",
     license="MIT",
-    description="A python package for the V2 CF Service Broker API and Open Broker API (version 2.10+)",
+    description="A python package for the V2 CF Service Broker API and Open Broker API (version 2.13+)",
     long_description=open('README.rst').read(),
     url="https://github.com/eruvanos/openbrokerapi",
     keywords=["cloudfoundry", "cfbrokerapi", "openbrokerapi", "openservicebrokerapi", "servicebroker", "flask"],
