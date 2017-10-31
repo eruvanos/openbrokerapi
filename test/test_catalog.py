@@ -24,7 +24,7 @@ class CatalogTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.broker.catalog.assert_called_once()
+        self.assertTrue(self.broker.catalog.called)
 
     def test_catalog_ignores_request_headers(self):
         self.broker.catalog.return_value = self.service_list
@@ -37,7 +37,7 @@ class CatalogTest(BrokerTestCase):
                 "unknown": "unknown"
             })
 
-        self.broker.catalog.assert_called_once()
+        self.assertTrue(self.broker.catalog.called)
 
     def test_catalog_returns_200_with_service_information(self):
         self.broker.catalog.return_value = service_list = [

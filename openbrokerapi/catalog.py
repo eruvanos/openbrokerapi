@@ -51,20 +51,33 @@ class Schemas:
     def __init__(self,
                  service_instance=None,
                  service_binding=None):
-        self.service_instance: Dict = service_instance
-        self.service_binding: Dict = service_binding
+        """
+        :param dict service_instance:
+        :param dict service_binding:
+        """
+        self.service_instance = service_instance
+        self.service_binding = service_binding
 
 
 class ServicePlan:
     def __init__(self,
-                 id: str,
-                 name: str,
-                 description: str,
-                 metadata: ServicePlanMetaData = None,
-                 free: bool = None,
-                 bindable: bool = None,
-                 schemas: Schemas = None
+                 id,
+                 name,
+                 description,
+                 metadata=None,
+                 free=None,
+                 bindable=None,
+                 schemas=None
                  ):
+        """
+        :param str                 id:
+        :param str                 name:
+        :param str                 description:
+        :param ServicePlanMetaData metadata:
+        :param bool                free:
+        :param bool                bindable:
+        :param Schemas             schemas:
+        """
         self.id = id
         self.name = name
         self.description = description
@@ -76,19 +89,28 @@ class ServicePlan:
 
 class Service:
     def __init__(self,
-                 id: str,
-                 name: str,
-                 description: str,
-                 bindable: bool,
-                 plans: List[ServicePlan],
-                 tags: List[str] = None,
-                 requires: List[str] = None,
-                 metadata: ServiceMetadata = None,
-                 dashboard_client: ServiceDashboardClient = None,
-                 plan_updateable: bool = False
+                 id,
+                 name,
+                 description,
+                 bindable,
+                 plans,
+                 tags=None,
+                 requires=None,
+                 metadata=None,
+                 dashboard_client=None,
+                 plan_updateable=False
                  ):
         """
-        :param requires:  syslog_drain, route_forwarding or volume_mount
+        :param str id:
+        :param str name:
+        :param str description:
+        :param bool bindable:
+        :param List[ServicePlan] plans:
+        :param List[str] tags:
+        :param List[str] requires:  syslog_drain, route_forwarding or volume_mount
+        :param ServiceMetadata metadata:
+        :param ServiceDashboardClient dashboard_client:
+        :param bool plan_updateable:
         """
         self.id = id
         self.name = name

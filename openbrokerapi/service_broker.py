@@ -63,16 +63,22 @@ class PreviousValues:
 
 class UpdateDetails:
     def __init__(self,
-                 service_id: str,
-                 plan_id: str = None,
-                 parameters: dict = None,
-                 previous_values: dict = None,
+                 service_id,
+                 plan_id=None,
+                 parameters=None,
+                 previous_values=None,
                  **kwargs
                  ):
+        """
+        :param str service_id:
+        :param str plan_id:
+        :param dict parameters:
+        :param dict previous_values:
+        """
         self.service_id = service_id
         self.plan_id = plan_id
         self.parameters = parameters
-        self.previous_values: PreviousValues = PreviousValues(**previous_values) if previous_values else None
+        self.previous_values = PreviousValues(**previous_values) if previous_values else None
 
 
 class UpdateServiceSpec:

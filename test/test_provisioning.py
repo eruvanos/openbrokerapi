@@ -1,8 +1,6 @@
 import http
 import json
 
-from werkzeug.wrappers import Response
-
 from openbrokerapi import errors
 from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails
 from test import BrokerTestCase
@@ -100,7 +98,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_returns_201_if_created(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(False, "dash_url", "operation_str")
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/abc",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -122,7 +120,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_returns_202_if_provisioning_in_progress(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(True, "dash_url", "operation_str")
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/abc",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -144,7 +142,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_returns_409_if_already_exists_but_is_not_equal(self):
         self.broker.provision.side_effect = errors.ErrInstanceAlreadyExists()
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/abc",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -163,7 +161,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_returns_422_if_async_required_but_not_supported(self):
         self.broker.provision.side_effect = errors.ErrAsyncRequired()
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/abc",
             data=json.dumps({
                 "service_id": "service-guid-here",

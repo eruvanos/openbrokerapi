@@ -1,7 +1,5 @@
 import http
 
-from werkzeug.wrappers import Response
-
 from test import BrokerTestCase
 from openbrokerapi import errors
 from openbrokerapi.service_broker import UnbindDetails
@@ -32,7 +30,7 @@ class UnbindTest(BrokerTestCase):
         self.broker.unbind.return_value = None
 
         query = "service_id=service-id-here&plan_id=plan-id-here"
-        response: Response = self.client.delete(
+        response = self.client.delete(
             "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
                 'X-Broker-Api-Version': '2.13',
@@ -46,7 +44,7 @@ class UnbindTest(BrokerTestCase):
         self.broker.unbind.side_effect = errors.ErrBindingDoesNotExist()
 
         query = "service_id=service-id-here&plan_id=plan-id-here"
-        response: Response = self.client.delete(
+        response = self.client.delete(
             "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
                 'X-Broker-Api-Version': '2.13',
@@ -58,7 +56,7 @@ class UnbindTest(BrokerTestCase):
 
     def test_returns_400_if_request_not_contain_auth_header(self):
         query = "service_id=service-id-here&plan_id=plan-id-here"
-        response: Response = self.client.delete(
+        response = self.client.delete(
             "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
                 'X-Broker-Api-Version': '2.13',

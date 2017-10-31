@@ -1,8 +1,6 @@
 import http
 import json
 
-from werkzeug.wrappers import Response
-
 from openbrokerapi import errors
 from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice
 from test import BrokerTestCase
@@ -117,7 +115,7 @@ class BindTest(BrokerTestCase):
             credentials=expected_credentials
         )
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -152,7 +150,7 @@ class BindTest(BrokerTestCase):
             ]
         )
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -185,7 +183,7 @@ class BindTest(BrokerTestCase):
     def test_returns_409_if_binding_already_exists(self):
         self.broker.bind.side_effect = errors.ErrBindingAlreadyExists()
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -205,7 +203,7 @@ class BindTest(BrokerTestCase):
     def test_returns_422_if_app_guid_is_required_but_not_given(self):
         self.broker.bind.side_effect = errors.ErrAppGuidNotProvided()
 
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -224,7 +222,7 @@ class BindTest(BrokerTestCase):
         ))
 
     def test_returns_401_if_request_not_contain_auth_header(self):
-        response: Response = self.client.put(
+        response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({}),
             headers={

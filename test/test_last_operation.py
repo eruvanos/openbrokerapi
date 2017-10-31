@@ -1,7 +1,5 @@
 import http
 
-from werkzeug.wrappers import Response
-
 from test import BrokerTestCase
 from openbrokerapi.service_broker import LastOperation, OperationState
 
@@ -39,7 +37,7 @@ class LastOperationTest(BrokerTestCase):
         self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
 
         query = "service_id=123&plan_id=456&operation=operation-data"
-        response: Response = self.client.get(
+        response = self.client.get(
             "/v2/service_instances/here-instance_id/last_operation?%s" % query,
             headers={
                 'X-Broker-Api-Version': '2.13',

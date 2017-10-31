@@ -11,21 +11,26 @@ from openbrokerapi.service_broker import *
 
 
 class BrokerCredentials:
-    def __init__(self, username: str, password: str):
+    def __init__(self, username, password):
+        """
+        :param str username: Username
+        :param str password: Password
+        """
         self.username = username
         self.password = password
 
 
-def get_blueprint(service_broker: ServiceBroker,
-                  broker_credentials: BrokerCredentials,
-                  logger: logging.Logger):
+def get_blueprint(service_broker,
+                  broker_credentials,
+                  logger):
     """
     Returns the blueprint with service broker api.
 
-    :param service_broker: Service broker used to handle requests
-    :param broker_credentials: Username and password that will be required to communicate with service broker
-    :param logger: Used for api logs. This will not influence Flasks logging behavior.
+    :param ServiceBroker     service_broker: Service broker used to handle requests
+    :param BrokerCredentials broker_credentials: Username and password that will be required to communicate with service broker
+    :param logging.Logger    logger: Used for api logs. This will not influence Flasks logging behavior.
     :return: Blueprint to register with Flask app instance
+    :rtype: Blueprint
     """
     openbroker = Blueprint('open_broker', __name__)
 
@@ -120,7 +125,7 @@ def get_blueprint(service_broker: ServiceBroker,
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
 
             details = json.loads(request.data)
-            provision_details: ProvisionDetails = ProvisionDetails(**details)
+            provision_details = ProvisionDetails(**details)
         except TypeError as e:
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
@@ -146,7 +151,7 @@ def get_blueprint(service_broker: ServiceBroker,
     def update(instance_id):
         try:
             details = json.loads(request.data)
-            update_details: UpdateDetails = UpdateDetails(**details)
+            update_details = UpdateDetails(**details)
 
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
         except TypeError as e:
@@ -172,7 +177,7 @@ def get_blueprint(service_broker: ServiceBroker,
     def bind(instance_id, binding_id):
         try:
             details = json.loads(request.data)
-            binding_details: BindDetails = BindDetails(**details)
+            binding_details = BindDetails(**details)
         except KeyError as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
@@ -197,7 +202,7 @@ def get_blueprint(service_broker: ServiceBroker,
         try:
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
-            unbind_details: UnbindDetails = UnbindDetails(plan_id, service_id)
+            unbind_details = UnbindDetails(plan_id, service_id)
         except KeyError as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
@@ -256,19 +261,19 @@ def get_blueprint(service_broker: ServiceBroker,
     return openbroker
 
 
-def serve(service_broker: ServiceBroker,
-          credentials: BrokerCredentials,
-          logger: logging.Logger = logging.root,
+def serve(service_broker,
+          credentials,
+          logger=logging.root,
           port=5000,
           debug=False):
     """
     Starts flask with the given broker
 
-    :param service_broker: Service broker used to handle requests
-    :param credentials: Username and password that will be required to communicate with service broker
-    :param logger: Used for api logs. This will not influence Flasks logging behavior
-    :param port: Port
-    :param debug: Enables debugging in flask app
+    :param ServiceBroker     service_broker: Service broker used to handle requests
+    :param BrokerCredentials credentials:    Username and password that will be required to communicate with service broker
+    :param logging.Logger    logger:         Used for api logs. This will not influence Flasks logging behavior
+    :param int               port:           Port
+    :param bool              debug:          Enables debugging in flask app
     """
 
     from flask import Flask

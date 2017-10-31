@@ -1,13 +1,12 @@
 import base64
+import logging
 from unittest.mock import Mock
 
-import logging
 from flask.app import Flask
 from flask_testing import TestCase
 
-from openbrokerapi.log_util import basic_config
 from openbrokerapi.api import BrokerCredentials
-from openbrokerapi.service_broker import ServiceBroker
+from openbrokerapi.log_util import basic_config
 
 
 class BrokerTestCase(TestCase):
@@ -17,7 +16,7 @@ class BrokerTestCase(TestCase):
         from openbrokerapi.api import get_blueprint
 
         app = Flask(__name__)
-        self.broker: ServiceBroker = Mock()
+        self.broker = Mock()
 
         app.register_blueprint(
             get_blueprint(self.broker,

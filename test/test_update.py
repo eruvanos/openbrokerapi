@@ -1,8 +1,6 @@
 import http
 import json
 
-from werkzeug.wrappers import Response
-
 from openbrokerapi import errors
 from openbrokerapi.service_broker import UpdateServiceSpec, UpdateDetails, PreviousValues
 from test import BrokerTestCase
@@ -112,7 +110,7 @@ class UpdateTest(BrokerTestCase):
     def test_returns_200_if_updated(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
-        response: Response = self.client.patch(
+        response = self.client.patch(
             "/v2/service_instances/abc",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -135,7 +133,7 @@ class UpdateTest(BrokerTestCase):
     def test_returns_202_if_update_is_in_progress(self):
         self.broker.update.return_value = UpdateServiceSpec(True, "operation")
 
-        response: Response = self.client.patch(
+        response = self.client.patch(
             "/v2/service_instances/abc?accepts_incomplete=true",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -160,7 +158,7 @@ class UpdateTest(BrokerTestCase):
     def test_returns_422_if_async_required_but_not_supported(self):
         self.broker.update.side_effect = errors.ErrAsyncRequired()
 
-        response: Response = self.client.patch(
+        response = self.client.patch(
             "/v2/service_instances/abc?accepts_incomplete=false",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -184,7 +182,7 @@ class UpdateTest(BrokerTestCase):
         ))
 
     def test_returns_401_if_request_not_contain_auth_header(self):
-        response: Response = self.client.patch(
+        response = self.client.patch(
             "/v2/service_instances/abc",
             headers={
                 'X-Broker-Api-Version': '2.13'
