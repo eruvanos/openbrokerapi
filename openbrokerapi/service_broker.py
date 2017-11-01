@@ -193,7 +193,7 @@ class ServiceBroker:
         :param instance_id: Instance id provided by the platform
         :param service_details: Details about the service to create
         :param async_allowed: Client allows async creation
-        :return: ProvisionedServiceSpec
+        :rtype: ProvisionedServiceSpec
         :raises ErrInstanceAlreadyExists: If instance already exists
         :raises ErrAsyncRequired: If async is required but not supported
         """
@@ -206,7 +206,7 @@ class ServiceBroker:
         :param instance_id: Instance id provided by the platform
         :param details: Details about the service to update
         :param async_allowed: Client allows async creation
-        :return: UpdateServiceSpec
+        :rtype: UpdateServiceSpec
         :raises ErrAsyncRequired: If async is required but not supported
         """
         raise NotImplementedError()
@@ -219,7 +219,7 @@ class ServiceBroker:
         :param instance_id: Instance id provided by the platform
         :param details: Details about the service to delete
         :param async_allowed: Client allows async creation
-        :return: DeprovisionServiceSpec
+        :rtype: DeprovisionServiceSpec
         :raises ErrInstanceDoesNotExist: If instance does not exists
         :raises ErrAsyncRequired: If async is required but not supported
         """
@@ -232,7 +232,7 @@ class ServiceBroker:
         :param instance_id: Instance id provided by the platform
         :param binding_id: Binding id provided by the platform
         :param details: Details about the binding to create
-        :return: Binding
+        :rtype: Binding
         :raises ErrBindingAlreadyExists: If binding already exists
         :raises ErrAppGuidNotProvided: If AppGuid is required but not provided
         """
@@ -245,7 +245,7 @@ class ServiceBroker:
         :param instance_id: Instance id provided by the platform
         :param binding_id: Binding id provided by the platform
         :param details: Details about the binding to delete
-        :return: UnbindDetails
+        :rtype: UnbindDetails
         :raises ErrBindingAlreadyExists: If binding already exists
         """
         raise NotImplementedError()
@@ -256,6 +256,6 @@ class ServiceBroker:
 
         :param instance_id: Instance id provided by the platform
         :param operation_data: Operation data received from async operation
-        :return: LastOperation
+        :rtype: LastOperation
         """
         raise NotImplementedError()
