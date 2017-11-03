@@ -12,7 +12,7 @@ Service Broker API <https://www.openservicebrokerapi.org/>`__
 Installation
 ------------
 
-This package is available for Python 3.6+.
+This package is available for Python 3.5+.
 
 .. code:: bash
 

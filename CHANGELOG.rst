@@ -2,6 +2,9 @@
 Changelog
 =============
 
+**v0.4.1**
+  - support Python 3.5+
+
 **v0.4.0**
   - remove unused response classes
   - ProvisionedServiceSpec: do not require optional fields
