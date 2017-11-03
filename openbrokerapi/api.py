@@ -11,26 +11,21 @@ from openbrokerapi.service_broker import *
 
 
 class BrokerCredentials:
-    def __init__(self, username, password):
-        """
-        :param str username: Username
-        :param str password: Password
-        """
+    def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
 
 
-def get_blueprint(service_broker,
-                  broker_credentials,
-                  logger):
+def get_blueprint(service_broker: ServiceBroker,
+                  broker_credentials: BrokerCredentials,
+                  logger: logging.Logger) -> Blueprint:
     """
     Returns the blueprint with service broker api.
 
-    :param ServiceBroker     service_broker: Service broker used to handle requests
-    :param BrokerCredentials broker_credentials: Username and password that will be required to communicate with service broker
-    :param logging.Logger    logger: Used for api logs. This will not influence Flasks logging behavior.
+    :param service_broker: Service broker used to handle requests
+    :param broker_credentials: Username and password that will be required to communicate with service broker
+    :param logger: Used for api logs. This will not influence Flasks logging behavior.
     :return: Blueprint to register with Flask app instance
-    :rtype: Blueprint
     """
     openbroker = Blueprint('open_broker', __name__)
 
@@ -261,19 +256,19 @@ def get_blueprint(service_broker,
     return openbroker
 
 
-def serve(service_broker,
-          credentials,
-          logger=logging.root,
+def serve(service_broker: ServiceBroker,
+          credentials: BrokerCredentials,
+          logger: logging.Logger = logging.root,
           port=5000,
           debug=False):
     """
     Starts flask with the given broker
 
-    :param ServiceBroker     service_broker: Service broker used to handle requests
-    :param BrokerCredentials credentials:    Username and password that will be required to communicate with service broker
-    :param logging.Logger    logger:         Used for api logs. This will not influence Flasks logging behavior
-    :param int               port:           Port
-    :param bool              debug:          Enables debugging in flask app
+    :param service_broker: Service broker used to handle requests
+    :param credentials: Username and password that will be required to communicate with service broker
+    :param logger: Used for api logs. This will not influence Flasks logging behavior
+    :param port: Port
+    :param debug: Enables debugging in flask app
     """
 
     from flask import Flask

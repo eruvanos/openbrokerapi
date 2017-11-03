@@ -87,6 +87,9 @@ class Service:
                  dashboard_client: ServiceDashboardClient = None,
                  plan_updateable: bool = False
                  ):
+        """
+        :param requires:  syslog_drain, route_forwarding or volume_mount
+        """
         self.id = id
         self.name = name
         self.description = description
