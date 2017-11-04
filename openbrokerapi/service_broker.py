@@ -19,13 +19,19 @@ class ProvisionDetails:
         self.parameters = parameters
 
 
+class ProvisionServiceState(Enum):
+    IS_ASYNC = "is_async"
+    SUCCESSFUL_CREATED = "successfully created"
+    IDENTICAL_ALREADY_EXISTS = "exists with identical config"
+
+
 class ProvisionedServiceSpec:
     def __init__(self,
-                 is_async: bool,
+                 state: ProvisionServiceState = ProvisionServiceState.SUCCESSFUL_CREATED,
                  dashboard_url: str = None,
                  operation: str = None
                  ):
-        self.is_async = is_async
+        self.state = state
         self.dashboard_url = dashboard_url
         self.operation = operation
 

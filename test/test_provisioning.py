@@ -2,14 +2,13 @@ import http
 import json
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails
+from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionServiceState as PSS
 from test import BrokerTestCase
 
 
 class ProvisioningTest(BrokerTestCase):
-
     def test_provisining_called_with_the_right_values(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(False, "dash_url", "operation_str")
+        self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         _ = self.client.put(
             "/v2/service_instances/here-instance-id?accepts_incomplete=true",
@@ -39,7 +38,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(actual_details.space_guid, "space-guid-here")
 
     def test_provisining_called_just_with_required_fields(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(False, "dash_url", "operation_str")
+        self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         _ = self.client.put(
             "/v2/service_instances/here-instance-id",
@@ -67,7 +66,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertIsNone(actual_details.parameters)
 
     def test_provisining_ignores_unknown_parameters(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(False, "dash_url", "operation_str")
+        self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         _ = self.client.put(
             "/v2/service_instances/here-instance-id",
@@ -96,7 +95,10 @@ class ProvisioningTest(BrokerTestCase):
         self.assertIsNone(actual_details.parameters)
 
     def test_returns_201_if_created(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(False, "dash_url", "operation_str")
+        self.broker.provision.return_value = ProvisionedServiceSpec(
+            dashboard_url="dash_url",
+            operation="operation_str"
+        )
 
         response = self.client.put(
             "/v2/service_instances/abc",
@@ -118,7 +120,11 @@ class ProvisioningTest(BrokerTestCase):
         ))
 
     def test_returns_202_if_provisioning_in_progress(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(True, "dash_url", "operation_str")
+        self.broker.provision.return_value = ProvisionedServiceSpec(
+            PSS.IS_ASYNC,
+            "dash_url",
+            "operation_str"
+        )
 
         response = self.client.put(
             "/v2/service_instances/abc",
@@ -179,3 +185,22 @@ class ProvisioningTest(BrokerTestCase):
             error="AsyncRequired",
             description="This service plan requires client support for asynchronous service operations."
         ))
+
+    def test_returns_200_if_identical_service_exists(self):
+        self.broker.provision.return_value = ProvisionedServiceSpec(PSS.IDENTICAL_ALREADY_EXISTS)
+
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEquals(response.status_code, http.HTTPStatus.OK)
+        self.assertEquals(response.json, dict())

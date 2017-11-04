@@ -8,6 +8,7 @@ from flask import json, request, jsonify, Response
 from openbrokerapi import errors
 from openbrokerapi.response import *
 from openbrokerapi.service_broker import *
+from openbrokerapi.service_broker import ProvisionServiceState as PSS
 
 
 class BrokerCredentials:
@@ -136,10 +137,14 @@ def get_blueprint(service_broker: ServiceBroker,
                 description="This service plan requires client support for asynchronous service operations."
             )), HTTPStatus.UNPROCESSABLE_ENTITY
 
-        if result.is_async:
+        if result.state == PSS.IS_ASYNC:
             return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.ACCEPTED
-        else:
+        elif result.state == PSS.IDENTICAL_ALREADY_EXISTS:
+            return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.OK
+        elif result.state == PSS.SUCCESSFUL_CREATED:
             return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.CREATED
+        else:
+            raise errors.ServiceExeption('IllegalState, ServiceProvisioningState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
     @requires_auth
