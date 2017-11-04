@@ -2,7 +2,7 @@ import http
 import json
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionServiceState as PSS
+from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionState
 from test import BrokerTestCase
 
 
@@ -121,7 +121,7 @@ class ProvisioningTest(BrokerTestCase):
 
     def test_returns_202_if_provisioning_in_progress(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(
-            PSS.IS_ASYNC,
+            ProvisionState.IS_ASYNC,
             "dash_url",
             "operation_str"
         )
@@ -187,7 +187,7 @@ class ProvisioningTest(BrokerTestCase):
         ))
 
     def test_returns_200_if_identical_service_exists(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(PSS.IDENTICAL_ALREADY_EXISTS)
+        self.broker.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
 
         response = self.client.put(
             "/v2/service_instances/abc",

@@ -19,7 +19,7 @@ class ProvisionDetails:
         self.parameters = parameters
 
 
-class ProvisionServiceState(Enum):
+class ProvisionState(Enum):
     IS_ASYNC = "is_async"
     SUCCESSFUL_CREATED = "successfully created"
     IDENTICAL_ALREADY_EXISTS = "exists with identical config"
@@ -27,7 +27,7 @@ class ProvisionServiceState(Enum):
 
 class ProvisionedServiceSpec:
     def __init__(self,
-                 state: ProvisionServiceState = ProvisionServiceState.SUCCESSFUL_CREATED,
+                 state: ProvisionState = ProvisionState.SUCCESSFUL_CREATED,
                  dashboard_url: str = None,
                  operation: str = None
                  ):
@@ -139,13 +139,20 @@ class VolumeMount:
         self.device = device
 
 
+class BindState(Enum):
+    SUCCESSFUL_BOUND = "successfully created"
+    IDENTICAL_ALREADY_EXISTS = "exists with identical config"
+
+
 class Binding:
     def __init__(self,
+                 state=BindState.SUCCESSFUL_BOUND,
                  credentials: dict = None,
                  syslog_drain_url: str = None,
                  route_service_url: str = None,
                  volume_mounts: List[VolumeMount] = None
                  ):
+        self.state = state
         self.credentials = credentials
         self.syslog_drain_url = syslog_drain_url
         self.route_service_url = route_service_url

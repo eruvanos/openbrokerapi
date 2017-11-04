@@ -8,7 +8,7 @@ from flask import json, request, jsonify, Response
 from openbrokerapi import errors
 from openbrokerapi.response import *
 from openbrokerapi.service_broker import *
-from openbrokerapi.service_broker import ProvisionServiceState as PSS
+from openbrokerapi.service_broker import ProvisionState
 
 
 class BrokerCredentials:
@@ -137,14 +137,14 @@ def get_blueprint(service_broker: ServiceBroker,
                 description="This service plan requires client support for asynchronous service operations."
             )), HTTPStatus.UNPROCESSABLE_ENTITY
 
-        if result.state == PSS.IS_ASYNC:
+        if result.state == ProvisionState.IS_ASYNC:
             return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.ACCEPTED
-        elif result.state == PSS.IDENTICAL_ALREADY_EXISTS:
+        elif result.state == ProvisionState.IDENTICAL_ALREADY_EXISTS:
             return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.OK
-        elif result.state == PSS.SUCCESSFUL_CREATED:
+        elif result.state == ProvisionState.SUCCESSFUL_CREATED:
             return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.CREATED
         else:
-            raise errors.ServiceExeption('IllegalState, ServiceProvisioningState unknown.')
+            raise errors.ServiceExeption('IllegalState, ProvisioningState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
     @requires_auth
@@ -194,7 +194,18 @@ def get_blueprint(service_broker: ServiceBroker,
                 description="This service supports generation of credentials through binding an application only."
             )), HTTPStatus.UNPROCESSABLE_ENTITY
 
-        return to_json_response(result), HTTPStatus.CREATED
+        response = BindResponse(
+            credentials=result.credentials,
+            syslog_drain_url=result.syslog_drain_url,
+            route_service_url=result.route_service_url,
+            volume_mounts=result.volume_mounts
+        )
+        if result.state == BindState.SUCCESSFUL_BOUND:
+            return to_json_response(response), HTTPStatus.CREATED
+        elif result.state == BindState.IDENTICAL_ALREADY_EXISTS:
+            return to_json_response(response), HTTPStatus.OK
+        else:
+            raise errors.ServiceExeption('IllegalState, BindState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['DELETE'])
     @requires_auth

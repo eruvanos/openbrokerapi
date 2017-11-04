@@ -2,7 +2,7 @@ import http
 import json
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice
+from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice, BindState
 from test import BrokerTestCase
 
 expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
@@ -110,7 +110,7 @@ class BindTest(BrokerTestCase):
         self.assertIsNone(actual_details.parameters)
         self.assertIsNotNone(actual_details.bind_resource)
 
-    def test_returns_200_if_binding_has_been_created(self):
+    def test_returns_201_if_binding_has_been_created(self):
         self.broker.bind.return_value = Binding(
             credentials=expected_credentials
         )
@@ -230,3 +230,21 @@ class BindTest(BrokerTestCase):
             })
 
         self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+
+    def test_returns_200_if_identical_binding_already_exists(self):
+        self.broker.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)
+
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "bind_resource": {}
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEquals(response.status_code, http.HTTPStatus.OK)
+        self.assertEquals(response.json, dict())
