@@ -1,6 +1,12 @@
-
 Changelog
 =============
+
+**v0.5.0**
+  - support 200-OK as provision and bind responses `[issue #1]`_
+
+    - instead of 'is_async' flag an enumeration is used
+
+.. _[issue #1]: https://github.com/eruvanos/openbrokerapi/issues/1
 
 **v0.4.1**
   - support Python 3.5+

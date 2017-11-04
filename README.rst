@@ -9,6 +9,10 @@ Following `CF Service Broker
 API <https://docs.cloudfoundry.org/services/api.html>`__ and `Open
 Service Broker API <https://www.openservicebrokerapi.org/>`__
 
+Check out the documentation_.
+
+.. _documentation: http://openbrokerapi.readthedocs.io/en/latest/
+
 Installation
 ------------
 
@@ -80,19 +84,6 @@ Internal Notes
 --------------
 
 - Context object from update 2.12 and 2.13 is ignored. This can change, when an update removes the redundant fields.
-
-Not Planned To Support
-----------------------
-
--  Provisioning
-
-  - Response: 200 - If service already exists, a 409-Conflict will be
-    returned
-
--  Bind
-
-  - Response: 200 - If binding already exists, a 409-Conflict will be
-    returned
 
 Bugs or Issues
 --------------
