@@ -14,7 +14,7 @@ script: coverage run --source=openbrokerapi ./setup.py test
 after_success: coveralls
 deploy:
   - provider: pypi
-    server: https://testpypi.python.org/pypi
+    server: https://test.pypi.org/legacy/
     user: eruvanos
     password:
       secure: YYSaKhOoxG9bwMfLjSSzYwpJd6It8Ue+WP0emoqVAABIipaPXmNcUQH0ZEBltF4vo+tw/5lBeJAjp2ZUlEj42izUSPYoao4Ak4dEdman6ixTahBUXixuLlOVt8MfLq8XGLwDXjjG3i5Q8PoScFCHvc6c+wS7WNFik6rCiESnqChx/6RpqEKrw/DQSfkRBiVVujBWHcWhR1XYJygjiYhg1N4qZnb4CIjrTsp5+5kmIP+hVscKiU9K67Uyk4w4goR+kzE0OVf++UO+zOnltYk8qgoDOnWFGA+HN/RIfBRE5tH7ljaVLPOUXTdXABRONWpL2HXlW2l/AaggD5l4mQDaGHBjxE3MOqRmyep5+IvFuGa3xcLdbQqCMSwJSmRg/MgtVey0LmzXaRWqg+HIuzPXO4ks5sh3cuikueNyyU/Ew4QUNrFcvpfYoO5lu8iWLvE+N6LVtqlRy4pMlrWEn/wD0OggCWaLfsDhKW8QomYNfWA88dlT3niydoY7oV4Hk1pXT8DsLK7UhmFH4NAJTFHA4ysb8OOXx+XgSGmz2wW2iOamO7jwpi6naTYV6ts12C3iYvxB3cB5S6uDdTEeTvvtUNjr72l2jDcuG5J+SrqpwjR9yTRm7eruDY1a2AeZ8k5PyGzec3tObNKxltMJ1+LUtEi5PFbZUykodXrp3P4RIl4=
