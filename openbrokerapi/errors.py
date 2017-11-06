@@ -1,4 +1,4 @@
-class ServiceExeption(BaseException):
+class ServiceExeption(Exception):
     pass
 
 

@@ -53,8 +53,8 @@ class DeprovisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json, dict())
 
     def test_returns_202_if_deletion_is_in_progress(self):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(True, "operation_str")
@@ -66,8 +66,8 @@ class DeprovisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.ACCEPTED)
-        self.assertEquals(response.json, dict(operation="operation_str"))
+        self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
+        self.assertEqual(response.json, dict(operation="operation_str"))
 
     def test_returns_410_if_service_instance_already_gone(self):
         self.broker.deprovision.side_effect = errors.ErrInstanceDoesNotExist()
@@ -79,8 +79,8 @@ class DeprovisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.GONE)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.GONE)
+        self.assertEqual(response.json, dict())
 
     def test_returns_422_if_async_not_supported_but_required(self):
         self.broker.deprovision.side_effect = errors.ErrAsyncRequired()
@@ -92,8 +92,8 @@ class DeprovisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
             error="AsyncRequired",
             description="This service plan requires client support for asynchronous service operations."
         ))
@@ -105,4 +105,4 @@ class DeprovisioningTest(BrokerTestCase):
                 'X-Broker-Api-Version': '2.13'
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)

@@ -129,8 +129,8 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.CREATED)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.CREATED)
+        self.assertEqual(response.json, dict(
             credentials=expected_credentials
         ))
 
@@ -164,8 +164,8 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.CREATED)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.CREATED)
+        self.assertEqual(response.json, dict(
             volume_mounts=[
                 dict(
                     driver="",
@@ -197,8 +197,8 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.CONFLICT)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.CONFLICT)
+        self.assertEqual(response.json, dict())
 
     def test_returns_422_if_app_guid_is_required_but_not_given(self):
         self.broker.bind.side_effect = errors.ErrAppGuidNotProvided()
@@ -215,8 +215,8 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
             error="RequiresApp",
             description="This service supports generation of credentials through binding an application only."
         ))
@@ -229,7 +229,7 @@ class BindTest(BrokerTestCase):
                 'X-Broker-Api-Version': '2.13'
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
 
     def test_returns_200_if_identical_binding_already_exists(self):
         self.broker.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)
@@ -246,5 +246,5 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json, dict())

@@ -113,8 +113,8 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.CREATED)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.CREATED)
+        self.assertEqual(response.json, dict(
             dashboard_url="dash_url",
             operation="operation_str"
         ))
@@ -139,8 +139,8 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.ACCEPTED)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
+        self.assertEqual(response.json, dict(
             dashboard_url="dash_url",
             operation="operation_str"
         ))
@@ -161,8 +161,8 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.CONFLICT)
-        self.assertEquals(response.json, {})
+        self.assertEqual(response.status_code, http.HTTPStatus.CONFLICT)
+        self.assertEqual(response.json, {})
 
     def test_returns_422_if_async_required_but_not_supported(self):
         self.broker.provision.side_effect = errors.ErrAsyncRequired()
@@ -180,8 +180,8 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
             error="AsyncRequired",
             description="This service plan requires client support for asynchronous service operations."
         ))
@@ -202,5 +202,5 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json, dict())

@@ -44,8 +44,8 @@ class LastOperationTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json, dict(
             state=OperationState.IN_PROGRESS.value,
             description="Running..."
         ))

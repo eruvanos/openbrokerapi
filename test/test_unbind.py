@@ -37,8 +37,8 @@ class UnbindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json, dict())
 
     def test_returns_410_if_binding_does_not_exists(self):
         self.broker.unbind.side_effect = errors.ErrBindingDoesNotExist()
@@ -51,8 +51,8 @@ class UnbindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.GONE)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.GONE)
+        self.assertEqual(response.json, dict())
 
     def test_returns_400_if_request_not_contain_auth_header(self):
         query = "service_id=service-id-here&plan_id=plan-id-here"
@@ -62,4 +62,4 @@ class UnbindTest(BrokerTestCase):
                 'X-Broker-Api-Version': '2.13',
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)

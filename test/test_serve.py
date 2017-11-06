@@ -1,9 +1,9 @@
 import time
-import requests
-
 from multiprocessing import Process
 from typing import List
 from unittest import TestCase
+
+import requests
 
 from openbrokerapi import api
 from openbrokerapi import service_broker

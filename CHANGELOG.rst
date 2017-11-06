@@ -2,6 +2,7 @@ Changelog
 =============
 
 **v0.5.0**
+  - error handling fixed for ServiceExceptions
   - support 200-OK as provision and bind responses `[issue #1]`_
 
     - instead of 'is_async' flag an enumeration is used

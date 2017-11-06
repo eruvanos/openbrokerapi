@@ -87,8 +87,8 @@ class CatalogTest(BrokerTestCase):
                 "unknown": "unknown"
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json,
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json,
                           dict(
                               services=[
                                   dict(id="s1",
@@ -141,8 +141,8 @@ class CatalogTest(BrokerTestCase):
                 "unknown": "unknown"
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json,
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json,
                           dict(
                               services=[
                                   dict(
@@ -167,8 +167,8 @@ class CatalogTest(BrokerTestCase):
                 "unknown": "unknown"
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
-        self.assertEquals(response.json,
+        self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.json,
                           dict(
                               description="ERROR"
                           ))

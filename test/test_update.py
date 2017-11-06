@@ -127,8 +127,8 @@ class UpdateTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.OK)
-        self.assertEquals(response.json, dict())
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json, dict())
 
     def test_returns_202_if_update_is_in_progress(self):
         self.broker.update.return_value = UpdateServiceSpec(True, "operation")
@@ -150,8 +150,8 @@ class UpdateTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.ACCEPTED)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
+        self.assertEqual(response.json, dict(
             operation="operation"
         ))
 
@@ -175,8 +175,8 @@ class UpdateTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
-        self.assertEquals(response.json, dict(
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
             error="AsyncRequired",
             description="This service plan requires client support for asynchronous service operations."
         ))
@@ -188,4 +188,4 @@ class UpdateTest(BrokerTestCase):
                 'X-Broker-Api-Version': '2.13'
             })
 
-        self.assertEquals(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
