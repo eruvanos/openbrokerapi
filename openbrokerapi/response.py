@@ -15,12 +15,16 @@ class ErrorResponse:
         self.description = description
 
 
+class AsyncResponse:
+    pass
+
+
 class CatalogResponse:
     def __init__(self, services: List[Service]):
         self.services = services
 
 
-class ProvisioningResponse:
+class ProvisioningResponse(AsyncResponse):
     def __init__(self,
                  dashboard_url: str,
                  operation: str):
@@ -41,12 +45,12 @@ class BindResponse:
         self.volume_mounts = volume_mounts
 
 
-class UpdateResponse:
+class UpdateResponse(AsyncResponse):
     def __init__(self, operation: str):
         self.operation = operation
 
 
-class DeprovisionResponse:
+class DeprovisionResponse(AsyncResponse):
     def __init__(self, operation: str):
         self.operation = operation
 
