@@ -1,23 +1,16 @@
 import time
 from multiprocessing import Process
-from typing import List
 from unittest import TestCase
 
 import requests
 
 from openbrokerapi import api
-from openbrokerapi import catalog
-from openbrokerapi import service_broker
 
 
 class ServeTest(TestCase):
     def test_serve_starts_server(self):
         def run_server():
-            class TestBroker(service_broker.ServiceBroker):
-                def catalog(self) -> List[catalog.Service]:
-                    return []
-
-            api.serve(TestBroker(), api.BrokerCredentials("", ""))
+            api.serve([], api.BrokerCredentials("", ""))
 
         server = Process(target=run_server)
         server.start()

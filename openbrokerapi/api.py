@@ -1,4 +1,5 @@
 import logging
+from typing import List
 from functools import wraps
 from http import HTTPStatus
 
@@ -22,7 +23,7 @@ from openbrokerapi.service_broker import (
     DeprovisionDetails,
     ProvisionDetails,
     ProvisionState,
-    ServiceBroker,
+    Service,
     UnbindDetails,
     UpdateDetails,
 )
@@ -34,13 +35,13 @@ class BrokerCredentials:
         self.password = password
 
 
-def get_blueprint(service_broker: ServiceBroker,
+def get_blueprint(services: List[Service],
                   broker_credentials: BrokerCredentials,
                   logger: logging.Logger) -> Blueprint:
     """
     Returns the blueprint with service broker api.
 
-    :param service_broker: Service broker used to handle requests
+    :param services: Services that this broker exposes
     :param broker_credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior.
     :return: Blueprint to register with Flask app instance
@@ -83,6 +84,12 @@ def get_blueprint(service_broker: ServiceBroker,
             return f(*args, **kwargs)
 
         return decorated
+
+    def get_service_by_id(service_id: str):
+        for service in services:
+            if service.id == service_id:
+                return service
+        raise KeyError('service {} not found'.format(service_id))
 
     def print_request():
         logger.debug("--- Request Start -------------------")
@@ -128,7 +135,6 @@ def get_blueprint(service_broker: ServiceBroker,
         """
         :return: Catalog of broker (List of services)
         """
-        services = service_broker.catalog()
         return to_json_response(CatalogResponse(services))
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PUT'])
@@ -143,7 +149,8 @@ def get_blueprint(service_broker: ServiceBroker,
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            result = service_broker.provision(instance_id, provision_details, accepts_incomplete)
+            service = get_service_by_id(provision_details.service_id)
+            result = service.provision(instance_id, provision_details, accepts_incomplete)
         except errors.ErrInstanceAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
@@ -176,7 +183,8 @@ def get_blueprint(service_broker: ServiceBroker,
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            result = service_broker.update(instance_id, update_details, accepts_incomplete)
+            service = get_service_by_id(update_details.service_id)
+            result = service.update(instance_id, update_details, accepts_incomplete)
         except errors.ErrAsyncRequired as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(
@@ -200,7 +208,8 @@ def get_blueprint(service_broker: ServiceBroker,
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            result = service_broker.bind(instance_id, binding_id, binding_details)
+            service = get_service_by_id(binding_details.service_id)
+            result = service.bind(instance_id, binding_id, binding_details)
         except errors.ErrBindingAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
@@ -236,7 +245,8 @@ def get_blueprint(service_broker: ServiceBroker,
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            service_broker.unbind(instance_id, binding_id, unbind_details)
+            service = get_service_by_id(unbind_details.service_id)
+            service.unbind(instance_id, binding_id, unbind_details)
         except errors.ErrBindingDoesNotExist as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
@@ -258,7 +268,8 @@ def get_blueprint(service_broker: ServiceBroker,
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            result = service_broker.deprovision(instance_id, deprovision_details, accepts_incomplete)
+            service = get_service_by_id(deprovision_details.service_id)
+            result = service.deprovision(instance_id, deprovision_details, accepts_incomplete)
         except errors.ErrInstanceDoesNotExist as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
@@ -282,14 +293,16 @@ def get_blueprint(service_broker: ServiceBroker,
         # plan_id = request.args.get("plan_id", None)
 
         operation_data = request.args.get("operation", None)
-        result = service_broker.last_operation(instance_id, operation_data)
+        service = None
+        #  TODO: retrieve service here somehow
+        result = service.last_operation(instance_id, operation_data)
 
         return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
 
     return openbroker
 
 
-def serve(service_broker: ServiceBroker,
+def serve(services: List[Service],
           credentials: BrokerCredentials,
           logger: logging.Logger = logging.root,
           port=5000,
@@ -297,7 +310,7 @@ def serve(service_broker: ServiceBroker,
     """
     Starts flask with the given broker
 
-    :param service_broker: Service broker used to handle requests
+    :param services: Services that this broker provides
     :param credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior
     :param port: Port
@@ -307,7 +320,7 @@ def serve(service_broker: ServiceBroker,
     from flask import Flask
     app = Flask(__name__)
 
-    blueprint = get_blueprint(service_broker, credentials, logger)
+    blueprint = get_blueprint(services, credentials, logger)
 
     logger.debug("Register openbrokerapi blueprint")
     app.register_blueprint(blueprint)

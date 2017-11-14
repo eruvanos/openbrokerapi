@@ -1,7 +1,11 @@
 from enum import Enum
 from typing import List
 
-from openbrokerapi.catalog import Service
+from openbrokerapi.catalog import (
+    ServiceDashboardClient,
+    ServiceMetadata,
+    ServicePlan,
+)
 
 
 class ProvisionDetails:
@@ -183,14 +187,32 @@ class LastOperation:
         self.description = description
 
 
-class ServiceBroker:
-    def catalog(self) -> List[Service]:
+class Service:
+    def __init__(self,
+                 id: str,
+                 name: str,
+                 description: str,
+                 bindable: bool,
+                 plans: List[ServicePlan],
+                 tags: List[str] = None,
+                 requires: List[str] = None,
+                 metadata: ServiceMetadata = None,
+                 dashboard_client: ServiceDashboardClient = None,
+                 plan_updateable: bool = False
+                 ):
         """
-        Returns the Catalog of all services that are provided by this broker.
-
-        :return: List[Service]
+        :param requires:  syslog_drain, route_forwarding or volume_mount
         """
-        raise NotImplementedError()
+        self.id = id
+        self.name = name
+        self.description = description
+        self.bindable = bindable
+        self.plans = plans
+        self.tags = tags
+        self.requires = requires
+        self.metadata = metadata
+        self.dashboard_client = dashboard_client
+        self.plan_updateable = plan_updateable
 
     def provision(self, instance_id: str, service_details: ProvisionDetails,
                   async_allowed: bool) -> ProvisionedServiceSpec:

@@ -72,31 +72,3 @@ class ServicePlan:
         self.free = free
         self.bindable = bindable
         self.schemas = schemas
-
-
-class Service:
-    def __init__(self,
-                 id: str,
-                 name: str,
-                 description: str,
-                 bindable: bool,
-                 plans: List[ServicePlan],
-                 tags: List[str] = None,
-                 requires: List[str] = None,
-                 metadata: ServiceMetadata = None,
-                 dashboard_client: ServiceDashboardClient = None,
-                 plan_updateable: bool = False
-                 ):
-        """
-        :param requires:  syslog_drain, route_forwarding or volume_mount
-        """
-        self.id = id
-        self.name = name
-        self.description = description
-        self.bindable = bindable
-        self.plans = plans
-        self.tags = tags
-        self.requires = requires
-        self.metadata = metadata
-        self.dashboard_client = dashboard_client
-        self.plan_updateable = plan_updateable

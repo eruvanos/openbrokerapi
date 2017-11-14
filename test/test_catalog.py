@@ -1,7 +1,8 @@
 import http
 
+from openbrokerapi.service_broker import Service
+
 from openbrokerapi.catalog import (
-    Service,
     ServiceDashboardClient,
     ServiceMetadata,
     ServicePlan,
