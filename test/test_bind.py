@@ -15,7 +15,7 @@ expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
 
 class BindTest(BrokerTestCase):
     def test_bind_called_with_the_right_values(self):
-        self.broker.bind.return_value = Binding(
+        self.service.bind.return_value = Binding(
             credentials=expected_credentials
         )
 
@@ -37,7 +37,7 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_binding_id, actual_details = self.broker.bind.call_args[0]
+        actual_instance_id, actual_binding_id, actual_details = self.service.bind.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -51,7 +51,7 @@ class BindTest(BrokerTestCase):
         self.assertEqual(actual_details.bind_resource.route, "route-here")
 
     def test_bind_called_just_with_required_fields(self):
-        self.broker.bind.return_value = Binding(
+        self.service.bind.return_value = Binding(
             credentials=expected_credentials
         )
 
@@ -66,7 +66,7 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_binding_id, actual_details = self.broker.bind.call_args[0]
+        actual_instance_id, actual_binding_id, actual_details = self.service.bind.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -79,7 +79,7 @@ class BindTest(BrokerTestCase):
         self.assertIsNone(actual_details.bind_resource)
 
     def test_bind_ignores_unknown_parameters(self):
-        self.broker.bind.return_value = Binding(
+        self.service.bind.return_value = Binding(
             credentials=expected_credentials
         )
 
@@ -98,7 +98,7 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_binding_id, actual_details = self.broker.bind.call_args[0]
+        actual_instance_id, actual_binding_id, actual_details = self.service.bind.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -111,7 +111,7 @@ class BindTest(BrokerTestCase):
         self.assertIsNotNone(actual_details.bind_resource)
 
     def test_returns_201_if_binding_has_been_created(self):
-        self.broker.bind.return_value = Binding(
+        self.service.bind.return_value = Binding(
             credentials=expected_credentials
         )
 
@@ -135,7 +135,7 @@ class BindTest(BrokerTestCase):
         ))
 
     def test_supports_volume_mounts(self):
-        self.broker.bind.return_value = Binding(
+        self.service.bind.return_value = Binding(
             volume_mounts=[
                 VolumeMount(
                     driver="",
@@ -181,7 +181,7 @@ class BindTest(BrokerTestCase):
         ))
 
     def test_returns_409_if_binding_already_exists(self):
-        self.broker.bind.side_effect = errors.ErrBindingAlreadyExists()
+        self.service.bind.side_effect = errors.ErrBindingAlreadyExists()
 
         response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
@@ -201,7 +201,7 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.json, dict())
 
     def test_returns_422_if_app_guid_is_required_but_not_given(self):
-        self.broker.bind.side_effect = errors.ErrAppGuidNotProvided()
+        self.service.bind.side_effect = errors.ErrAppGuidNotProvided()
 
         response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
@@ -232,7 +232,7 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
 
     def test_returns_200_if_identical_binding_already_exists(self):
-        self.broker.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)
+        self.service.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)
 
         response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",

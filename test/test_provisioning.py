@@ -8,7 +8,7 @@ from test import BrokerTestCase
 
 class ProvisioningTest(BrokerTestCase):
     def test_provisining_called_with_the_right_values(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
+        self.service.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         self.client.put(
             "/v2/service_instances/here-instance-id?accepts_incomplete=true",
@@ -26,7 +26,7 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_details, actual_async_allowed = self.broker.provision.call_args[0]
+        actual_instance_id, actual_details, actual_async_allowed = self.service.provision.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance-id")
         self.assertEqual(actual_async_allowed, True)
 
@@ -38,7 +38,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(actual_details.space_guid, "space-guid-here")
 
     def test_provisining_called_just_with_required_fields(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
+        self.service.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         self.client.put(
             "/v2/service_instances/here-instance-id",
@@ -53,7 +53,7 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_details, actual_async_allowed = self.broker.provision.call_args[0]
+        actual_instance_id, actual_details, actual_async_allowed = self.service.provision.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance-id")
         self.assertEqual(actual_async_allowed, False)
 
@@ -66,7 +66,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertIsNone(actual_details.parameters)
 
     def test_provisining_ignores_unknown_parameters(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
+        self.service.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         self.client.put(
             "/v2/service_instances/here-instance-id",
@@ -82,7 +82,7 @@ class ProvisioningTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_details, actual_async_allowed = self.broker.provision.call_args[0]
+        actual_instance_id, actual_details, actual_async_allowed = self.service.provision.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance-id")
         self.assertEqual(actual_async_allowed, False)
 
@@ -95,7 +95,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertIsNone(actual_details.parameters)
 
     def test_returns_201_if_created(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(
+        self.service.provision.return_value = ProvisionedServiceSpec(
             dashboard_url="dash_url",
             operation="operation_str"
         )
@@ -120,7 +120,7 @@ class ProvisioningTest(BrokerTestCase):
         ))
 
     def test_returns_202_if_provisioning_in_progress(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(
+        self.service.provision.return_value = ProvisionedServiceSpec(
             ProvisionState.IS_ASYNC,
             "dash_url",
             "operation_str"
@@ -146,7 +146,7 @@ class ProvisioningTest(BrokerTestCase):
         ))
 
     def test_returns_409_if_already_exists_but_is_not_equal(self):
-        self.broker.provision.side_effect = errors.ErrInstanceAlreadyExists()
+        self.service.provision.side_effect = errors.ErrInstanceAlreadyExists()
 
         response = self.client.put(
             "/v2/service_instances/abc",
@@ -165,7 +165,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(response.json, {})
 
     def test_returns_422_if_async_required_but_not_supported(self):
-        self.broker.provision.side_effect = errors.ErrAsyncRequired()
+        self.service.provision.side_effect = errors.ErrAsyncRequired()
 
         response = self.client.put(
             "/v2/service_instances/abc",
@@ -187,7 +187,7 @@ class ProvisioningTest(BrokerTestCase):
         ))
 
     def test_returns_200_if_identical_service_exists(self):
-        self.broker.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
+        self.service.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
 
         response = self.client.put(
             "/v2/service_instances/abc",

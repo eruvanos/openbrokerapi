@@ -16,10 +16,11 @@ class BrokerTestCase(TestCase):
         from openbrokerapi.api import get_blueprint
 
         app = Flask(__name__)
-        self.broker = Mock()
+        self.service = Mock()
+        self.service.id = 'service-guid-here'
 
         app.register_blueprint(
-            get_blueprint(self.broker,
+            get_blueprint([self.service],
                           BrokerCredentials("", ""),
                           basic_config(level=logging.WARN)
                           )
