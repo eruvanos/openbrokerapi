@@ -23,7 +23,7 @@ class CatalogTest(BrokerTestCase):
     ]
 
     def test_catalog_called_with_the_right_values(self):
-        self.broker.catalog.return_value = self.service_list
+        self.service.get_catalog.return_value = self.service_list[0]
 
         self.client.get(
             "/v2/catalog",
@@ -32,10 +32,10 @@ class CatalogTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertTrue(self.broker.catalog.called)
+        self.assertTrue(self.service.get_catalog.called)
 
     def test_catalog_ignores_request_headers(self):
-        self.broker.catalog.return_value = self.service_list
+        self.service.get_catalog.return_value = self.service_list[0]
 
         self.client.get(
             "/v2/catalog",
@@ -45,47 +45,46 @@ class CatalogTest(BrokerTestCase):
                 "unknown": "unknown"
             })
 
-        self.assertTrue(self.broker.catalog.called)
+        self.assertTrue(self.service.get_catalog.called)
 
     def test_catalog_returns_200_with_service_information(self):
-        self.broker.catalog.return_value = [
-            Service(id="s1",
-                    name="service_name",
-                    description="service_description",
-                    bindable=True,
-                    plans=[ServicePlan(
-                        id="p1",
-                        name="default",
-                        description="plan_description",
-                        metadata=ServicePlanMetaData(
-                            displayName="displayName",
-                            bullets=["bullet1"],
-                            costs=[ServicePlanCost(
-                                amount={"requests": 1},
-                                unit="unit"
-                            )]
-                        ),
-                        free=True,
-                        bindable=True
-                    )],
-                    tags=['tag1', 'tag2'],
-                    requires=['something'],
-                    metadata=ServiceMetadata(
-                        displayName="displayName",
-                        imageUrl="imageUrl",
-                        longDescription="longDescription",
-                        providerDisplayName="providerDisplayName",
-                        documentationUrl="documentationUrl",
-                        supportUrl="supportUrl"
-                    ),
-                    dashboard_client=ServiceDashboardClient(
-                        id="id",
-                        secret="secret",
-                        redirect_uri="redirect_uri"
-                    ),
-                    plan_updateable=True
-                    )
-        ]
+        self.service.get_catalog.return_value = Service(
+            id="s1",
+            name="service_name",
+            description="service_description",
+            bindable=True,
+            plans=[ServicePlan(
+                id="p1",
+                name="default",
+                description="plan_description",
+                metadata=ServicePlanMetaData(
+                    displayName="displayName",
+                    bullets=["bullet1"],
+                    costs=[ServicePlanCost(
+                        amount={"requests": 1},
+                        unit="unit"
+                    )]
+                ),
+                free=True,
+                bindable=True
+            )],
+            tags=['tag1', 'tag2'],
+            requires=['something'],
+            metadata=ServiceMetadata(
+                displayName="displayName",
+                imageUrl="imageUrl",
+                longDescription="longDescription",
+                providerDisplayName="providerDisplayName",
+                documentationUrl="documentationUrl",
+                supportUrl="supportUrl"
+            ),
+            dashboard_client=ServiceDashboardClient(
+                id="id",
+                secret="secret",
+                redirect_uri="redirect_uri"
+            ),
+            plan_updateable=True
+        )
 
         response = self.client.get(
             "/v2/catalog",
@@ -139,7 +138,7 @@ class CatalogTest(BrokerTestCase):
                          ))
 
     def test_catalog_returns_200_with_minimal_service_information(self):
-        self.broker.catalog.return_value = self.service_list
+        self.service.get_catalog.return_value = self.service_list[0]
 
         response = self.client.get(
             "/v2/catalog",
@@ -165,7 +164,7 @@ class CatalogTest(BrokerTestCase):
                          ))
 
     def test_catalog_returns_500_if_error_raised(self):
-        self.broker.catalog.side_effect = Exception("ERROR")
+        self.service.get_catalog.side_effect = Exception("ERROR")
 
         response = self.client.get(
             "/v2/catalog",

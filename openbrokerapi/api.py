@@ -149,7 +149,7 @@ def get_blueprint(services: List[Service],
         """
         :return: Catalog of broker (List of services)
         """
-        return to_json_response(CatalogResponse(services))
+        return to_json_response(CatalogResponse(list(x.get_catalog() for x in services)))
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PUT'])
     @requires_auth
