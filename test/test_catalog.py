@@ -1,6 +1,13 @@
 import http
 
-from openbrokerapi.catalog import *
+from openbrokerapi.catalog import (
+    Service,
+    ServiceDashboardClient,
+    ServiceMetadata,
+    ServicePlan,
+    ServicePlanCost,
+    ServicePlanMetaData,
+)
 from test import BrokerTestCase
 
 
