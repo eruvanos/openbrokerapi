@@ -1,7 +1,6 @@
 from typing import List
 
-from openbrokerapi.catalog import Service
-from openbrokerapi.service_broker import OperationState, VolumeMount
+from openbrokerapi.service_broker import OperationState, VolumeMount, Service
 
 
 class EmptyResponse:

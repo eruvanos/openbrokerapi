@@ -39,9 +39,36 @@ Usage
     from openbrokerapi.log_util import *
 
     # Implement a service broker by overriding methods of ServiceBroker
-    class CustomServiceBroker(service_broker.ServiceBroker):
-        def catalog(self) -> List[Service]:
-            pass
+    class ExampleService(service_broker.Service):
+        def __init__(self):
+            super().__init__(
+                id='00000000-0000-0000-0000-000000000000',
+                name='example-service',
+                description='Example Service does nothing',
+                bindable=True,
+                plans=[
+                    ServicePlan(
+                        id='00000000-0000-0000-0000-000000000000',
+                        name='small',
+                        description='example service plan',
+                        metadata=None,
+                        free=False,
+                        bindable=True,
+                    ),
+                ],
+                tags=['example', 'service'],
+                requires=None,
+                metadata=ServiceMetadata(
+                    displayName='Example Service',
+                    imageUrl=None,
+                    longDescription=None,
+                    providerDisplayName=None,
+                    documentationUrl=None,
+                    supportUrl=None,
+                ),
+                dashboard_client=None,
+                plan_updateable=True,
+            )
 
         def provision(self, instance_id: str, service_details: ProvisionDetails, async_allowed: bool) -> ProvisionedServiceSpec:
             pass
@@ -61,13 +88,13 @@ Usage
         def last_operation(self, instance_id: str, operation_data: str) -> LastOperation:
             pass
 
-    # Simpely start the server
-    serve(CustomServiceBroker(), BrokerCredentials("", ""))
+    # Simply start the server
+    serve([CustomService()], BrokerCredentials("", ""))
 
     # or register blueprint to your own FlaskApp instance
     app = Flask(__name__)
     logger = basic_config() #  Use root logger with a basic configuration provided by openbrokerapi.log_utils
-    openbroker_bp = get_blueprint(CustomServiceBroker(), BrokerCredentials("",""), logger)
+    openbroker_bp = get_blueprint([CustomService()], BrokerCredentials("",""), logger)
     app.register_blueprint(openbroker_bp)
     app.run("0.0.0.0")
 
