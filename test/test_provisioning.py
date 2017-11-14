@@ -142,7 +142,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
         self.assertEqual(response.json, dict(
             dashboard_url="dash_url",
-            operation="operation_str"
+            operation="service-guid-here operation_str"
         ))
 
     def test_returns_409_if_already_exists_but_is_not_equal(self):
