@@ -6,6 +6,7 @@ from unittest import TestCase
 import requests
 
 from openbrokerapi import api
+from openbrokerapi import catalog
 from openbrokerapi import service_broker
 
 
@@ -13,7 +14,7 @@ class ServeTest(TestCase):
     def test_serve_starts_server(self):
         def run_server():
             class TestBroker(service_broker.ServiceBroker):
-                def catalog(self) -> List[api.Service]:
+                def catalog(self) -> List[catalog.Service]:
                     return []
 
             api.serve(TestBroker(), api.BrokerCredentials("", ""))

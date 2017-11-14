@@ -19,7 +19,7 @@ class BindTest(BrokerTestCase):
             credentials=expected_credentials
         )
 
-        _ = self.client.put(
+        self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -55,7 +55,7 @@ class BindTest(BrokerTestCase):
             credentials=expected_credentials
         )
 
-        _ = self.client.put(
+        self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -83,7 +83,7 @@ class BindTest(BrokerTestCase):
             credentials=expected_credentials
         )
 
-        _ = self.client.put(
+        self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({
                 "service_id": "service-guid-here",
