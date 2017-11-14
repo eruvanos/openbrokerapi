@@ -24,7 +24,7 @@ class CatalogTest(BrokerTestCase):
     def test_catalog_called_with_the_right_values(self):
         self.broker.catalog.return_value = self.service_list
 
-        _ = self.client.get(
+        self.client.get(
             "/v2/catalog",
             headers={
                 'X-Broker-Api-Version': '2.13',
@@ -36,7 +36,7 @@ class CatalogTest(BrokerTestCase):
     def test_catalog_ignores_request_headers(self):
         self.broker.catalog.return_value = self.service_list
 
-        _ = self.client.get(
+        self.client.get(
             "/v2/catalog",
             headers={
                 'X-Broker-Api-Version': '2.13',
@@ -47,7 +47,7 @@ class CatalogTest(BrokerTestCase):
         self.assertTrue(self.broker.catalog.called)
 
     def test_catalog_returns_200_with_service_information(self):
-        self.broker.catalog.return_value = service_list = [
+        self.broker.catalog.return_value = [
             Service(id="s1",
                     name="service_name",
                     description="service_description",

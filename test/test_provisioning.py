@@ -10,7 +10,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_provisining_called_with_the_right_values(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
-        _ = self.client.put(
+        self.client.put(
             "/v2/service_instances/here-instance-id?accepts_incomplete=true",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -40,7 +40,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_provisining_called_just_with_required_fields(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
-        _ = self.client.put(
+        self.client.put(
             "/v2/service_instances/here-instance-id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -68,7 +68,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_provisining_ignores_unknown_parameters(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
-        _ = self.client.put(
+        self.client.put(
             "/v2/service_instances/here-instance-id",
             data=json.dumps({
                 "service_id": "service-guid-here",

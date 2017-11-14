@@ -10,7 +10,7 @@ class UpdateTest(BrokerTestCase):
     def test_update_called_with_the_right_values(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
-        _ = self.client.patch(
+        self.client.patch(
             "/v2/service_instances/here-service-instance-id?accepts_incomplete=true",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -47,7 +47,7 @@ class UpdateTest(BrokerTestCase):
     def test_update_called_called_just_with_required_fields(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
-        _ = self.client.patch(
+        self.client.patch(
             "/v2/service_instances/here-service-instance-id",
             data=json.dumps({
                 "service_id": "service-guid-here",
@@ -71,7 +71,7 @@ class UpdateTest(BrokerTestCase):
     def test_update_ignores_unknown_parameters(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
-        _ = self.client.patch(
+        self.client.patch(
             "/v2/service_instances/here-service-instance-id?accepts_incomplete=true",
             data=json.dumps({
                 "service_id": "service-guid-here",

@@ -9,7 +9,7 @@ class LastOperationTest(BrokerTestCase):
     def test_last_operation_called_just_with_required_fields(self):
         self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
 
-        _ = self.client.get(
+        self.client.get(
             "/v2/service_instances/here-instance_id/last_operation",
             headers={
                 'X-Broker-Api-Version': '2.13',
@@ -22,7 +22,7 @@ class LastOperationTest(BrokerTestCase):
         self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
 
         query = "service_id=123&plan_id=456&operation=operation-data"
-        _ = self.client.get(
+        self.client.get(
             "/v2/service_instances/here-instance_id/last_operation?%s" % query,
             headers={
                 'X-Broker-Api-Version': '2.13',

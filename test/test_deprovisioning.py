@@ -10,7 +10,7 @@ class DeprovisioningTest(BrokerTestCase):
     def test_deprovisioning_is_called_with_the_right_values(self):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
-        _ = self.client.delete(
+        self.client.delete(
             "/v2/service_instances/here_instance_id?service_id=service-id-here&plan_id=plan-id-here&accepts_incomplete=true",
             headers={
                 'X-Broker-Api-Version': '2.13',
@@ -28,7 +28,7 @@ class DeprovisioningTest(BrokerTestCase):
     def test_deprovisioning_called_just_with_required_fields(self):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
-        _ = self.client.delete(
+        self.client.delete(
             "/v2/service_instances/here_instance_id?service_id=service-id-here&plan_id=plan-id-here",
             headers={
                 'X-Broker-Api-Version': '2.13',
