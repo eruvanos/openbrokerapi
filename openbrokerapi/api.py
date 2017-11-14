@@ -23,6 +23,7 @@ from openbrokerapi.service_broker import (
     DeprovisionDetails,
     ProvisionDetails,
     ProvisionState,
+    ProvisionedServiceSpec,
     Service,
     UnbindDetails,
     UpdateDetails,
@@ -91,6 +92,19 @@ def get_blueprint(services: List[Service],
                 return service
         raise KeyError('service {} not found'.format(service_id))
 
+    def add_service_id_to_async_response(response, service_id: str):
+        patch = False
+        if isinstance(response, ProvisionedServiceSpec):
+            if response.state == ProvisionState.IS_ASYNC:
+                patch = True
+        elif response.is_async:
+            patch = True
+        if patch:
+            if response.operation is None:
+                response.operation = service_id
+            else:
+                response.operation = ' '.join((service_id, response.operation))
+
     def print_request():
         logger.debug("--- Request Start -------------------")
         logger.debug("--- Header")
@@ -151,6 +165,7 @@ def get_blueprint(services: List[Service],
         try:
             service = get_service_by_id(provision_details.service_id)
             result = service.provision(instance_id, provision_details, accepts_incomplete)
+            add_service_id_to_async_response(result, service.id)
         except errors.ErrInstanceAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
@@ -185,6 +200,7 @@ def get_blueprint(services: List[Service],
         try:
             service = get_service_by_id(update_details.service_id)
             result = service.update(instance_id, update_details, accepts_incomplete)
+            add_service_id_to_async_response(result, service.id)
         except errors.ErrAsyncRequired as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(
@@ -270,6 +286,7 @@ def get_blueprint(services: List[Service],
         try:
             service = get_service_by_id(deprovision_details.service_id)
             result = service.deprovision(instance_id, deprovision_details, accepts_incomplete)
+            add_service_id_to_async_response(result, service.id)
         except errors.ErrInstanceDoesNotExist as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
@@ -293,8 +310,13 @@ def get_blueprint(services: List[Service],
         # plan_id = request.args.get("plan_id", None)
 
         operation_data = request.args.get("operation", None)
-        service = None
-        #  TODO: retrieve service here somehow
+        data = operation_data.split(' ', maxsplit=1)
+        service_id = data[0]
+        if len(data) == 2:
+            operation_data = data[1]
+        else:
+            operation_data = None
+        service = get_service_by_id(service_id)
         result = service.last_operation(instance_id, operation_data)
 
         return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
