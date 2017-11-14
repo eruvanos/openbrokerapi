@@ -31,8 +31,6 @@ class LastOperationTest(BrokerTestCase):
 
         self.broker.last_operation.assert_called_once_with("here-instance_id", "operation-data")
 
-
-
     def test_returns_200_with_given_state(self):
         self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
 

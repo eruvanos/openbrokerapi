@@ -96,46 +96,46 @@ class CatalogTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(response.json,
-                          dict(
-                              services=[
-                                  dict(id="s1",
-                                          name="service_name",
-                                          description="service_description",
-                                          bindable=True,
-                                          plans=[dict(
-                                              id="p1",
-                                              name="default",
-                                              description="plan_description",
-                                              metadata=dict(
-                                                  displayName="displayName",
-                                                  bullets=["bullet1"],
-                                                  costs=[dict(
-                                                      amount={"requests": 1},
-                                                      unit="unit"
-                                                  )]
-                                              ),
-                                              free=True,
-                                              bindable=True
-                                          )],
-                                          tags=['tag1', 'tag2'],
-                                          requires=['something'],
+                         dict(
+                             services=[
+                                 dict(id="s1",
+                                      name="service_name",
+                                      description="service_description",
+                                      bindable=True,
+                                      plans=[dict(
+                                          id="p1",
+                                          name="default",
+                                          description="plan_description",
                                           metadata=dict(
                                               displayName="displayName",
-                                              imageUrl="imageUrl",
-                                              longDescription="longDescription",
-                                              providerDisplayName="providerDisplayName",
-                                              documentationUrl="documentationUrl",
-                                              supportUrl="supportUrl"
+                                              bullets=["bullet1"],
+                                              costs=[dict(
+                                                  amount={"requests": 1},
+                                                  unit="unit"
+                                              )]
                                           ),
-                                          dashboard_client=dict(
-                                              id="id",
-                                              secret="secret",
-                                              redirect_uri="redirect_uri"
-                                          ),
-                                          plan_updateable=True
-                                          )
-                              ]
-                          ))
+                                          free=True,
+                                          bindable=True
+                                      )],
+                                      tags=['tag1', 'tag2'],
+                                      requires=['something'],
+                                      metadata=dict(
+                                          displayName="displayName",
+                                          imageUrl="imageUrl",
+                                          longDescription="longDescription",
+                                          providerDisplayName="providerDisplayName",
+                                          documentationUrl="documentationUrl",
+                                          supportUrl="supportUrl"
+                                      ),
+                                      dashboard_client=dict(
+                                          id="id",
+                                          secret="secret",
+                                          redirect_uri="redirect_uri"
+                                      ),
+                                      plan_updateable=True
+                                      )
+                             ]
+                         ))
 
     def test_catalog_returns_200_with_minimal_service_information(self):
         self.broker.catalog.return_value = self.service_list
@@ -150,18 +150,18 @@ class CatalogTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(response.json,
-                          dict(
-                              services=[
-                                  dict(
-                                      id="s1",
-                                      name="service_name",
-                                      description="service_description",
-                                      bindable=True,
-                                      plan_updateable=False,
-                                      plans=[dict(id="p1", name="default", description="plan_description")]
-                                  )
-                              ]
-                          ))
+                         dict(
+                             services=[
+                                 dict(
+                                     id="s1",
+                                     name="service_name",
+                                     description="service_description",
+                                     bindable=True,
+                                     plan_updateable=False,
+                                     plans=[dict(id="p1", name="default", description="plan_description")]
+                                 )
+                             ]
+                         ))
 
     def test_catalog_returns_500_if_error_raised(self):
         self.broker.catalog.side_effect = Exception("ERROR")
@@ -176,6 +176,6 @@ class CatalogTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
         self.assertEqual(response.json,
-                          dict(
-                              description="ERROR"
-                          ))
+                         dict(
+                             description="ERROR"
+                         ))
