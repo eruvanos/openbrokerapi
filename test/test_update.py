@@ -152,7 +152,7 @@ class UpdateTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
         self.assertEqual(response.json, dict(
-            operation="operation"
+            operation="service-guid-here operation"
         ))
 
     def test_returns_422_if_async_required_but_not_supported(self):

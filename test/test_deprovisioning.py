@@ -67,7 +67,7 @@ class DeprovisioningTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
-        self.assertEqual(response.json, dict(operation="operation_str"))
+        self.assertEqual(response.json, dict(operation="service-guid-here operation_str"))
 
     def test_returns_410_if_service_instance_already_gone(self):
         self.service.deprovision.side_effect = errors.ErrInstanceDoesNotExist()
