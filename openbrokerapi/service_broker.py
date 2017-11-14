@@ -214,6 +214,9 @@ class Service:
         self.dashboard_client = dashboard_client
         self.plan_updateable = plan_updateable
 
+    def get_catalog(self):
+        return self
+
     def provision(self, instance_id: str, service_details: ProvisionDetails,
                   async_allowed: bool) -> ProvisionedServiceSpec:
         """
