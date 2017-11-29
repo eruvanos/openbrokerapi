@@ -64,6 +64,9 @@ Usage
     # Simpely start the server
     serve(CustomServiceBroker(), BrokerCredentials("", ""))
 
+    # or start the server without authentication
+    serve(CustomServiceBroker(), None)
+
     # or register blueprint to your own FlaskApp instance
     app = Flask(__name__)
     logger = basic_config() #  Use root logger with a basic configuration provided by openbrokerapi.log_utils
