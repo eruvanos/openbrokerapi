@@ -1,6 +1,10 @@
 Changelog
 =============
 
+**v1.0.0**
+  - permit to run a broker without authentication
+  - Support multiple services with one broker
+
 **v0.5.0**
   - error handling fixed for ServiceExceptions
   - support 200-OK as provision and bind responses `[issue #1]`_
