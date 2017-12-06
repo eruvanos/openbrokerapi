@@ -39,6 +39,10 @@ class ProvisionedServiceSpec:
         self.dashboard_url = dashboard_url
         self.operation = operation
 
+    @property
+    def is_async(self):
+        return self.state == ProvisionState.IS_ASYNC
+
 
 class DeprovisionDetails:
     def __init__(self,

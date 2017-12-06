@@ -93,13 +93,7 @@ def get_blueprint(services: List[Service],
         raise KeyError('service {} not found'.format(service_id))
 
     def add_service_id_to_async_response(response, service_id: str):
-        patch = False
-        if isinstance(response, ProvisionedServiceSpec):
-            if response.state == ProvisionState.IS_ASYNC:
-                patch = True
-        elif response.is_async:
-            patch = True
-        if patch:
+        if response.is_async:
             if response.operation is None:
                 response.operation = service_id
             else:
