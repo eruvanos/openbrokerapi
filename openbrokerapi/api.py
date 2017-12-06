@@ -80,7 +80,7 @@ def get_blueprint(services: List[Service],
         @wraps(f)
         def decorated(*args, **kwargs):
             auth = request.authorization
-            if broker_credentials is not None and ( not auth or not check_auth(auth.username, auth.password) ):
+            if broker_credentials and ( not auth or not check_auth(auth.username, auth.password) ):
                 return authenticate()
             return f(*args, **kwargs)
 

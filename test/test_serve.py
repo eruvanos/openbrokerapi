@@ -28,11 +28,7 @@ class ServeTest(TestCase):
 
     def test_serve_starts_server_without_auth(self):
         def run_server():
-            class TestBroker(service_broker.ServiceBroker):
-                def catalog(self) -> List[catalog.Service]:
-                    return []
-
-            api.serve(TestBroker(), None)
+            api.serve([], None)
 
         server = Process(target=run_server)
         server.start()
