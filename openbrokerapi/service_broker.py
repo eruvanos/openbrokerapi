@@ -218,8 +218,26 @@ class Service:
         self.dashboard_client = dashboard_client
         self.plan_updateable = plan_updateable
 
-    def get_catalog(self):
-        return self
+
+class ServiceBroker:
+    """
+    Provides a service. This covers catalog, provision, update, bind, unbind, deprovision and last operation.
+    """
+
+    def service_id(self):
+        """
+        Shortcut for self.catalog().id
+        :return: id of provided service
+        """
+        return self.catalog().id
+
+    def catalog(self) -> Service:
+        """
+        Returns the services information which is provided by this broker.
+
+        :return: Service
+        """
+        raise NotImplementedError()
 
     def provision(self, instance_id: str, service_details: ProvisionDetails,
                   async_allowed: bool) -> ProvisionedServiceSpec:

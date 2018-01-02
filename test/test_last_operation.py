@@ -5,9 +5,11 @@ from openbrokerapi.service_broker import LastOperation, OperationState
 
 
 class LastOperationTest(BrokerTestCase):
+    def setUp(self):
+        self.broker.service_id.return_value = 'service-guid-here'
 
     def test_last_operation_called_just_with_required_fields(self):
-        self.service.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
+        self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
 
         query = "operation=service-guid-here"
         self.client.get(
@@ -17,10 +19,10 @@ class LastOperationTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.service.last_operation.assert_called_once_with("here-instance_id", None)
+        self.broker.last_operation.assert_called_once_with("here-instance_id", None)
 
     def test_last_operation_called_with_the_right_values(self):
-        self.service.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
+        self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
 
         query = "service_id=&plan_id=456&operation=service-guid-here%20operation-data"
         self.client.get(
@@ -30,10 +32,10 @@ class LastOperationTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.service.last_operation.assert_called_once_with("here-instance_id", "operation-data")
+        self.broker.last_operation.assert_called_once_with("here-instance_id", "operation-data")
 
     def test_returns_200_with_given_state(self):
-        self.service.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
+        self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
 
         query = "service_id=123&plan_id=456&operation=service-guid-here%20operation-data"
         response = self.client.get(

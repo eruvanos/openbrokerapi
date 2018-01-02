@@ -5,6 +5,10 @@ from test import BrokerTestCase
 
 
 class PrecheckTest(BrokerTestCase):
+
+    def setUp(self):
+        self.broker.service_id.return_value = 'service-guid-here'
+
     def test_returns_401_if_request_not_contain_auth_header(self):
         response = self.client.put(
             "/v2/service_instances/abc",
@@ -34,7 +38,7 @@ class PrecheckTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
 
     def test_returns_500_with_json_body_if_exception_was_raised(self):
-        self.service.deprovision.side_effect = Exception("Boooom!")
+        self.broker.deprovision.side_effect = Exception("Boooom!")
 
         response = self.client.delete(
             "/v2/service_instances/abc?plan_id=a&service_id=service-guid-here",
@@ -47,7 +51,7 @@ class PrecheckTest(BrokerTestCase):
         self.assertEqual(response.json["description"], "Boooom!")
 
     def test_returns_500_with_json_body_if_service_exception_was_raised(self):
-        self.service.deprovision.side_effect = errors.ServiceExeption("Boooom!")
+        self.broker.deprovision.side_effect = errors.ServiceExeption("Boooom!")
 
         response = self.client.delete(
             "/v2/service_instances/abc?plan_id=a&service_id=service-guid-here",

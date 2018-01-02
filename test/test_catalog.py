@@ -1,7 +1,5 @@
 import http
 
-from openbrokerapi.service_broker import Service
-
 from openbrokerapi.catalog import (
     ServiceDashboardClient,
     ServiceMetadata,
@@ -9,21 +7,21 @@ from openbrokerapi.catalog import (
     ServicePlanCost,
     ServicePlanMetaData,
 )
+from openbrokerapi.service_broker import Service
 from test import BrokerTestCase
 
 
 class CatalogTest(BrokerTestCase):
-    service_list = [
-        Service(id="s1",
-                name="service_name",
-                description="service_description",
-                bindable=True,
-                plans=[ServicePlan(id="p1", name="default", description="plan_description")]
-                )
-    ]
+    service = Service(
+        id="s1",
+        name="service_name",
+        description="service_description",
+        bindable=True,
+        plans=[ServicePlan(id="p1", name="default", description="plan_description")]
+    )
 
     def test_catalog_called_with_the_right_values(self):
-        self.service.get_catalog.return_value = self.service_list[0]
+        self.broker.catalog.return_value = self.service
 
         self.client.get(
             "/v2/catalog",
@@ -32,10 +30,10 @@ class CatalogTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.assertTrue(self.service.get_catalog.called)
+        self.assertTrue(self.broker.catalog.called)
 
     def test_catalog_ignores_request_headers(self):
-        self.service.get_catalog.return_value = self.service_list[0]
+        self.broker.catalog.return_value = self.service
 
         self.client.get(
             "/v2/catalog",
@@ -45,10 +43,10 @@ class CatalogTest(BrokerTestCase):
                 "unknown": "unknown"
             })
 
-        self.assertTrue(self.service.get_catalog.called)
+        self.assertTrue(self.broker.catalog.called)
 
     def test_catalog_returns_200_with_service_information(self):
-        self.service.get_catalog.return_value = Service(
+        self.broker.catalog.return_value = Service(
             id="s1",
             name="service_name",
             description="service_description",
@@ -138,7 +136,7 @@ class CatalogTest(BrokerTestCase):
                          ))
 
     def test_catalog_returns_200_with_minimal_service_information(self):
-        self.service.get_catalog.return_value = self.service_list[0]
+        self.broker.catalog.return_value = self.service
 
         response = self.client.get(
             "/v2/catalog",
@@ -164,7 +162,7 @@ class CatalogTest(BrokerTestCase):
                          ))
 
     def test_catalog_returns_500_if_error_raised(self):
-        self.service.get_catalog.side_effect = Exception("ERROR")
+        self.broker.catalog.side_effect = Exception("ERROR")
 
         response = self.client.get(
             "/v2/catalog",

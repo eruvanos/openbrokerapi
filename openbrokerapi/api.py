@@ -1,7 +1,8 @@
+import collections
 import logging
-from typing import List
 from functools import wraps
 from http import HTTPStatus
+from typing import List, Union
 
 from flask import Blueprint
 from flask import json, request, jsonify, Response
@@ -23,11 +24,9 @@ from openbrokerapi.service_broker import (
     DeprovisionDetails,
     ProvisionDetails,
     ProvisionState,
-    ProvisionedServiceSpec,
-    Service,
     UnbindDetails,
     UpdateDetails,
-)
+    ServiceBroker)
 
 
 class BrokerCredentials:
@@ -36,18 +35,21 @@ class BrokerCredentials:
         self.password = password
 
 
-def get_blueprint(services: List[Service],
+def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
                   broker_credentials: BrokerCredentials,
                   logger: logging.Logger) -> Blueprint:
     """
     Returns the blueprint with service broker api.
 
-    :param services: Services that this broker exposes
+    :param service_brokers: Services that this broker exposes
     :param broker_credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior.
     :return: Blueprint to register with Flask app instance
     """
     openbroker = Blueprint('open_broker', __name__)
+
+    if not isinstance(service_brokers, collections.Iterable):
+        service_brokers = [service_brokers]
 
     def version_tuple(v):
         return tuple(map(int, (v.split("."))))
@@ -80,15 +82,15 @@ def get_blueprint(services: List[Service],
         @wraps(f)
         def decorated(*args, **kwargs):
             auth = request.authorization
-            if broker_credentials and ( not auth or not check_auth(auth.username, auth.password) ):
+            if broker_credentials and (not auth or not check_auth(auth.username, auth.password)):
                 return authenticate()
             return f(*args, **kwargs)
 
         return decorated
 
-    def get_service_by_id(service_id: str):
-        for service in services:
-            if service.id == service_id:
+    def get_broker_by_id(service_id: str):
+        for service in service_brokers:
+            if service.service_id() == service_id:
                 return service
         raise KeyError('service {} not found'.format(service_id))
 
@@ -143,7 +145,7 @@ def get_blueprint(services: List[Service],
         """
         :return: Catalog of broker (List of services)
         """
-        return to_json_response(CatalogResponse(list(x.get_catalog() for x in services)))
+        return to_json_response(CatalogResponse(list(s.catalog() for s in service_brokers)))
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PUT'])
     @requires_auth
@@ -157,9 +159,9 @@ def get_blueprint(services: List[Service],
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            service = get_service_by_id(provision_details.service_id)
-            result = service.provision(instance_id, provision_details, accepts_incomplete)
-            add_service_id_to_async_response(result, service.id)
+            broker = get_broker_by_id(provision_details.service_id)
+            result = broker.provision(instance_id, provision_details, accepts_incomplete)
+            add_service_id_to_async_response(result, broker.service_id())
         except errors.ErrInstanceAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
@@ -192,9 +194,9 @@ def get_blueprint(services: List[Service],
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            service = get_service_by_id(update_details.service_id)
-            result = service.update(instance_id, update_details, accepts_incomplete)
-            add_service_id_to_async_response(result, service.id)
+            broker = get_broker_by_id(update_details.service_id)
+            result = broker.update(instance_id, update_details, accepts_incomplete)
+            add_service_id_to_async_response(result, broker.service_id())
         except errors.ErrAsyncRequired as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(
@@ -218,8 +220,8 @@ def get_blueprint(services: List[Service],
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            service = get_service_by_id(binding_details.service_id)
-            result = service.bind(instance_id, binding_id, binding_details)
+            broker = get_broker_by_id(binding_details.service_id)
+            result = broker.bind(instance_id, binding_id, binding_details)
         except errors.ErrBindingAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
@@ -255,8 +257,8 @@ def get_blueprint(services: List[Service],
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            service = get_service_by_id(unbind_details.service_id)
-            service.unbind(instance_id, binding_id, unbind_details)
+            broker = get_broker_by_id(unbind_details.service_id)
+            broker.unbind(instance_id, binding_id, unbind_details)
         except errors.ErrBindingDoesNotExist as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
@@ -278,9 +280,9 @@ def get_blueprint(services: List[Service],
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            service = get_service_by_id(deprovision_details.service_id)
-            result = service.deprovision(instance_id, deprovision_details, accepts_incomplete)
-            add_service_id_to_async_response(result, service.id)
+            broker = get_broker_by_id(deprovision_details.service_id)
+            result = broker.deprovision(instance_id, deprovision_details, accepts_incomplete)
+            add_service_id_to_async_response(result, broker.service_id())
         except errors.ErrInstanceDoesNotExist as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
@@ -310,23 +312,24 @@ def get_blueprint(services: List[Service],
             operation_data = data[1]
         else:
             operation_data = None
-        service = get_service_by_id(service_id)
-        result = service.last_operation(instance_id, operation_data)
+        broker = get_broker_by_id(service_id)
+        result = broker.last_operation(instance_id, operation_data)
 
         return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
 
     return openbroker
 
 
-def serve(services: List[Service],
+def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
           credentials: BrokerCredentials,
           logger: logging.Logger = logging.root,
           port=5000,
           debug=False):
     """
-    Starts flask with the given broker
+    Starts flask with the given brokers.
+    You can provide a list or just one ServiceBroker
 
-    :param services: Services that this broker provides
+    :param service_brokers: ServicesBroker for services to provide
     :param credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior
     :param port: Port
@@ -336,7 +339,7 @@ def serve(services: List[Service],
     from flask import Flask
     app = Flask(__name__)
 
-    blueprint = get_blueprint(services, credentials, logger)
+    blueprint = get_blueprint(service_brokers, credentials, logger)
 
     logger.debug("Register openbrokerapi blueprint")
     app.register_blueprint(blueprint)

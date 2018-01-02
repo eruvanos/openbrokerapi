@@ -1,10 +1,12 @@
 import time
 from multiprocessing import Process
 from unittest import TestCase
+from unittest.mock import Mock
 
 import requests
 
 from openbrokerapi import api
+from openbrokerapi.service_broker import Service
 
 
 class ServeTest(TestCase):
@@ -40,5 +42,28 @@ class ServeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), dict(services=[]))
 
+        server.terminate()
+        server.join()
+
+    def test_serve_starts_with_single_instance(self):
+        def run_server():
+            broker = Mock()
+            broker.catalog.return_value = Service('id', 'name', 'description', False, [])
+            api.serve(broker, None)
+
+        server = Process(target=run_server)
+        server.start()
+
+        time.sleep(2)
+        response = requests.get("http://localhost:5000/v2/catalog",
+                                headers={'X-Broker-Api-Version': '2.13'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), dict(services=[{'bindable': False,
+                                                          'description': 'description',
+                                                          'id': 'id',
+                                                          'name': 'name',
+                                                          'plan_updateable': False,
+                                                          'plans': []}]))
         server.terminate()
         server.join()

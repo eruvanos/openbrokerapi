@@ -7,8 +7,11 @@ from openbrokerapi.service_broker import UnbindDetails
 
 class UnbindTest(BrokerTestCase):
 
+    def setUp(self):
+        self.broker.service_id.return_value = 'service-guid-here'
+
     def test_unbind_is_called_with_the_right_values(self):
-        self.service.unbind.return_value = None
+        self.broker.unbind.return_value = None
 
         query = "service_id=service-guid-here&plan_id=plan-id-here"
         self.client.delete(
@@ -18,7 +21,7 @@ class UnbindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_binding_id, actual_details = self.service.unbind.call_args[0]
+        actual_instance_id, actual_binding_id, actual_details = self.broker.unbind.call_args[0]
         self.assertEqual(actual_instance_id, "here_instance_id")
         self.assertEqual(actual_binding_id, "here_binding_id")
 
@@ -27,7 +30,7 @@ class UnbindTest(BrokerTestCase):
         self.assertEqual(actual_details.service_id, "service-guid-here")
 
     def test_returns_200_if_binding_has_been_created(self):
-        self.service.unbind.return_value = None
+        self.broker.unbind.return_value = None
 
         query = "service_id=service-guid-here&plan_id=plan-id-here"
         response = self.client.delete(
@@ -41,7 +44,7 @@ class UnbindTest(BrokerTestCase):
         self.assertEqual(response.json, dict())
 
     def test_returns_410_if_binding_does_not_exists(self):
-        self.service.unbind.side_effect = errors.ErrBindingDoesNotExist()
+        self.broker.unbind.side_effect = errors.ErrBindingDoesNotExist()
 
         query = "service_id=service-guid-here&plan_id=plan-id-here"
         response = self.client.delete(

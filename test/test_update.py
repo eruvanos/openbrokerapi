@@ -7,8 +7,11 @@ from test import BrokerTestCase
 
 
 class UpdateTest(BrokerTestCase):
+    def setUp(self):
+        self.broker.service_id.return_value = 'service-guid-here'
+
     def test_update_called_with_the_right_values(self):
-        self.service.update.return_value = UpdateServiceSpec(False, "operation")
+        self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
         self.client.patch(
             "/v2/service_instances/here-service-instance-id?accepts_incomplete=true",
@@ -30,7 +33,7 @@ class UpdateTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_service_id, actual_details, actual_async = self.service.update.call_args[0]
+        actual_service_id, actual_details, actual_async = self.broker.update.call_args[0]
         self.assertEqual(actual_service_id, "here-service-instance-id")
         self.assertEqual(actual_async, True)
 
@@ -45,7 +48,7 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(actual_details.previous_values.space_id, "space-guid-here")
 
     def test_update_called_called_just_with_required_fields(self):
-        self.service.update.return_value = UpdateServiceSpec(False, "operation")
+        self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
         self.client.patch(
             "/v2/service_instances/here-service-instance-id",
@@ -57,7 +60,7 @@ class UpdateTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_details, actual_async = self.service.update.call_args[0]
+        actual_instance_id, actual_details, actual_async = self.broker.update.call_args[0]
         self.assertEqual(actual_instance_id, "here-service-instance-id")
         self.assertEqual(actual_async, False)
 
@@ -69,7 +72,7 @@ class UpdateTest(BrokerTestCase):
         self.assertIsNone(actual_details.previous_values)
 
     def test_update_ignores_unknown_parameters(self):
-        self.service.update.return_value = UpdateServiceSpec(False, "operation")
+        self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
         self.client.patch(
             "/v2/service_instances/here-service-instance-id?accepts_incomplete=true",
@@ -93,7 +96,7 @@ class UpdateTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_service_id, actual_details, actual_async = self.service.update.call_args[0]
+        actual_service_id, actual_details, actual_async = self.broker.update.call_args[0]
         self.assertEqual(actual_service_id, "here-service-instance-id")
         self.assertEqual(actual_async, True)
 
@@ -108,7 +111,7 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(actual_details.previous_values.space_id, "space-guid-here")
 
     def test_returns_200_if_updated(self):
-        self.service.update.return_value = UpdateServiceSpec(False, "operation")
+        self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
         response = self.client.patch(
             "/v2/service_instances/abc",
@@ -131,7 +134,7 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.json, dict())
 
     def test_returns_202_if_update_is_in_progress(self):
-        self.service.update.return_value = UpdateServiceSpec(True, "operation")
+        self.broker.update.return_value = UpdateServiceSpec(True, "operation")
 
         response = self.client.patch(
             "/v2/service_instances/abc?accepts_incomplete=true",
@@ -156,7 +159,7 @@ class UpdateTest(BrokerTestCase):
         ))
 
     def test_returns_422_if_async_required_but_not_supported(self):
-        self.service.update.side_effect = errors.ErrAsyncRequired()
+        self.broker.update.side_effect = errors.ErrAsyncRequired()
 
         response = self.client.patch(
             "/v2/service_instances/abc?accepts_incomplete=false",
