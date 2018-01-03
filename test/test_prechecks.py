@@ -26,6 +26,7 @@ class PrecheckTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.PRECONDITION_FAILED)
+        print(response.data)
         self.assertEqual(response.json, dict(description="Service broker requires version 2.13+."))
 
     def test_returns_400_if_request_not_contains_version_header(self):
