@@ -36,7 +36,7 @@ class BrokerCredentials:
 
 
 def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
-                  broker_credentials: BrokerCredentials,
+                  broker_credentials: Union[None, BrokerCredentials],
                   logger: logging.Logger) -> Blueprint:
     """
     Returns the blueprint with service broker api.
@@ -321,7 +321,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
 
 
 def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
-          credentials: BrokerCredentials,
+          credentials: Union[None, BrokerCredentials],
           logger: logging.Logger = logging.root,
           port=5000,
           debug=False):
