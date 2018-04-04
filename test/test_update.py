@@ -30,6 +30,7 @@ class UpdateTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -57,6 +58,7 @@ class UpdateTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -93,6 +95,7 @@ class UpdateTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -127,6 +130,7 @@ class UpdateTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -150,6 +154,7 @@ class UpdateTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -175,6 +180,7 @@ class UpdateTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -184,11 +190,23 @@ class UpdateTest(BrokerTestCase):
             description="This service plan requires client support for asynchronous service operations."
         ))
 
-    def test_returns_401_if_request_not_contain_auth_header(self):
+    def test_returns_401_if_request_does_not_contain_auth_header(self):
         response = self.client.patch(
             "/v2/service_instances/abc",
             headers={
-                'X-Broker-Api-Version': '2.13'
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json'
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+
+    def test_returns_400_if_request_does_not_contain_content_type_header(self):
+        response = self.client.patch(
+            "/v2/service_instances/abc",
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="Improper Content-Type header. Expecting \"application/json\""))

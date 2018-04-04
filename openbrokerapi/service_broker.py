@@ -231,6 +231,16 @@ class ServiceBroker:
         """
         return self.catalog().id
 
+    def check_plan_id(self, plan_id) -> bool:
+        """
+        Checks that the plan_id exists in the catalog
+        :return: boolean
+        """
+        for plan in self.catalog().plans:
+            if plan.id == plan_id:
+                return True
+        return False
+
     def catalog(self) -> Service:
         """
         Returns the services information which is provided by this broker.

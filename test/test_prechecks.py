@@ -62,7 +62,7 @@ class PrecheckTest(BrokerTestCase):
         self.assertEqual(response.json["description"], "Boooom!")
 
     def test_returns_500_with_json_body_if_service_exception_was_raised(self):
-        self.broker.deprovision.side_effect = errors.ServiceExeption("Boooom!")
+        self.broker.deprovision.side_effect = errors.ServiceException("Boooom!")
 
         response = self.client.delete(
             "/v2/service_instances/abc?plan_id=a&service_id=service-guid-here",

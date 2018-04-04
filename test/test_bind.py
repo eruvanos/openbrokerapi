@@ -39,6 +39,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -68,6 +69,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -100,6 +102,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -131,6 +134,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -166,6 +170,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -199,6 +204,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -217,6 +223,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -226,15 +233,28 @@ class BindTest(BrokerTestCase):
             description="This service supports generation of credentials through binding an application only."
         ))
 
-    def test_returns_401_if_request_not_contain_auth_header(self):
+    def test_returns_401_if_request_does_not_contain_auth_header(self):
         response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
             data=json.dumps({}),
             headers={
-                'X-Broker-Api-Version': '2.13'
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json'
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+
+    def test_returns_400_if_request_does_not_contain_content_type_header(self):
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data=json.dumps({}),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="Improper Content-Type header. Expecting \"application/json\""))
 
     def test_returns_200_if_identical_binding_already_exists(self):
         self.broker.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)
@@ -248,6 +268,7 @@ class BindTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
