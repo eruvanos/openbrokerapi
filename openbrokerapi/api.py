@@ -37,15 +37,13 @@ class BrokerCredentials:
 
 def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
                   broker_credentials: Union[None, BrokerCredentials],
-                  logger: logging.Logger,
-                  version_min: str="2.13" ) -> Blueprint:
+                  logger: logging.Logger) -> Blueprint:
     """
     Returns the blueprint with service broker api.
 
     :param service_brokers: Services that this broker exposes
     :param broker_credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior.
-    :param version_min: Refuse requests using an older Open Broker API version than version_min
     :return: Blueprint to register with Flask app instance
     """
     openbroker = Blueprint('open_broker', __name__)
@@ -56,7 +54,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     def version_tuple(v):
         return tuple(map(int, (v.split("."))))
 
-    min_version = version_tuple(version_min)
+    min_version = version_tuple("2.13")
 
     def check_version():
         version = request.headers.get("X-Broker-Api-Version", None)
@@ -339,8 +337,7 @@ def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
           credentials: Union[None, BrokerCredentials],
           logger: logging.Logger = logging.root,
           port=5000,
-          debug=False,
-          version_min="2.13"):
+          debug=False):
     """
     Starts flask with the given brokers.
     You can provide a list or just one ServiceBroker
@@ -355,7 +352,7 @@ def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     from flask import Flask
     app = Flask(__name__)
 
-    blueprint = get_blueprint(service_brokers, credentials, logger, version_min)
+    blueprint = get_blueprint(service_brokers, credentials, logger)
 
     logger.debug("Register openbrokerapi blueprint")
     app.register_blueprint(blueprint)
