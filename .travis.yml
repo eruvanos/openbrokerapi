@@ -22,6 +22,7 @@ deploy:
     on:
       tags: false
       branch: master
+      python: '3.5'
   - provider: pypi
     user: eruvanos
     password:
@@ -30,3 +31,4 @@ deploy:
     on:
       tags: true
       branch: master
+      python: '3.5'
