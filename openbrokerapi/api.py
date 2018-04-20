@@ -92,7 +92,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         for service in service_brokers:
             if service.service_id() == service_id:
                 return service
-        raise KeyError('service {} not found'.format(service_id))
+        raise KeyError('Service {} not found'.format(service_id))
 
     def add_service_id_to_async_response(response, service_id: str):
         if response.is_async:
@@ -152,14 +152,17 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     def provision(instance_id):
         try:
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
-
+            if request.headers["Content-Type"] != 'application/json':
+                raise TypeError('Improper Content-Type header. Expecting "application/json"')
             details = json.loads(request.data)
             provision_details = ProvisionDetails(**details)
-        except TypeError as e:
+            broker = get_broker_by_id(provision_details.service_id)
+            if not broker.check_plan_id(provision_details.plan_id):
+                raise TypeError('plan_id not found in this service.')
+        except (TypeError, KeyError) as e:
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            broker = get_broker_by_id(provision_details.service_id)
             result = broker.provision(instance_id, provision_details, accepts_incomplete)
             add_service_id_to_async_response(result, broker.service_id())
         except errors.ErrInstanceAlreadyExists as e:
@@ -179,22 +182,25 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         elif result.state == ProvisionState.SUCCESSFUL_CREATED:
             return to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)), HTTPStatus.CREATED
         else:
-            raise errors.ServiceExeption('IllegalState, ProvisioningState unknown.')
+            raise errors.ServiceException('IllegalState, ProvisioningState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
     @requires_auth
     def update(instance_id):
         try:
+            accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
+            if request.headers["Content-Type"] != 'application/json':
+                raise TypeError('Improper Content-Type header. Expecting "application/json"')
             details = json.loads(request.data)
             update_details = UpdateDetails(**details)
-
-            accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
-        except TypeError as e:
+            broker = get_broker_by_id(update_details.service_id)
+            if not broker.check_plan_id(update_details.plan_id):
+                raise TypeError('plan_id not found in this service.')
+        except (TypeError, KeyError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            broker = get_broker_by_id(update_details.service_id)
             result = broker.update(instance_id, update_details, accepts_incomplete)
             add_service_id_to_async_response(result, broker.service_id())
         except errors.ErrAsyncRequired as e:
@@ -213,14 +219,18 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     @requires_auth
     def bind(instance_id, binding_id):
         try:
+            if request.headers["Content-Type"] != 'application/json':
+                raise TypeError('Improper Content-Type header. Expecting "application/json"')
             details = json.loads(request.data)
             binding_details = BindDetails(**details)
-        except KeyError as e:
+            broker = get_broker_by_id(binding_details.service_id)
+            if not broker.check_plan_id(binding_details.plan_id):
+                raise TypeError('plan_id not found in this service.')
+        except (TypeError, KeyError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            broker = get_broker_by_id(binding_details.service_id)
             result = broker.bind(instance_id, binding_id, binding_details)
         except errors.ErrBindingAlreadyExists as e:
             logger.exception(e)
@@ -243,7 +253,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         elif result.state == BindState.IDENTICAL_ALREADY_EXISTS:
             return to_json_response(response), HTTPStatus.OK
         else:
-            raise errors.ServiceExeption('IllegalState, BindState unknown.')
+            raise errors.ServiceException('IllegalState, BindState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['DELETE'])
     @requires_auth
@@ -252,12 +262,14 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
             unbind_details = UnbindDetails(plan_id, service_id)
-        except KeyError as e:
+            broker = get_broker_by_id(unbind_details.service_id)
+            if not broker.check_plan_id(unbind_details.plan_id):
+                raise TypeError('plan_id not found in this service.')
+        except (TypeError, KeyError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            broker = get_broker_by_id(unbind_details.service_id)
             broker.unbind(instance_id, binding_id, unbind_details)
         except errors.ErrBindingDoesNotExist as e:
             logger.exception(e)
@@ -274,13 +286,14 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
 
             deprovision_details = DeprovisionDetails(plan_id, service_id)
-
-        except KeyError as e:
+            broker = get_broker_by_id(deprovision_details.service_id)
+            if not broker.check_plan_id(deprovision_details.plan_id):
+                raise TypeError('plan_id not found in this service.')
+        except (TypeError, KeyError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
-            broker = get_broker_by_id(deprovision_details.service_id)
             result = broker.deprovision(instance_id, deprovision_details, accepts_incomplete)
             add_service_id_to_async_response(result, broker.service_id())
         except errors.ErrInstanceDoesNotExist as e:

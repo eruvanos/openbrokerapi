@@ -1,52 +1,52 @@
-class ServiceExeption(Exception):
+class ServiceException(Exception):
     pass
 
 
-class ErrInstanceAlreadyExists(ServiceExeption):
+class ErrInstanceAlreadyExists(ServiceException):
     def __init__(self):
-        super().__init__("instance already exists")
+        super().__init__("Instance already exists")
 
 
-class ErrInstanceDoesNotExist(ServiceExeption):
+class ErrInstanceDoesNotExist(ServiceException):
     def __init__(self):
-        super().__init__("instance does not exist")
+        super().__init__("Instance does not exist")
 
 
-class ErrInstanceLimitMet(ServiceExeption):
+class ErrInstanceLimitMet(ServiceException):
     def __init__(self):
-        super().__init__("instance limit for this service has been reached")
+        super().__init__("Instance limit for this service has been reached")
 
 
-class ErrPlanQuotaExceeded(ServiceExeption):
+class ErrPlanQuotaExceeded(ServiceException):
     def __init__(self):
         super().__init__("The quota for this service plan has been exceeded. Please contact your Operator for help.")
 
 
-class ErrServiceQuotaExceeded(ServiceExeption):
+class ErrServiceQuotaExceeded(ServiceException):
     def __init__(self):
         super().__init__("The quota for this service has been exceeded. Please contact your Operator for help.")
 
 
-class ErrBindingAlreadyExists(ServiceExeption):
+class ErrBindingAlreadyExists(ServiceException):
     def __init__(self):
-        super().__init__("binding already exists")
+        super().__init__("Binding already exists")
 
 
-class ErrBindingDoesNotExist(ServiceExeption):
+class ErrBindingDoesNotExist(ServiceException):
     def __init__(self):
-        super().__init__("binding does not exist")
+        super().__init__("Binding does not exist")
 
 
-class ErrAsyncRequired(ServiceExeption):
+class ErrAsyncRequired(ServiceException):
     def __init__(self):
         super().__init__("This service plan requires client support for asynchronous service operations.")
 
 
-class ErrPlanChangeNotSupported(ServiceExeption):
+class ErrPlanChangeNotSupported(ServiceException):
     def __init__(self):
         super().__init__("The requested plan migration cannot be performed")
 
 
-class ErrAppGuidNotProvided(ServiceExeption):
+class ErrAppGuidNotProvided(ServiceException):
     def __init__(self):
         super().__init__("app_guid is a required field but was not provided")

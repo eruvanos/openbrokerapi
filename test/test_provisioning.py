@@ -26,6 +26,7 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -53,6 +54,7 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -82,6 +84,7 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -113,6 +116,7 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -139,6 +143,7 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -161,6 +166,7 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -180,6 +186,7 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
@@ -202,8 +209,28 @@ class ProvisioningTest(BrokerTestCase):
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(response.json, dict())
+
+    def test_returns_400_if_request_does_not_contain_content_type_header(self):
+        self.broker.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
+
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="Improper Content-Type header. Expecting \"application/json\""))
