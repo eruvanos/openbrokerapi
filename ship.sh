@@ -27,4 +27,4 @@ git commit --amend --no-edit
 #git commit -m "v$(cat .bumpversion.cfg|grep current_version|tr -d ' '|cut -f 2 -d '=')""
 
 echo "Push to git"
-git push
+git push --tag
