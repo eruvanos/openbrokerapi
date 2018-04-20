@@ -16,7 +16,7 @@ echo "Run tests"
 
 echo "Bump version"
 #Bump version
-bumpversion --no-tag --no-commit $args
+bumpversion --tag --commit $args
 
 echo "Add version changes to commit"
 git add .bumpversion.cfg
@@ -27,4 +27,4 @@ git commit --amend --no-edit
 #git commit -m "v$(cat .bumpversion.cfg|grep current_version|tr -d ' '|cut -f 2 -d '=')""
 
 echo "Push to git"
-#git push
+git push --tag
