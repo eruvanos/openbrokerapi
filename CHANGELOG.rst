@@ -1,6 +1,13 @@
 Changelog
 =============
 
+**v3.0.x**
+  - Fix typos
+  - add checks for Content-Type
+
+**v2.0.0**
+  - Refactor API
+
 **v1.0.0**
   - permit to run a broker without authentication
   - Support multiple services with one broker
