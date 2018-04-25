@@ -1,5 +1,6 @@
 import collections
 import logging
+import base64
 from functools import wraps
 from http import HTTPStatus
 from typing import List, Union
@@ -36,13 +37,13 @@ class BrokerCredentials:
 
 
 def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
-                  broker_credentials: Union[None, BrokerCredentials],
+                  broker_credentials: Union[None, List[BrokerCredentials], BrokerCredentials],
                   logger: logging.Logger) -> Blueprint:
     """
     Returns the blueprint with service broker api.
 
     :param service_brokers: Services that this broker exposes
-    :param broker_credentials: Username and password that will be required to communicate with service broker
+    :param broker_credentials: Optional Usernames and passwords that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior.
     :return: Blueprint to register with Flask app instance
     """
@@ -68,25 +69,44 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     logger.debug("Apply check_version filter for version %s" % str(min_version))
     openbroker.before_request(check_version)
 
-    def check_auth(username, password):
-        return username == broker_credentials.username and password == broker_credentials.password
+    def check_originating_identity():
+        """
+        Check and decode the "X-Broker-API-Originating-Identity" header
+        https://github.com/openservicebrokerapi/servicebroker/blob/v2.13/spec.md#originating-identity
+        """
+        if "X-Broker-API-Originating-Identity" in request.headers:
+            try:
+                platform, value = request.headers["X-Broker-API-Originating-Identity"].split(None, 1)
+                request.originating_identity = {
+                    'platform': platform,
+                    'value': json.loads(base64.standard_b64decode(value))
+                }
+            except ValueError as e:
+                return to_json_response(ErrorResponse(
+                    description='Improper "X-Broker-API-Originating-Identity" header. '+str(e))
+                ), HTTPStatus.BAD_REQUEST
+        else:
+            request.originating_identity = None
 
-    def authenticate():
-        """Sends a 401 response that enables basic auth"""
-        return Response(
-            'Could not verify your access level for that URL.\n'
-            'You have to login with proper credentials', HTTPStatus.UNAUTHORIZED,
-            {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    logger.debug("Apply check_originating_identity filter")
+    openbroker.before_request(check_originating_identity)
 
-    def requires_auth(f):
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            auth = request.authorization
-            if broker_credentials and (not auth or not check_auth(auth.username, auth.password)):
-                return authenticate()
-            return f(*args, **kwargs)
+    def check_auth():
+        """Check authentication over all provided usernames else sends a 401 response that enables basic auth"""
+        auth = request.authorization
+        if auth:
+            for credentials in broker_credentials:
+                if auth.username == credentials.username and auth.password == credentials.password:
+                    return
+        return to_json_response(ErrorResponse(
+                description='Could not verify your access level for that URL.\nYou have to login with proper credentials'
+                )), HTTPStatus.UNAUTHORIZED, {'WWW-Authenticate': 'Basic realm="Login Required"'}
 
-        return decorated
+    if broker_credentials is not None:
+        if not isinstance(broker_credentials, collections.Iterable):
+            broker_credentials = [broker_credentials]
+        logger.debug("Apply check_auth filter with {} credentials".format(len(broker_credentials)))
+        openbroker.before_request(check_auth)
 
     def get_broker_by_id(service_id: str):
         for service in service_brokers:
@@ -140,7 +160,6 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         )), HTTPStatus.INTERNAL_SERVER_ERROR
 
     @openbroker.route("/v2/catalog", methods=['GET'])
-    @requires_auth
     def catalog():
         """
         :return: Catalog of broker (List of services)
@@ -148,18 +167,20 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         return to_json_response(CatalogResponse(list(s.catalog() for s in service_brokers)))
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PUT'])
-    @requires_auth
     def provision(instance_id):
         try:
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
             if request.headers["Content-Type"] != 'application/json':
                 raise TypeError('Improper Content-Type header. Expecting "application/json"')
-            details = json.loads(request.data)
-            provision_details = ProvisionDetails(**details)
+
+            provision_details = ProvisionDetails(**json.loads(request.data))
+            provision_details.originating_identity = request.originating_identity
+            provision_details.authorization_username = request.authorization.username
             broker = get_broker_by_id(provision_details.service_id)
             if not broker.check_plan_id(provision_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
         except (TypeError, KeyError) as e:
+            logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
         try:
@@ -185,14 +206,15 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             raise errors.ServiceException('IllegalState, ProvisioningState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
-    @requires_auth
     def update(instance_id):
         try:
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
             if request.headers["Content-Type"] != 'application/json':
                 raise TypeError('Improper Content-Type header. Expecting "application/json"')
-            details = json.loads(request.data)
-            update_details = UpdateDetails(**details)
+
+            update_details = UpdateDetails(**json.loads(request.data))
+            update_details.originating_identity = request.originating_identity
+            update_details.authorization_username = request.authorization.username
             broker = get_broker_by_id(update_details.service_id)
             if not broker.check_plan_id(update_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -216,13 +238,14 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             return to_json_response(EmptyResponse()), HTTPStatus.OK
 
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['PUT'])
-    @requires_auth
     def bind(instance_id, binding_id):
         try:
             if request.headers["Content-Type"] != 'application/json':
                 raise TypeError('Improper Content-Type header. Expecting "application/json"')
-            details = json.loads(request.data)
-            binding_details = BindDetails(**details)
+
+            binding_details = BindDetails(**json.loads(request.data))
+            binding_details.originating_identity = request.originating_identity
+            binding_details.authorization_username = request.authorization.username
             broker = get_broker_by_id(binding_details.service_id)
             if not broker.check_plan_id(binding_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -256,12 +279,13 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             raise errors.ServiceException('IllegalState, BindState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['DELETE'])
-    @requires_auth
     def unbind(instance_id, binding_id):
         try:
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
             unbind_details = UnbindDetails(plan_id, service_id)
+            unbind_details.originating_identity = request.originating_identity
+            unbind_details.authorization_username = request.authorization.username
             broker = get_broker_by_id(unbind_details.service_id)
             if not broker.check_plan_id(unbind_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -278,7 +302,6 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         return to_json_response(EmptyResponse()), HTTPStatus.OK
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['DELETE'])
-    @requires_auth
     def deprovision(instance_id):
         try:
             plan_id = request.args["plan_id"]
@@ -286,6 +309,8 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
 
             deprovision_details = DeprovisionDetails(plan_id, service_id)
+            deprovision_details.originating_identity = request.originating_identity
+            deprovision_details.authorization_username = request.authorization.username
             broker = get_broker_by_id(deprovision_details.service_id)
             if not broker.check_plan_id(deprovision_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -312,7 +337,6 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             return to_json_response(EmptyResponse()), HTTPStatus.OK
 
     @openbroker.route("/v2/service_instances/<instance_id>/last_operation", methods=['GET'])
-    @requires_auth
     def last_operation(instance_id):
         # Not required
         # service_id = request.args.get("service_id", None)

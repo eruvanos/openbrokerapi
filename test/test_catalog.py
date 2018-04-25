@@ -1,4 +1,5 @@
 import http
+import base64
 
 from openbrokerapi.catalog import (
     ServiceDashboardClient,
@@ -142,6 +143,7 @@ class CatalogTest(BrokerTestCase):
             "/v2/catalog",
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'X-Broker-Api-Originating-Identity': 'test '+base64.standard_b64encode(b'{"user_id":123}').decode('ascii'),
                 'Authorization': self.auth_header,
                 "unknown": "unknown"
             })

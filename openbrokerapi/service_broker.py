@@ -14,13 +14,18 @@ class ProvisionDetails:
                  plan_id: str,
                  organization_guid: str,
                  space_guid: str,
-                 parameters=None,
+                 parameters: dict = None,
+                 context: dict = None,
                  **kwargs):
         self.service_id = service_id
         self.plan_id = plan_id
         self.organization_guid = organization_guid
         self.space_guid = space_guid
         self.parameters = parameters
+        self.context = context
+        # HTTP contextual data
+        self.authorization_username = None #: username of HTTP Basic Auth
+        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class ProvisionState(Enum):
@@ -51,6 +56,9 @@ class DeprovisionDetails:
                  ):
         self.plan_id = plan_id
         self.service_id = service_id
+        # HTTP contextual data
+        self.authorization_username = None #: username of HTTP Basic Auth
+        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class DeprovisionServiceSpec:
@@ -81,12 +89,17 @@ class UpdateDetails:
                  plan_id: str = None,
                  parameters: dict = None,
                  previous_values: dict = None,
+                 context: dict = None,
                  **kwargs
                  ):
         self.service_id = service_id
         self.plan_id = plan_id
         self.parameters = parameters
         self.previous_values = PreviousValues(**previous_values) if previous_values else None
+        self.context = context
+        # HTTP contextual data
+        self.authorization_username = None #: username of HTTP Basic Auth
+        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class UpdateServiceSpec:
@@ -114,6 +127,7 @@ class BindDetails:
                  app_guid: str = None,
                  bind_resource: dict = None,
                  parameters: dict = None,
+                 context: dict = None,
                  **kwargs
                  ):
         self.app_guid = app_guid
@@ -121,6 +135,10 @@ class BindDetails:
         self.service_id = service_id
         self.parameters = parameters
         self.bind_resource = BindResource(**bind_resource) if bind_resource else None
+        self.context = context
+        # HTTP contextual data
+        self.authorization_username = None #: username of HTTP Basic Auth
+        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class SharedDevice:
@@ -174,6 +192,9 @@ class UnbindDetails:
                  ):
         self.plan_id = plan_id
         self.service_id = service_id
+        # HTTP contextual data
+        self.authorization_username = None #: username of HTTP Basic Auth
+        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class OperationState(Enum):

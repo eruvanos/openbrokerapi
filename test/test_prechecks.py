@@ -1,4 +1,5 @@
 import http
+import base64
 from unittest import skip
 
 from openbrokerapi import errors
@@ -47,6 +48,48 @@ class PrecheckTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+
+    def test_returns_400_if_request_contains_originating_identity_header_with_missing_value(self):
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            headers={
+                'Authorization': self.auth_header,
+                'X-Broker-Api-Version': '2.13',
+                'X-Broker-Api-Originating-Identity': '   test   ' # missing value
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(
+            description='Improper "X-Broker-API-Originating-Identity" header. not enough values to unpack (expected 2, got 1)'
+        ))
+
+    def test_returns_400_if_request_contains_originating_identity_header_with_improper_base64_value(self):
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            headers={
+                'Authorization': self.auth_header,
+                'X-Broker-Api-Version': '2.13',
+                'X-Broker-Api-Originating-Identity': 'test bad64encoding' # bad base64
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(
+            description='Improper "X-Broker-API-Originating-Identity" header. Incorrect padding'
+        ))
+
+    def test_returns_400_if_request_contains_originating_identity_header_with_improper_json_value(self):
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            headers={
+                'Authorization': self.auth_header,
+                'X-Broker-Api-Version': '2.13',
+                'X-Broker-Api-Originating-Identity': 'test '+base64.standard_b64encode(b'{"test:123}').decode('ascii') # bad json
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(
+            description='Improper "X-Broker-API-Originating-Identity" header. Unterminated string starting at: line 1 column 2 (char 1)'
+        ))
 
     def test_returns_500_with_json_body_if_exception_was_raised(self):
         self.broker.deprovision.side_effect = Exception("Boooom!")
