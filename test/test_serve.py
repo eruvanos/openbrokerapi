@@ -21,12 +21,11 @@ class ServeTest(TestCase):
         response = requests.get("http://localhost:5000/v2/catalog",
                                 auth=("", ""),
                                 headers={'X-Broker-Api-Version': '2.13'})
+        server.terminate()
+        server.join()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), dict(services=[]))
-
-        server.terminate()
-        server.join()
 
     def test_serve_starts_server_without_auth(self):
         def run_server():
@@ -39,11 +38,11 @@ class ServeTest(TestCase):
         response = requests.get("http://localhost:5000/v2/catalog",
                                 headers={'X-Broker-Api-Version': '2.13'})
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), dict(services=[]))
-
         server.terminate()
         server.join()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), dict(services=[]))
 
     def test_serve_starts_with_single_instance(self):
         def run_server():
@@ -59,6 +58,8 @@ class ServeTest(TestCase):
         response = requests.get("http://localhost:5000/v2/catalog",
                                 auth=("k8s-login", "k8s-pwd"),
                                 headers={'X-Broker-Api-Version': '2.13'})
+        server.terminate()
+        server.join()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), dict(services=[{'bindable': False,
@@ -67,5 +68,3 @@ class ServeTest(TestCase):
                                                           'name': 'name',
                                                           'plan_updateable': False,
                                                           'plans': []}]))
-        server.terminate()
-        server.join()
