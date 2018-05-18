@@ -6,7 +6,7 @@ setup(
     version='3.0.3',
     python_requires='>=3.5',
     packages=find_packages(exclude=['tests']),
-    install_requires=['flask'],
+    install_requires=['flask', 'gevent'],
     test_suite="test",
 
     # Metadata

@@ -299,8 +299,10 @@ def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     :param debug: Enables debugging in flask app
     """
 
+    from gevent.pywsgi import WSGIServer
     from flask import Flask
     app = Flask(__name__)
+    app.debug = debug
 
     blueprint = get_blueprint(service_brokers, credentials, logger)
 
@@ -308,4 +310,5 @@ def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     app.register_blueprint(blueprint)
 
     logger.info("Start Flask on 0.0.0.0:%s" % port)
-    app.run('0.0.0.0', port, debug)
+    http_server = WSGIServer(('0.0.0.0', port), app)
+    http_server.serve_forever()
