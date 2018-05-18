@@ -3,7 +3,7 @@ import json
 
 from openbrokerapi import errors
 from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionState
-from test import BrokerTestCase
+from tests import BrokerTestCase
 
 
 class ProvisioningTest(BrokerTestCase):

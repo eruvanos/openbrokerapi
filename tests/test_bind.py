@@ -3,7 +3,7 @@ import json
 
 from openbrokerapi import errors
 from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice, BindState
-from test import BrokerTestCase
+from tests import BrokerTestCase
 
 expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
                         "username": "mysqluser",

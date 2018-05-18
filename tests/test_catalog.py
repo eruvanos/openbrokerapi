@@ -9,7 +9,7 @@ from openbrokerapi.catalog import (
     ServicePlanMetaData,
 )
 from openbrokerapi.service_broker import Service
-from test import BrokerTestCase
+from tests import BrokerTestCase
 
 
 class CatalogTest(BrokerTestCase):
