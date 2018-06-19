@@ -98,9 +98,6 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     def provision(instance_id):
         try:
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
-            if not request.is_json:
-                er = ErrorResponse(description='Improper Content-Type header. Expecting "application/json"')
-                return to_json_response(er), HTTPStatus.BAD_REQUEST
 
             provision_details = ProvisionDetails(**json.loads(request.data))
             provision_details.originating_identity = request.originating_identity
@@ -207,9 +204,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['DELETE'])
     def unbind(instance_id, binding_id):
         try:
-            plan_id = request.args["plan_id"]
-            service_id = request.args["service_id"]
-            unbind_details = UnbindDetails(plan_id, service_id)
+            unbind_details = UnbindDetails(request.args["plan_id"], request.args["service_id"])
             unbind_details.originating_identity = request.originating_identity
             unbind_details.authorization_username = request.authorization.username
             broker = get_broker_by_id(unbind_details.service_id)
@@ -230,11 +225,9 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['DELETE'])
     def deprovision(instance_id):
         try:
-            plan_id = request.args["plan_id"]
-            service_id = request.args["service_id"]
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
 
-            deprovision_details = DeprovisionDetails(plan_id, service_id)
+            deprovision_details = DeprovisionDetails(request.args["plan_id"], request.args["service_id"])
             deprovision_details.originating_identity = request.originating_identity
             deprovision_details.authorization_username = request.authorization.username
             broker = get_broker_by_id(deprovision_details.service_id)
