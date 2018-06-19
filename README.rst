@@ -77,13 +77,13 @@ Usage
                      async_allowed: bool) -> ProvisionedServiceSpec:
            pass
 
-       def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails):
+       def bind(self, instance_id: str, binding_id: str, details: BindDetails) -> Binding:
            pass
 
        def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool) -> UpdateServiceSpec:
            pass
 
-       def bind(self, instance_id: str, binding_id: str, details: BindDetails) -> Binding:
+       def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails):
            pass
 
        def deprovision(self, instance_id: str, details: DeprovisionDetails, async_allowed: bool) -> DeprovisionServiceSpec:

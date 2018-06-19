@@ -3,7 +3,7 @@ import base64
 from unittest import skip
 
 from openbrokerapi import errors
-from test import BrokerTestCase
+from tests import BrokerTestCase
 
 
 class PrecheckTest(BrokerTestCase):

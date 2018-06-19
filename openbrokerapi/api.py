@@ -1,14 +1,14 @@
-import collections
 import logging
-import base64
-from functools import wraps
 from http import HTTPStatus
 from typing import List, Union
 
 from flask import Blueprint
-from flask import json, request, jsonify, Response
+from flask import json, request
 
 from openbrokerapi import errors
+from openbrokerapi.helper import to_json_response, ensure_list
+from openbrokerapi.request_filter import print_request, check_originating_identity, get_auth_filter, check_version, \
+    requires_application_json
 from openbrokerapi.response import (
     BindResponse,
     CatalogResponse,
@@ -28,6 +28,7 @@ from openbrokerapi.service_broker import (
     UnbindDetails,
     UpdateDetails,
     ServiceBroker)
+from openbrokerapi.settings import MIN_VERSION
 
 
 class BrokerCredentials:
@@ -48,65 +49,22 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     :return: Blueprint to register with Flask app instance
     """
     openbroker = Blueprint('open_broker', __name__)
+    service_brokers = ensure_list(service_brokers)
 
-    if not isinstance(service_brokers, collections.Iterable):
-        service_brokers = [service_brokers]
+    # Apply filters
+    logger.debug("Apply print_request filter for debugging")
+    openbroker.before_request(print_request)
 
-    def version_tuple(v):
-        return tuple(map(int, (v.split("."))))
-
-    min_version = version_tuple("2.13")
-
-    def check_version():
-        version = request.headers.get("X-Broker-Api-Version", None)
-        if not version:
-            return to_json_response(ErrorResponse(description="No X-Broker-Api-Version found.")), HTTPStatus.BAD_REQUEST
-        if min_version > version_tuple(version):
-            return to_json_response(ErrorResponse(
-                description="Service broker requires version %d.%d+." % min_version)
-            ), HTTPStatus.PRECONDITION_FAILED
-
-    logger.debug("Apply check_version filter for version %s" % str(min_version))
+    logger.debug("Apply check_version filter for version %s" % str(MIN_VERSION))
     openbroker.before_request(check_version)
-
-    def check_originating_identity():
-        """
-        Check and decode the "X-Broker-API-Originating-Identity" header
-        https://github.com/openservicebrokerapi/servicebroker/blob/v2.13/spec.md#originating-identity
-        """
-        if "X-Broker-API-Originating-Identity" in request.headers:
-            try:
-                platform, value = request.headers["X-Broker-API-Originating-Identity"].split(None, 1)
-                request.originating_identity = {
-                    'platform': platform,
-                    'value': json.loads(base64.standard_b64decode(value))
-                }
-            except ValueError as e:
-                return to_json_response(ErrorResponse(
-                    description='Improper "X-Broker-API-Originating-Identity" header. '+str(e))
-                ), HTTPStatus.BAD_REQUEST
-        else:
-            request.originating_identity = None
 
     logger.debug("Apply check_originating_identity filter")
     openbroker.before_request(check_originating_identity)
 
-    def check_auth():
-        """Check authentication over all provided usernames else sends a 401 response that enables basic auth"""
-        auth = request.authorization
-        if auth:
-            for credentials in broker_credentials:
-                if auth.username == credentials.username and auth.password == credentials.password:
-                    return
-        return to_json_response(ErrorResponse(
-                description='Could not verify your access level for that URL.\nYou have to login with proper credentials'
-                )), HTTPStatus.UNAUTHORIZED, {'WWW-Authenticate': 'Basic realm="Login Required"'}
-
     if broker_credentials is not None:
-        if not isinstance(broker_credentials, collections.Iterable):
-            broker_credentials = [broker_credentials]
+        broker_credentials = ensure_list(broker_credentials)
         logger.debug("Apply check_auth filter with {} credentials".format(len(broker_credentials)))
-        openbroker.before_request(check_auth)
+        openbroker.before_request(get_auth_filter(broker_credentials))
 
     def get_broker_by_id(service_id: str):
         for service in service_brokers:
@@ -120,37 +78,6 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
                 response.operation = service_id
             else:
                 response.operation = ' '.join((service_id, response.operation))
-
-    def print_request():
-        logger.debug("--- Request Start -------------------")
-        logger.debug("--- Header")
-        for k, v in request.headers:
-            logger.debug("%s:%s", k, v)
-        logger.debug("--- Body")
-        logger.debug(request.data)
-        logger.debug("--- Request End ---------------------")
-
-    openbroker.before_request(print_request)
-
-    # Following https://stackoverflow.com/a/1118038
-    def todict(obj):
-        if isinstance(obj, dict):
-            data = {}
-            for (k, v) in obj.items():
-                data[k] = todict(v)
-            return data
-        elif hasattr(obj, "__iter__") and not isinstance(obj, str):
-            return [todict(v) for v in obj]
-        elif hasattr(obj, "__dict__"):
-            data = dict([(key, todict(value))
-                         for key, value in obj.__dict__.items()
-                         if not callable(value) and not key.startswith('_') and value is not None])
-            return data
-        else:
-            return obj
-
-    def to_json_response(obj):
-        return jsonify(todict(obj))
 
     @openbroker.errorhandler(Exception)
     def error_handler(e):
@@ -167,11 +94,13 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         return to_json_response(CatalogResponse(list(s.catalog() for s in service_brokers)))
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PUT'])
+    @requires_application_json
     def provision(instance_id):
         try:
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
-            if request.headers["Content-Type"] != 'application/json':
-                raise TypeError('Improper Content-Type header. Expecting "application/json"')
+            if not request.is_json:
+                er = ErrorResponse(description='Improper Content-Type header. Expecting "application/json"')
+                return to_json_response(er), HTTPStatus.BAD_REQUEST
 
             provision_details = ProvisionDetails(**json.loads(request.data))
             provision_details.originating_identity = request.originating_identity
@@ -206,11 +135,10 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             raise errors.ServiceException('IllegalState, ProvisioningState unknown.')
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['PATCH'])
+    @requires_application_json
     def update(instance_id):
         try:
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
-            if request.headers["Content-Type"] != 'application/json':
-                raise TypeError('Improper Content-Type header. Expecting "application/json"')
 
             update_details = UpdateDetails(**json.loads(request.data))
             update_details.originating_identity = request.originating_identity
@@ -238,11 +166,9 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             return to_json_response(EmptyResponse()), HTTPStatus.OK
 
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['PUT'])
+    @requires_application_json
     def bind(instance_id, binding_id):
         try:
-            if request.headers["Content-Type"] != 'application/json':
-                raise TypeError('Improper Content-Type header. Expecting "application/json"')
-
             binding_details = BindDetails(**json.loads(request.data))
             binding_details.originating_identity = request.originating_identity
             binding_details.authorization_username = request.authorization.username
@@ -358,7 +284,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
 
 
 def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
-          credentials: Union[None, BrokerCredentials],
+          credentials: Union[List[BrokerCredentials], BrokerCredentials, None],
           logger: logging.Logger = logging.root,
           port=5000,
           debug=False):
@@ -373,8 +299,10 @@ def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     :param debug: Enables debugging in flask app
     """
 
+    from gevent.pywsgi import WSGIServer
     from flask import Flask
     app = Flask(__name__)
+    app.debug = debug
 
     blueprint = get_blueprint(service_brokers, credentials, logger)
 
@@ -382,4 +310,5 @@ def serve(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     app.register_blueprint(blueprint)
 
     logger.info("Start Flask on 0.0.0.0:%s" % port)
-    app.run('0.0.0.0', port, debug)
+    http_server = WSGIServer(('0.0.0.0', port), app)
+    http_server.serve_forever()

@@ -3,7 +3,7 @@ import json
 
 from openbrokerapi import errors
 from openbrokerapi.service_broker import UpdateServiceSpec, UpdateDetails, PreviousValues
-from test import BrokerTestCase
+from tests import BrokerTestCase
 
 
 class UpdateTest(BrokerTestCase):

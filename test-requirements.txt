@@ -1,4 +1,3 @@
-nose2
-flask-testing
-Werkzeug
-requests
+nose2==0.7.4
+flask-testing==0.7.1
+requests==2.18.4

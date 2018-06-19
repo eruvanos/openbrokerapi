@@ -4,6 +4,10 @@ Changelog
 **v3.0.x**
   - Fix typos
   - add checks for Content-Type
+  - use `gevent` instead of `app.run`
+  - Originating-Identity available (thx to #10 redorff)
+  - Context dict available (thx to #10 redorff)
+  - Support multiple credentials (thx to #10 redorff)
 
 **v2.0.0**
   - Refactor API

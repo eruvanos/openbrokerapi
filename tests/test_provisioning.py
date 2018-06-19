@@ -3,7 +3,7 @@ import json
 
 from openbrokerapi import errors
 from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionState
-from test import BrokerTestCase
+from tests import BrokerTestCase
 
 
 class ProvisioningTest(BrokerTestCase):
@@ -231,7 +231,8 @@ class ProvisioningTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
-        self.assertEqual(response.json, dict(description="Improper Content-Type header. Expecting \"application/json\""))
+        self.assertEqual(response.json,
+                         dict(description='Improper Content-Type header. Expecting "application/json"'))
 
     def test_returns_400_if_context_organization_guid_mismatch(self):
         response = self.client.put(
@@ -256,7 +257,8 @@ class ProvisioningTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
-        self.assertEqual(response.json, dict(description="organization_guid does not match with context.organization_guid"))
+        self.assertEqual(response.json,
+                         dict(description="organization_guid does not match with context.organization_guid"))
 
     def test_returns_400_if_context_space_guid_mismatch(self):
         response = self.client.put(

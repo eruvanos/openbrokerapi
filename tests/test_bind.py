@@ -2,9 +2,8 @@ import http
 import json
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice, BindState, \
-    Service
-from test import BrokerTestCase
+from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice, BindState
+from tests import BrokerTestCase
 
 expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
                         "username": "mysqluser",
@@ -254,7 +253,7 @@ class BindTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
-        self.assertEqual(response.json, dict(description="Improper Content-Type header. Expecting \"application/json\""))
+        self.assertEqual(response.json, dict(description='Improper Content-Type header. Expecting "application/json"'))
 
     def test_returns_200_if_identical_binding_already_exists(self):
         self.broker.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)

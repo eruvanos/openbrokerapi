@@ -1,6 +1,6 @@
 import http
 
-from test import BrokerTestCase
+from tests import BrokerTestCase
 from openbrokerapi.service_broker import LastOperation, OperationState
 
 

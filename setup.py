@@ -3,11 +3,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='openbrokerapi',
-    version='3.0.1',
+    version='3.0.5',
     python_requires='>=3.5',
-    packages=find_packages(),
-    install_requires=['flask'],
-    test_suite="test",
+    packages=find_packages(exclude=['tests']),
+    install_requires=['flask', 'gevent'],
+    test_suite="tests",
 
     # Metadata
     author="Maic Siemering",
