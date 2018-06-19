@@ -100,9 +100,6 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     def provision(instance_id):
         try:
             accepts_incomplete = 'true' == request.args.get("accepts_incomplete", 'false')
-            if not request.is_json:
-                er = ErrorResponse(description='Improper Content-Type header. Expecting "application/json"')
-                return to_json_response(er), HTTPStatus.BAD_REQUEST
 
             provision_details = ProvisionDetails(**json.loads(request.data))
             provision_details.originating_identity = request.originating_identity
@@ -211,6 +208,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         try:
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
+
             unbind_details = UnbindDetails(plan_id, service_id)
             unbind_details.originating_identity = request.originating_identity
             unbind_details.authorization_username = request.authorization.username
