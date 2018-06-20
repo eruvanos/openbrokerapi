@@ -131,9 +131,29 @@ Bugs or Issues
 --------------
 
 Please report bugs, issues or feature requests to `Github
-Issues <https://github.com/eruvanos/openbrokerapi/issues>`__
+Issues`_
+
+
+How to contribute
+-----------------
+
+You want to contribute, I really appreciate!
+
+So let us check how you can contribute:
+
+- Create an issue in the `Github Issues`_. Please provide all information that you think are usefull to solve it.
+- Use the `Github Issues`_ to create a feature request, so we can discuss and find a good interface for that feature.
+- Create a Pull Request. There are some things that will make it easier to review your Pull Request:
+    - Use a new branch for every Pull Request
+    - Include just related commits in this branch
+    - Less commits are better, one would be the best (You can squash them.)
+    - Always add tests for your feature, if you are not familiar with writing tests, ask for help.
+
+.. _Github Issues: https://github.com/eruvanos/openbrokerapi/issues
 
 .. |Build Status| image:: https://travis-ci.org/eruvanos/openbrokerapi.svg?branch=master
    :target: https://travis-ci.org/eruvanos/openbrokerapi
 .. |Coverage Status| image:: https://coveralls.io/repos/github/eruvanos/openbrokerapi/badge.svg?branch=master
    :target: https://coveralls.io/github/eruvanos/openbrokerapi?branch=master
+   
+   
