@@ -1,4 +1,4 @@
-|Build Status| |Coverage Status|
+|Build Status| |Coverage Status| |Known Vulnerabilities| 
 
 Open Broker API
 ===============
@@ -155,5 +155,7 @@ So let us check how you can contribute:
    :target: https://travis-ci.org/eruvanos/openbrokerapi
 .. |Coverage Status| image:: https://coveralls.io/repos/github/eruvanos/openbrokerapi/badge.svg?branch=master
    :target: https://coveralls.io/github/eruvanos/openbrokerapi?branch=master
+.. |Known Vulnerabilities| image:: https://snyk.io/test/github/eruvanos/openbrokerapi/badge.svg?targetFile=requirements.txt
+   :target: https://snyk.io/test/github/eruvanos/openbrokerapi?targetFile=requirements.txt
    
    
