@@ -5,6 +5,8 @@ from typing import List, Union
 from flask import Blueprint
 from flask import json, request
 
+from json.decoder import JSONDecodeError
+
 from openbrokerapi import errors
 from openbrokerapi.helper import to_json_response, ensure_list
 from openbrokerapi.request_filter import print_request, check_originating_identity, get_auth_filter, check_version, \
@@ -108,7 +110,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             broker = get_broker_by_id(provision_details.service_id)
             if not broker.check_plan_id(provision_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
-        except (TypeError, KeyError) as e:
+        except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
@@ -146,7 +148,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             broker = get_broker_by_id(update_details.service_id)
             if not broker.check_plan_id(update_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
-        except (TypeError, KeyError) as e:
+        except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
@@ -175,7 +177,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             broker = get_broker_by_id(binding_details.service_id)
             if not broker.check_plan_id(binding_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
-        except (TypeError, KeyError) as e:
+        except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
 
