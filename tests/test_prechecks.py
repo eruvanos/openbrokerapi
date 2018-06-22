@@ -116,3 +116,14 @@ class PrecheckTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
         self.assertEqual(response.json["description"], "Boooom!")
+
+    def test_returns_400_if_request_did_not_include_data(self):
+        response = self.client.put(
+            "/v2/service_instances/here-instance-id?accepts_incomplete=true",
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
