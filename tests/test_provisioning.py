@@ -10,7 +10,7 @@ class ProvisioningTest(BrokerTestCase):
     def setUp(self):
         self.broker.service_id.return_value = 'service-guid-here'
 
-    def test_provisining_called_with_the_right_values(self):
+    def test_provisioning_called_with_the_right_values(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         self.client.put(
@@ -22,6 +22,10 @@ class ProvisioningTest(BrokerTestCase):
                 "space_guid": "space-guid-here",
                 "parameters": {
                     "parameter1": 1
+                },
+                "context": {
+                    "organization_guid": "org-guid-here",
+                    "space_guid": "space-guid-here",
                 }
             }),
             headers={
@@ -40,6 +44,8 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(actual_details.parameters, dict(parameter1=1))
         self.assertEqual(actual_details.organization_guid, "org-guid-here")
         self.assertEqual(actual_details.space_guid, "space-guid-here")
+        self.assertEqual(actual_details.context["organization_guid"], "org-guid-here")
+        self.assertEqual(actual_details.context["space_guid"], "space-guid-here")
 
     def test_provisining_called_just_with_required_fields(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
