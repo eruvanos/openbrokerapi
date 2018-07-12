@@ -5,7 +5,7 @@ from http import HTTPStatus
 
 from openbrokerapi.helper import to_json_response, version_tuple
 from openbrokerapi.response import ErrorResponse
-from openbrokerapi.settings import MIN_VERSION
+from openbrokerapi.settings import MIN_VERSION, VERSION_REQUIRED
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +76,9 @@ def get_auth_filter(broker_credentials):
 def check_version():
     from flask import request
     version = request.headers.get("X-Broker-Api-Version", None)
-    if not version:
+    if VERSION_REQUIRED and not version:
         return to_json_response(ErrorResponse(description="No X-Broker-Api-Version found.")), HTTPStatus.BAD_REQUEST
-    if MIN_VERSION > version_tuple(version):
+    if version and MIN_VERSION > version_tuple(version):
         return to_json_response(ErrorResponse(
             description="Service broker requires version %d.%d+." % MIN_VERSION)
         ), HTTPStatus.PRECONDITION_FAILED

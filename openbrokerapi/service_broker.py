@@ -27,7 +27,7 @@ class ProvisionDetails:
             if context['organization_guid'] != organization_guid:
                 raise TypeError('organization_guid does not match with context.organization_guid')
         if isinstance(context, dict) and 'space_guid' in context:
-            if context['space_guid'] != organization_guid:
+            if context['space_guid'] != space_guid:
                 raise TypeError('space_guid does not match with context.space_guid')
         # HTTP contextual data
         self.authorization_username = None #: username of HTTP Basic Auth

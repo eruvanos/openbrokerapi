@@ -103,7 +103,7 @@ Usage
    api.serve(ExampleServiceBroker(), [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
 
    # or with multiple service brokers and multiple credentials
-   api.serve([ExampleServiceBroker(), ExampleServiceBroker()], api.BrokerCredentials("", ""))
+   api.serve([ExampleServiceBroker(), ExampleServiceBroker()], [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
 
    # or register blueprint to your own FlaskApp instance
    app = Flask(__name__)
@@ -125,7 +125,7 @@ status code, as per the Service Broker API specification.
 Internal Notes
 --------------
 
-- Context object from update 2.12 and 2.13 is made available, but not checked. This can change, when an update removes the redundant fields.
+- Context object from update 2.12 and 2.13 is made available, but partially checked (only organization_guid and space_guid). This can change, when an update removes the redundant fields.
 
 Bugs or Issues
 --------------
