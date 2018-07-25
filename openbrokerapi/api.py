@@ -1,16 +1,20 @@
 import logging
 from http import HTTPStatus
+from json.decoder import JSONDecodeError
 from typing import List, Union
 
 from flask import Blueprint
 from flask import json, request
 
-from json.decoder import JSONDecodeError
-
 from openbrokerapi import errors
 from openbrokerapi.helper import to_json_response, ensure_list
-from openbrokerapi.request_filter import print_request, check_originating_identity, get_auth_filter, check_version, \
+from openbrokerapi.request_filter import (
+    print_request,
+    check_originating_identity,
+    get_auth_filter,
+    check_version,
     requires_application_json
+)
 from openbrokerapi.response import (
     BindResponse,
     CatalogResponse,
@@ -30,7 +34,10 @@ from openbrokerapi.service_broker import (
     UnbindDetails,
     UpdateDetails,
     ServiceBroker)
-from openbrokerapi.settings import MIN_VERSION
+from openbrokerapi.settings import (
+    MIN_VERSION,
+    DISABLE_VERSION_CHECK
+)
 
 
 class BrokerCredentials:
@@ -57,8 +64,13 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     logger.debug("Apply print_request filter for debugging")
     openbroker.before_request(print_request)
 
-    logger.debug("Apply check_version filter for version %s" % str(MIN_VERSION))
-    openbroker.before_request(check_version)
+    if DISABLE_VERSION_CHECK:
+        logger.warning(
+            "Minimum API version is not checked, this can cause illegal contracts between service broker and platform!"
+        )
+    else:
+        logger.debug("Apply check_version filter for version %s" % str(MIN_VERSION))
+        openbroker.before_request(check_version)
 
     logger.debug("Apply check_originating_identity filter")
     openbroker.before_request(check_originating_identity)
