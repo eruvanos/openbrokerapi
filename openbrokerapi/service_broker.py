@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from openbrokerapi.catalog import (
     ServiceDashboardClient,
@@ -341,7 +341,7 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def last_operation(self, instance_id: str, operation_data: str) -> LastOperation:
+    def last_operation(self, instance_id: str, operation_data: Optional[str]) -> LastOperation:
         """
         Further readings `CF Broker API#LastOperation <https://docs.cloudfoundry.org/services/api.html#polling>`_
 
