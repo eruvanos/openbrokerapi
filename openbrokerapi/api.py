@@ -172,9 +172,9 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             )), HTTPStatus.UNPROCESSABLE_ENTITY
 
         if result.is_async:
-            return to_json_response(UpdateResponse(result.operation)), HTTPStatus.ACCEPTED
+            return to_json_response(UpdateResponse(result.operation, result.dashboard_url)), HTTPStatus.ACCEPTED
         else:
-            return to_json_response(EmptyResponse()), HTTPStatus.OK
+            return to_json_response(UpdateResponse(None, result.dashboard_url)), HTTPStatus.OK
 
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['PUT'])
     @requires_application_json

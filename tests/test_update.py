@@ -48,7 +48,7 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(actual_details.previous_values.organization_id, "org-guid-here")
         self.assertEqual(actual_details.previous_values.space_id, "space-guid-here")
 
-    def test_update_called_called_just_with_required_fields(self):
+    def test_update_callable_including_only_required_fields(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
 
         self.client.patch(
@@ -72,6 +72,30 @@ class UpdateTest(BrokerTestCase):
         self.assertIsNone(actual_details.plan_id)
         self.assertIsNone(actual_details.parameters)
         self.assertIsNone(actual_details.previous_values)
+
+    def test_update_can_change_dashboard_url(self):
+        new_dashboard_url = 'https://new.dashboard/'
+        self.broker.update.return_value = UpdateServiceSpec(
+            is_async=False,
+            operation=None,
+            dashboard_url=new_dashboard_url
+        )
+
+        response = self.client.patch(
+            "/v2/service_instances/here-service-instance-id",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(
+            dict(dashboard_url=new_dashboard_url),
+            response.json
+        )
 
     def test_update_ignores_unknown_parameters(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
@@ -209,4 +233,5 @@ class UpdateTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
-        self.assertEqual(response.json, dict(description="Improper Content-Type header. Expecting \"application/json\""))
+        self.assertEqual(response.json,
+                         dict(description="Improper Content-Type header. Expecting \"application/json\""))

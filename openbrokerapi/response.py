@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from openbrokerapi.service_broker import OperationState, VolumeMount, Service
 
@@ -46,8 +46,9 @@ class BindResponse:
 
 
 class UpdateResponse(AsyncResponse):
-    def __init__(self, operation: str):
+    def __init__(self, operation: Optional[str], dashboard_url: Optional[str]):
         self.operation = operation
+        self.dashboard_url = dashboard_url
 
 
 class DeprovisionResponse(AsyncResponse):

@@ -111,9 +111,12 @@ class UpdateDetails:
 class UpdateServiceSpec:
     def __init__(self,
                  is_async: bool,
-                 operation: str = None):
+                 operation: Optional[str] = None,
+                 dashboard_url: Optional[str] = None
+                 ):
         self.is_async = is_async
         self.operation = operation
+        self.dashboard_url = dashboard_url
 
 
 class BindResource:
