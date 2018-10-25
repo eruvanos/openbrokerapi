@@ -255,6 +255,19 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(response.json, dict(description='Improper Content-Type header. Expecting "application/json"'))
 
+    def test_returns_400_if_request_does_not_contain_valid_json_body(self):
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data='I am not a json object',
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description='Improper Content-Type header. Expecting "application/json"'))
+
     def test_returns_200_if_identical_binding_already_exists(self):
         self.broker.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)
 

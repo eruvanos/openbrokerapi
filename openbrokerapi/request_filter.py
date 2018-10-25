@@ -48,7 +48,7 @@ def requires_application_json(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
         from flask import request
-        if not request.is_json:
+        if request.get_json(silent=True) is None:
             er = ErrorResponse(description='Improper Content-Type header. Expecting "application/json"')
             return to_json_response(er), HTTPStatus.BAD_REQUEST
         else:

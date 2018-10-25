@@ -235,3 +235,17 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(response.json,
                          dict(description="Improper Content-Type header. Expecting \"application/json\""))
+
+    def test_returns_400_if_request_does_not_contain_valid_json_body(self):
+        response = self.client.patch(
+            "/v2/service_instances/abc",
+            data='I am not a json object',
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json,
+                         dict(description="Improper Content-Type header. Expecting \"application/json\""))
