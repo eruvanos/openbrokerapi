@@ -36,6 +36,8 @@ Or install the development version from github:
 Usage
 -----
 
+You can start with a `skeleton project <https://github.com/eruvanos/openbrokerapi-skeleton>`__ or just from scratch.
+
 .. code:: python
 
    from flask import Flask
