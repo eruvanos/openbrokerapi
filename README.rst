@@ -117,6 +117,13 @@ Usage
    app.register_blueprint(openbroker_bp)
    app.run("0.0.0.0")
 
+Deployment
+----------
+The included :code:`api.serve` function provides a server setup for **local usage only**.
+
+For productive deployments use the blueprint from :code:`api.get_blueprint` to
+setup a production ready server like `Waitress <https://docs.pylonsproject.org/projects/waitress/en/latest/>`__
+or other mentioned in `Flask Deployment Docs <http://flask.pocoo.org/docs/dev/deploying/wsgi-standalone/>`__
 
 Error Types
 -----------
