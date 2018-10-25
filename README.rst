@@ -13,6 +13,11 @@ Check out the documentation_.
 
 .. _documentation: http://openbrokerapi.readthedocs.io/en/latest/
 
+To find out more about Platform Compatibility for OSBAPI versions, check out
+`Platform Compatibility for OSBAPI <https://github.com/openservicebrokerapi/servicebroker/blob/master/compatibility.md>`__
+
+ Not all features are supported with this library due to conflicting features.
+
 Installation
 ------------
 
