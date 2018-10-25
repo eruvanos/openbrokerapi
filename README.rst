@@ -5,8 +5,8 @@ Open Broker API
 
 A Python package for building Service Brokers supporting API version 2.13+.
 
-Following `CF Service Broker
-API <https://docs.cloudfoundry.org/services/api.html>`__ and `Open
+Following `Open Service Broker
+API Spec <https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md>`__ and `Open
 Service Broker API <https://www.openservicebrokerapi.org/>`__
 
 Check out the documentation_.
