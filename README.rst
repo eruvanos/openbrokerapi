@@ -1,4 +1,4 @@
-|Build Status| |Coverage Status| |Known Vulnerabilities| 
+|Build Status| |Coverage Status| |Known Vulnerabilities| |PYUP|
 
 Open Broker API
 ===============
@@ -172,5 +172,6 @@ So let us check how you can contribute:
    :target: https://coveralls.io/github/eruvanos/openbrokerapi?branch=master
 .. |Known Vulnerabilities| image:: https://snyk.io/test/github/eruvanos/openbrokerapi/badge.svg?targetFile=requirements.txt
    :target: https://snyk.io/test/github/eruvanos/openbrokerapi?targetFile=requirements.txt
-   
+.. |PYUP| image:: https://pyup.io/repos/github/eruvanos/openbrokerapi/shield.svg
+     :target: https://pyup.io/repos/github/eruvanos/openbrokerapi/
    
