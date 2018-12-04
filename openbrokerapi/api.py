@@ -3,7 +3,7 @@ from http import HTTPStatus
 from json.decoder import JSONDecodeError
 from typing import List, Union
 
-from flask import Blueprint
+from flask import Blueprint, Request
 from flask import json, request
 
 from openbrokerapi import errors
@@ -93,6 +93,12 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             else:
                 response.operation = ' '.join((service_id, response.operation))
 
+    def extract_authorization_username(request: Request):
+        if request.authorization is not None:
+            return request.authorization.username
+        else:
+            return None
+
     @openbroker.errorhandler(Exception)
     def error_handler(e):
         logger.exception(e)
@@ -122,7 +128,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
 
             provision_details = ProvisionDetails(**json.loads(request.data))
             provision_details.originating_identity = request.originating_identity
-            provision_details.authorization_username = request.authorization.username
+            provision_details.authorization_username = extract_authorization_username(request)
             broker = get_broker_by_id(provision_details.service_id)
             if not broker.check_plan_id(provision_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -160,7 +166,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
 
             update_details = UpdateDetails(**json.loads(request.data))
             update_details.originating_identity = request.originating_identity
-            update_details.authorization_username = request.authorization.username
+            update_details.authorization_username = extract_authorization_username(request)
             broker = get_broker_by_id(update_details.service_id)
             if not broker.check_plan_id(update_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -189,7 +195,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         try:
             binding_details = BindDetails(**json.loads(request.data))
             binding_details.originating_identity = request.originating_identity
-            binding_details.authorization_username = request.authorization.username
+            binding_details.authorization_username = extract_authorization_username(request)
             broker = get_broker_by_id(binding_details.service_id)
             if not broker.check_plan_id(binding_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -230,7 +236,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
 
             unbind_details = UnbindDetails(plan_id, service_id)
             unbind_details.originating_identity = request.originating_identity
-            unbind_details.authorization_username = request.authorization.username
+            unbind_details.authorization_username = extract_authorization_username(request)
             broker = get_broker_by_id(unbind_details.service_id)
             if not broker.check_plan_id(unbind_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
@@ -255,7 +261,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
 
             deprovision_details = DeprovisionDetails(plan_id, service_id)
             deprovision_details.originating_identity = request.originating_identity
-            deprovision_details.authorization_username = request.authorization.username
+            deprovision_details.authorization_username = extract_authorization_username(request)
             broker = get_broker_by_id(deprovision_details.service_id)
             if not broker.check_plan_id(deprovision_details.plan_id):
                 raise TypeError('plan_id not found in this service.')
