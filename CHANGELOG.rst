@@ -1,6 +1,9 @@
 Changelog
 =============
 
+**v3.2**
+  - Add shareable to ServiceMetaData
+
 **v3.1.x**
   - Fix typos
   - Add checks for Content-Type

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 
 class ServiceMetadata:
@@ -8,13 +8,16 @@ class ServiceMetadata:
                  longDescription: str,
                  providerDisplayName: str,
                  documentationUrl: str,
-                 supportUrl: str):
+                 supportUrl: str,
+                 shareable: Optional[bool] = None
+                 ):
         self.displayName = displayName
         self.imageUrl = imageUrl
         self.longDescription = longDescription
         self.providerDisplayName = providerDisplayName
         self.documentationUrl = documentationUrl
         self.supportUrl = supportUrl
+        self.shareable = shareable
 
 
 class ServiceDashboardClient:

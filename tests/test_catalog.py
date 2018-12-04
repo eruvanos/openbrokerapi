@@ -75,7 +75,8 @@ class CatalogTest(BrokerTestCase):
                 longDescription="longDescription",
                 providerDisplayName="providerDisplayName",
                 documentationUrl="documentationUrl",
-                supportUrl="supportUrl"
+                supportUrl="supportUrl",
+                shareable=True
             ),
             dashboard_client=ServiceDashboardClient(
                 id="id",
@@ -124,7 +125,8 @@ class CatalogTest(BrokerTestCase):
                                           longDescription="longDescription",
                                           providerDisplayName="providerDisplayName",
                                           documentationUrl="documentationUrl",
-                                          supportUrl="supportUrl"
+                                          supportUrl="supportUrl",
+                                          shareable=True
                                       ),
                                       dashboard_client=dict(
                                           id="id",
