@@ -3,6 +3,8 @@ Changelog
 
 **v3.2**
   - Add shareable to ServiceMetaData
+  - 501 to unimplemented broker actions  #41
+  - Fixed: AttributeError in broker without creds #43
 
 **v3.1.x**
   - Fix typos
