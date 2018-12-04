@@ -100,6 +100,13 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             description=str(e)
         )), HTTPStatus.INTERNAL_SERVER_ERROR
 
+    @openbroker.errorhandler(NotImplementedError)
+    def error_handler(e):
+        logger.exception(e)
+        return to_json_response(ErrorResponse(
+            description=str(e)
+        )), HTTPStatus.NOT_IMPLEMENTED
+
     @openbroker.route("/v2/catalog", methods=['GET'])
     def catalog():
         """
