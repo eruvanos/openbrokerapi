@@ -37,6 +37,11 @@ class ErrBindingDoesNotExist(ServiceException):
         super().__init__("Binding does not exist")
 
 
+class ErrInvalidParameters(ServiceException):
+    def __init__(self, msg):
+        super().__init__(msg)
+
+
 class ErrAsyncRequired(ServiceException):
     def __init__(self):
         super().__init__("This service plan requires client support for asynchronous service operations.")

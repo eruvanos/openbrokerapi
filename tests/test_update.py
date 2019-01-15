@@ -214,6 +214,33 @@ class UpdateTest(BrokerTestCase):
             description="This service plan requires client support for asynchronous service operations."
         ))
 
+    def test_returns_422_if_async_if_missing_mandatory_data(self):
+        self.broker.update.side_effect = errors.ErrInvalidParameters('Required parameters not provided.')
+
+        response = self.client.patch(
+            "/v2/service_instances/abc?accepts_incomplete=false",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "previous_values": {
+                    "plan_id": "old-plan-guid-here",
+                    "service_id": "service-guid-here",
+                    "organization_id": "org-guid-here",
+                    "space_id": "space-guid-here"
+                }
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(
+            error="InvalidParameters",
+            description="Required parameters not provided."
+        ))
+
     def test_returns_401_if_request_does_not_contain_auth_header(self):
         response = self.client.patch(
             "/v2/service_instances/abc",

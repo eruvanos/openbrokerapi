@@ -142,6 +142,8 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         except errors.ErrInstanceAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
+        except errors.ErrInvalidParameters as e:
+            return to_json_response(ErrorResponse('InvalidParameters', str(e))), HTTPStatus.BAD_REQUEST
         except errors.ErrAsyncRequired as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(
@@ -177,6 +179,8 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
         try:
             result = broker.update(instance_id, update_details, accepts_incomplete)
             add_service_id_to_async_response(result, broker.service_id())
+        except errors.ErrInvalidParameters as e:
+            return to_json_response(ErrorResponse('InvalidParameters', str(e))), HTTPStatus.BAD_REQUEST
         except errors.ErrAsyncRequired as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(

@@ -5,6 +5,7 @@ Changelog
   - Add shareable to ServiceMetaData
   - 501 to unimplemented broker actions  #41
   - Fixed: AttributeError in broker without creds #43
+  - Add `ErrInvalidParameters` to respond with `400` for malformed or missing mandatory data #49
 
 **v3.1.x**
   - Fix typos

@@ -202,6 +202,30 @@ class ProvisioningTest(BrokerTestCase):
             description="This service plan requires client support for asynchronous service operations."
         ))
 
+    def test_returns_400_if_missing_mandatory_data(self):
+        self.broker.provision.side_effect = errors.ErrInvalidParameters('Required parameters not provided.')
+
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(
+            error="InvalidParameters",
+            description="Required parameters not provided."
+        ))
+
+
     def test_returns_200_if_identical_service_exists(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
 
