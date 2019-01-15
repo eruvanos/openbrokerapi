@@ -6,6 +6,7 @@ Changelog
   - 501 to unimplemented broker actions  #41
   - Fixed: AttributeError in broker without creds #43
   - Add `ErrInvalidParameters` to respond with `400` for malformed or missing mandatory data #49
+  - Support for custom Metadata fields. #47
 
 **v3.1.x**
   - Fix typos

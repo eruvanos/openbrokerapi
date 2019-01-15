@@ -9,7 +9,8 @@ class ServiceMetadata:
                  providerDisplayName: str,
                  documentationUrl: str,
                  supportUrl: str,
-                 shareable: Optional[bool] = None
+                 shareable: Optional[bool] = None,
+                 **kwargs
                  ):
         self.displayName = displayName
         self.imageUrl = imageUrl
@@ -18,6 +19,8 @@ class ServiceMetadata:
         self.documentationUrl = documentationUrl
         self.supportUrl = supportUrl
         self.shareable = shareable
+
+        self.__dict__.update(kwargs)
 
 
 class ServiceDashboardClient:
@@ -39,15 +42,21 @@ class ServicePlanCost:
         self.unit = unit
 
 
-class ServicePlanMetaData:
+class ServicePlanMetadata:
     def __init__(self,
                  displayName: str = None,
                  bullets: List[str] = None,
-                 costs: List[ServicePlanCost] = None
+                 costs: List[ServicePlanCost] = None,
+                 **kwargs
                  ):
         self.displayName = displayName
         self.bullets = bullets
         self.costs = costs
+        self.__dict__.update(kwargs)
+
+
+# FIXME Deprecated spelling
+ServicePlanMetaData = ServicePlanMetadata
 
 
 class Schemas:

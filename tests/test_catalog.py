@@ -64,7 +64,8 @@ class CatalogTest(BrokerTestCase):
                     costs=[ServicePlanCost(
                         amount={'requests': 1},
                         unit='unit'
-                    )]
+                    )],
+                    custom_field2='custom_field2'
                 ),
                 free=True,
                 bindable=True
@@ -78,7 +79,8 @@ class CatalogTest(BrokerTestCase):
                 providerDisplayName='providerDisplayName',
                 documentationUrl='documentationUrl',
                 supportUrl='supportUrl',
-                shareable=True
+                shareable=True,
+                custom_field1='custom_field1'
             ),
             dashboard_client=ServiceDashboardClient(
                 id='id',
@@ -114,7 +116,8 @@ class CatalogTest(BrokerTestCase):
                                               costs=[dict(
                                                   amount={'requests': 1},
                                                   unit='unit'
-                                              )]
+                                              )],
+                                              custom_field2='custom_field2'
                                           ),
                                           free=True,
                                           bindable=True
