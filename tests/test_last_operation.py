@@ -50,3 +50,16 @@ class LastOperationTest(BrokerTestCase):
             state=OperationState.IN_PROGRESS.value,
             description="Running..."
         ))
+
+    def test_returns_400_on_invalid_request(self):
+        self.broker.last_operation.return_value = LastOperation(OperationState.IN_PROGRESS, "Running...")
+
+        query = "service_id=123&plan_id=456&operation=somethingwrong"
+        response = self.client.get(
+            "/v2/service_instances/here-instance_id/last_operation?%s" % query,
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)

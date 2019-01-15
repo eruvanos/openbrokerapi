@@ -304,9 +304,14 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             operation_data = data[1]
         else:
             operation_data = None
-        broker = get_broker_by_id(service_id)
-        result = broker.last_operation(instance_id, operation_data)
 
+        try:
+            broker = get_broker_by_id(service_id)
+        except KeyError as e:
+            logger.exception(e)
+            return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
+
+        result = broker.last_operation(instance_id, operation_data)
         return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
 
     return openbroker
