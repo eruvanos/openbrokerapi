@@ -271,6 +271,15 @@ class ServiceBroker:
                 return True
         return False
 
+    def status(self) -> str:
+        """
+        Returns the health status of the service provided by this broker.
+
+        :return: string "OK" or "KO" or anything usefull
+        :rtype: str
+        """
+        return "OK"
+
     def catalog(self) -> Service:
         """
         Returns the services information which is provided by this broker.

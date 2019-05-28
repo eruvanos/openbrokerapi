@@ -64,6 +64,18 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     logger.debug("Apply print_request filter for debugging")
     openbroker.before_request(print_request)
 
+    @openbroker.route("/status", methods=['GET'])
+    def status():
+        """
+        :return: Status of broker (Run health check for each service)
+        """
+        logger.debug("Status check filter %s %s", request.method, request.path)
+        if request.method == 'GET' and request.path == '/status':
+            return to_json_response({broker.service_id():broker.status() for broker in service_brokers})
+
+    logger.debug("Apply status filter for health check")
+    openbroker.before_request(status)
+
     if DISABLE_VERSION_CHECK:
         logger.warning(
             "Minimum API version is not checked, this can cause illegal contracts between service broker and platform!"
@@ -96,8 +108,7 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
     def extract_authorization_username(request: Request):
         if request.authorization is not None:
             return request.authorization.username
-        else:
-            return None
+        return None
 
     @openbroker.errorhandler(Exception)
     def error_handler(e):
