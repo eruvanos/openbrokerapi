@@ -170,7 +170,8 @@ def get_blueprint(service_brokers: Union[List[ServiceBroker], ServiceBroker],
             update_details.originating_identity = request.originating_identity
             update_details.authorization_username = extract_authorization_username(request)
             broker = get_broker_by_id(update_details.service_id)
-            if not broker.check_plan_id(update_details.plan_id):
+            plan_id = update_details.plan_id
+            if plan_id and not broker.check_plan_id(plan_id):
                 raise TypeError('plan_id not found in this service.')
         except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
