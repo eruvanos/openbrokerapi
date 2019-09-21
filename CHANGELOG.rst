@@ -1,6 +1,15 @@
 Changelog
 =============
 
+**v4.0**
+  - Extract routing mechanism into a `Router` class
+  - Clean `ServiceBroker` interface
+
+**Incompatibility**
+  - Changed parameter order in UnbindDetails, DeprovisionDetails
+  - Changed parameter name of provision
+
+
 **v3.2**
   - Add shareable to ServiceMetaData
   - 501 to unimplemented broker actions  #41
