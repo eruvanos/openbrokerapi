@@ -1,20 +1,30 @@
 import http
 
+from openbrokerapi.catalog import ServicePlan
 from tests import BrokerTestCase
 from openbrokerapi import errors
-from openbrokerapi.service_broker import DeprovisionServiceSpec, DeprovisionDetails
+from openbrokerapi.service_broker import DeprovisionServiceSpec, DeprovisionDetails, Service
 
 
 class DeprovisioningTest(BrokerTestCase):
 
     def setUp(self):
-        self.broker.service_id.return_value = 'service-guid-here'
+        self.broker.catalog.return_value = [
+            Service(
+                id='service-guid-here',
+                name='',
+                description='',
+                bindable=True,
+                plans=[
+                    ServicePlan('plan-guid-here', name='', description='')
+                ])
+        ]
 
     def test_deprovisioning_is_called_with_the_right_values(self):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
         self.client.delete(
-            "/v2/service_instances/here_instance_id?service_id=service-guid-here&plan_id=plan-id-here&accepts_incomplete=true",
+            "/v2/service_instances/here_instance_id?service_id=service-guid-here&plan_id=plan-guid-here&accepts_incomplete=true",
             headers={
                 'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
@@ -24,7 +34,7 @@ class DeprovisioningTest(BrokerTestCase):
         self.assertEqual(actual_instance_id, "here_instance_id")
 
         self.assertIsInstance(actual_details, DeprovisionDetails)
-        self.assertEqual(actual_details.plan_id, "plan-id-here")
+        self.assertEqual(actual_details.plan_id, "plan-guid-here")
         self.assertEqual(actual_details.service_id, "service-guid-here")
         self.assertEqual(actual_async_allowed, True)
 
@@ -32,7 +42,7 @@ class DeprovisioningTest(BrokerTestCase):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
         self.client.delete(
-            "/v2/service_instances/here_instance_id?service_id=service-guid-here&plan_id=plan-id-here",
+            "/v2/service_instances/here_instance_id?service_id=service-guid-here&plan_id=plan-guid-here",
             headers={
                 'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
@@ -42,7 +52,7 @@ class DeprovisioningTest(BrokerTestCase):
         self.assertEqual(actual_instance_id, "here_instance_id")
 
         self.assertIsInstance(actual_details, DeprovisionDetails)
-        self.assertEqual(actual_details.plan_id, "plan-id-here")
+        self.assertEqual(actual_details.plan_id, "plan-guid-here")
         self.assertEqual(actual_details.service_id, "service-guid-here")
         self.assertEqual(actual_async_allowed, False)
 
@@ -50,7 +60,7 @@ class DeprovisioningTest(BrokerTestCase):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
         response = self.client.delete(
-            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-id-here",
+            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-guid-here",
             headers={
                 'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
@@ -63,20 +73,20 @@ class DeprovisioningTest(BrokerTestCase):
         self.broker.deprovision.return_value = DeprovisionServiceSpec(True, "operation_str")
 
         response = self.client.delete(
-            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-id-here",
+            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-guid-here",
             headers={
                 'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
             })
 
         self.assertEqual(http.HTTPStatus.ACCEPTED, response.status_code)
-        self.assertEqual(response.json, dict(operation="service-guid-here operation_str"))
+        self.assertEqual(response.json, dict(operation="operation_str"))
 
     def test_returns_410_if_service_instance_already_gone(self):
         self.broker.deprovision.side_effect = errors.ErrInstanceDoesNotExist()
 
         response = self.client.delete(
-            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-id-here",
+            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-guid-here",
             headers={
                 'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header
@@ -89,7 +99,7 @@ class DeprovisioningTest(BrokerTestCase):
         self.broker.deprovision.side_effect = errors.ErrAsyncRequired()
 
         response = self.client.delete(
-            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-id-here",
+            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-guid-here",
             headers={
                 'X-Broker-Api-Version': '2.13',
                 'Authorization': self.auth_header

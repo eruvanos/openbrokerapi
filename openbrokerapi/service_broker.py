@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from openbrokerapi.catalog import (
     ServiceDashboardClient,
@@ -30,8 +30,8 @@ class ProvisionDetails:
             if context['space_guid'] != space_guid:
                 raise TypeError('space_guid does not match with context.space_guid')
         # HTTP contextual data
-        self.authorization_username = None #: username of HTTP Basic Auth
-        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
+        self.authorization_username = None  #: username of HTTP Basic Auth
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class ProvisionState(Enum):
@@ -57,14 +57,14 @@ class ProvisionedServiceSpec:
 
 class DeprovisionDetails:
     def __init__(self,
-                 plan_id: str,
-                 service_id: str
+                 service_id: str,
+                 plan_id: str
                  ):
-        self.plan_id = plan_id
         self.service_id = service_id
+        self.plan_id = plan_id
         # HTTP contextual data
-        self.authorization_username = None #: username of HTTP Basic Auth
-        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
+        self.authorization_username = None  #: username of HTTP Basic Auth
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class DeprovisionServiceSpec:
@@ -104,8 +104,8 @@ class UpdateDetails:
         self.previous_values = PreviousValues(**previous_values) if previous_values else None
         self.context = context
         # HTTP contextual data
-        self.authorization_username = None #: username of HTTP Basic Auth
-        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
+        self.authorization_username = None  #: username of HTTP Basic Auth
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class UpdateServiceSpec:
@@ -146,8 +146,8 @@ class BindDetails:
         self.bind_resource = BindResource(**bind_resource) if bind_resource else None
         self.context = context
         # HTTP contextual data
-        self.authorization_username = None #: username of HTTP Basic Auth
-        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
+        self.authorization_username = None  #: username of HTTP Basic Auth
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class SharedDevice:
@@ -196,14 +196,14 @@ class Binding:
 
 class UnbindDetails:
     def __init__(self,
-                 plan_id: str,
-                 service_id: str
+                 service_id: str,
+                 plan_id: str
                  ):
         self.plan_id = plan_id
         self.service_id = service_id
         # HTTP contextual data
-        self.authorization_username = None #: username of HTTP Basic Auth
-        self.originating_identity = None #: decoded X-Broker-Originating-Identity HTTP Header
+        self.authorization_username = None  #: username of HTTP Basic Auth
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class OperationState(Enum):
@@ -254,38 +254,23 @@ class ServiceBroker:
     Provides a service. This covers catalog, provision, update, bind, unbind, deprovision and last operation.
     """
 
-    def service_id(self):
-        """
-        Shortcut for self.catalog().id
-        :return: id of provided service
-        """
-        return self.catalog().id
-
-    def check_plan_id(self, plan_id) -> bool:
-        """
-        Checks that the plan_id exists in the catalog
-        :return: boolean
-        """
-        for plan in self.catalog().plans:
-            if plan.id == plan_id:
-                return True
-        return False
-
-    def catalog(self) -> Service:
+    def catalog(self) -> Union[Service, List[Service]]:
         """
         Returns the services information which is provided by this broker.
 
-        :return: Service
+        :return: Service or list of services
         """
         raise NotImplementedError()
 
-    def provision(self, instance_id: str, service_details: ProvisionDetails,
+    def provision(self,
+                  instance_id: str,
+                  details: ProvisionDetails,
                   async_allowed: bool) -> ProvisionedServiceSpec:
         """
         Further readings `CF Broker API#Provisioning <https://docs.cloudfoundry.org/services/api.html#provisioning>`_
 
         :param instance_id: Instance id provided by the platform
-        :param service_details: Details about the service to create
+        :param details: Details about the service to create
         :param async_allowed: Client allows async creation
         :rtype: ProvisionedServiceSpec
         :raises ErrInstanceAlreadyExists: If instance already exists
@@ -293,7 +278,10 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool) -> UpdateServiceSpec:
+    def update(self,
+               instance_id: str,
+               details: UpdateDetails,
+               async_allowed: bool) -> UpdateServiceSpec:
         """
         Further readings `CF Broker API#Update <https://docs.cloudfoundry.org/services/api.html#updating_service_instance>`_
 
@@ -305,7 +293,9 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def deprovision(self, instance_id: str, details: DeprovisionDetails,
+    def deprovision(self,
+                    instance_id: str,
+                    details: DeprovisionDetails,
                     async_allowed: bool) -> DeprovisionServiceSpec:
         """
         Further readings `CF Broker API#Deprovisioning <https://docs.cloudfoundry.org/services/api.html#deprovisioning>`_
@@ -319,7 +309,10 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def bind(self, instance_id: str, binding_id: str, details: BindDetails) -> Binding:
+    def bind(self,
+             instance_id: str,
+             binding_id: str,
+             details: BindDetails) -> Binding:
         """
         Further readings `CF Broker API#Binding <https://docs.cloudfoundry.org/services/api.html#binding>`_
 
@@ -332,7 +325,10 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails):
+    def unbind(self,
+               instance_id: str,
+               binding_id: str,
+               details: UnbindDetails):
         """
         Further readings `CF Broker API#Unbinding <https://docs.cloudfoundry.org/services/api.html#unbinding>`_
 
@@ -344,7 +340,9 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def last_operation(self, instance_id: str, operation_data: Optional[str]) -> LastOperation:
+    def last_operation(self,
+                       instance_id: str,
+                       operation_data: Optional[str]) -> LastOperation:
         """
         Further readings `CF Broker API#LastOperation <https://docs.cloudfoundry.org/services/api.html#polling>`_
 

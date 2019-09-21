@@ -44,7 +44,9 @@ class InMemBroker(ServiceBroker):
 class ServeTest(TestCase):
     def test_serve_starts_server(self):
         def run_server():
-            api.serve([], api.BrokerCredentials("", ""))
+            broker = Mock()
+            broker.catalog.return_value = []
+            api.serve(broker, api.BrokerCredentials("", ""))
 
         server = Process(target=run_server)
         server.start()
@@ -61,7 +63,9 @@ class ServeTest(TestCase):
 
     def test_serve_starts_server_without_auth(self):
         def run_server():
-            api.serve([], credentials=None)
+            broker = Mock()
+            broker.catalog.return_value = []
+            api.serve(broker, credentials=None)
 
         server = Process(target=run_server)
         server.start()
@@ -78,7 +82,7 @@ class ServeTest(TestCase):
 
     def test_provision_without_auth(self):
         def run_server():
-            api.serve([InMemBroker()], credentials=None)
+            api.serve(InMemBroker(), credentials=None)
 
         server = Process(target=run_server)
         server.start()
@@ -105,7 +109,6 @@ class ServeTest(TestCase):
         server.terminate()
         server.join()
 
-        print(response.content)
         self.assertEqual(response.status_code, 201)
 
     def test_serve_starts_with_single_instance(self):

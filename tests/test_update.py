@@ -2,13 +2,23 @@ import http
 import json
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import UpdateServiceSpec, UpdateDetails, PreviousValues
+from openbrokerapi.catalog import ServicePlan
+from openbrokerapi.service_broker import UpdateServiceSpec, UpdateDetails, PreviousValues, Service
 from tests import BrokerTestCase
 
 
 class UpdateTest(BrokerTestCase):
     def setUp(self):
-        self.broker.service_id.return_value = 'service-guid-here'
+        self.broker.catalog.return_value = [
+            Service(
+                id='service-guid-here',
+                name='',
+                description='',
+                bindable=True,
+                plans=[
+                    ServicePlan('plan-guid-here', name='', description='')
+                ])
+        ]
 
     def test_update_called_with_the_right_values(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
@@ -184,7 +194,7 @@ class UpdateTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
         self.assertEqual(response.json, dict(
-            operation="service-guid-here operation"
+            operation="operation"
         ))
 
     def test_returns_422_if_async_required_but_not_supported(self):

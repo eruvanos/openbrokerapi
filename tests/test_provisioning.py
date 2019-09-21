@@ -2,13 +2,23 @@ import http
 import json
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionState
+from openbrokerapi.catalog import ServicePlan
+from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionState, Service
 from tests import BrokerTestCase
 
 
 class ProvisioningTest(BrokerTestCase):
     def setUp(self):
-        self.broker.service_id.return_value = 'service-guid-here'
+        self.broker.catalog.return_value = [
+            Service(
+                id='service-guid-here',
+                name='',
+                description='',
+                bindable=True,
+                plans=[
+                    ServicePlan('plan-guid-here', name='', description='')
+                ])
+        ]
 
     def test_provisioning_called_with_the_right_values(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
@@ -156,7 +166,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
         self.assertEqual(response.json, dict(
             dashboard_url="dash_url",
-            operation="service-guid-here operation_str"
+            operation="operation_str"
         ))
 
     def test_returns_409_if_already_exists_but_is_not_equal(self):

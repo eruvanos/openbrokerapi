@@ -157,7 +157,7 @@ class CatalogTest(BrokerTestCase):
                 'unknown': 'unknown'
             })
 
-        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(http.HTTPStatus.OK, response.status_code)
         self.assertEqual(response.json,
                          dict(
                              services=[
@@ -188,3 +188,52 @@ class CatalogTest(BrokerTestCase):
                          dict(
                              description='ERROR'
                          ))
+
+    def test_catalog_can_return_multiple_services(self):
+        self.broker.catalog.return_value = [
+            Service(
+                id='s1',
+                name='service_name1',
+                description='service_description1',
+                bindable=True,
+                plans=[ServicePlan(id='p1', name='default1', description='plan_description1')]
+            ),
+            Service(
+                id='s2',
+                name='service_name2',
+                description='service_description2',
+                bindable=True,
+                plans=[ServicePlan(id='p2', name='default2', description='plan_description2')]
+            )
+        ]
+
+        response = self.client.get(
+            '/v2/catalog',
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header,
+                'unknown': 'unknown'
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertDictEqual(dict(
+            services=[
+                dict(
+                    id='s1',
+                    name='service_name1',
+                    description='service_description1',
+                    bindable=True,
+                    plan_updateable=False,
+                    plans=[dict(id='p1', name='default1', description='plan_description1')]
+                ),
+                dict(
+                    id='s2',
+                    name='service_name2',
+                    description='service_description2',
+                    bindable=True,
+                    plan_updateable=False,
+                    plans=[dict(id='p2', name='default2', description='plan_description2')]
+                )
+            ]
+        ),
+            response.json)

@@ -2,7 +2,9 @@ import http
 import json
 
 from openbrokerapi import errors
-from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice, BindState
+from openbrokerapi.catalog import ServicePlan
+from openbrokerapi.service_broker import Binding, BindDetails, BindResource, VolumeMount, SharedDevice, BindState, \
+    Service
 from tests import BrokerTestCase
 
 expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
@@ -16,7 +18,16 @@ expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
 class BindTest(BrokerTestCase):
 
     def setUp(self):
-        self.broker.service_id.return_value = 'service-guid-here'
+        self.broker.catalog.return_value = [
+            Service(
+                id='service-guid-here',
+                name='',
+                description='',
+                bindable=True,
+                plans=[
+                    ServicePlan('plan-guid-here', name='', description='')
+                ])
+        ]
 
     def test_bind_called_with_the_right_values(self):
         self.broker.bind.return_value = Binding(

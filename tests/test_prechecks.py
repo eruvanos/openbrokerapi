@@ -3,13 +3,24 @@ import base64
 from unittest import skip
 
 from openbrokerapi import errors
+from openbrokerapi.catalog import ServicePlan
+from openbrokerapi.service_broker import Service
 from tests import BrokerTestCase
 
 
 class PrecheckTest(BrokerTestCase):
 
     def setUp(self):
-        self.broker.service_id.return_value = 'service-guid-here'
+        self.broker.catalog.return_value = [
+            Service(
+                id='service-guid-here',
+                name='',
+                description='',
+                bindable=True,
+                plans=[
+                    ServicePlan('plan-guid-here', name='', description='')
+                ])
+        ]
 
     def test_returns_401_if_request_not_contain_auth_header(self):
         response = self.client.put(
@@ -95,7 +106,7 @@ class PrecheckTest(BrokerTestCase):
         self.broker.deprovision.side_effect = Exception("Boooom!")
 
         response = self.client.delete(
-            "/v2/service_instances/abc?plan_id=a&service_id=service-guid-here",
+            "/v2/service_instances/abc?plan_id=plan-guid-here&service_id=service-guid-here",
             headers={
                 'Authorization': self.auth_header,
                 'X-Broker-Api-Version': '2.13',
@@ -108,7 +119,7 @@ class PrecheckTest(BrokerTestCase):
         self.broker.deprovision.side_effect = errors.ServiceException("Boooom!")
 
         response = self.client.delete(
-            "/v2/service_instances/abc?plan_id=a&service_id=service-guid-here",
+            "/v2/service_instances/abc?plan_id=plan-guid-here&service_id=service-guid-here",
             headers={
                 'Authorization': self.auth_header,
                 'X-Broker-Api-Version': '2.13',
