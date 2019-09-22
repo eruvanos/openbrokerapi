@@ -42,6 +42,9 @@ from openbrokerapi.settings import (
 
 
 class BrokerCredentials:
+    """
+    Credentials, which will be used to validate authenticate requests
+    """
     def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
@@ -65,7 +68,7 @@ def get_blueprint(service_broker: ServiceBroker,
     """
     Returns the blueprint with service broker api.
 
-    :param service_brokers: Services that this broker exposes
+    :param service_broker: Services that this broker exposes
     :param broker_credentials: Optional Usernames and passwords that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior.
     :return: Blueprint to register with Flask app instance
