@@ -14,8 +14,10 @@ Welcome to openbrokerapi's documentation!
 
    Getting Started<readme>
    changelog
+   indeep
 
    openbrokerapi
+
 
 
 Indices and tables

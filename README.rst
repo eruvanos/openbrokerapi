@@ -27,6 +27,9 @@ This package is available for Python 3.5+.
 
     pip3 install openbrokerapi
 
+    # including gevent as server
+    pip3 install openbrokerapi[gevent]
+
 Or install the development version from github:
 
 .. code:: bash
@@ -110,7 +113,7 @@ You can start with a `skeleton project <https://github.com/eruvanos/openbrokerap
    api.serve(ExampleServiceBroker(), [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
 
    # or with multiple service brokers and multiple credentials
-   api.serve([ExampleServiceBroker(), ExampleServiceBroker()], [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
+   api.serve_multiple([ExampleServiceBroker(), ExampleServiceBroker()], [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
 
    # or register blueprint to your own FlaskApp instance
    app = Flask(__name__)

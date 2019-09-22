@@ -323,16 +323,23 @@ def serve(service_broker: ServiceBroker,
     :param debug: Enables debugging in flask app
     """
 
-    from gevent.pywsgi import WSGIServer
     from flask import Flask
     app = Flask(__name__)
     app.debug = debug
 
     blueprint = get_blueprint(service_broker, credentials, logger)
 
-    logger.debug("Register openbrokerapi blueprint")
+    logger.debug('Register openbrokerapi blueprint')
     app.register_blueprint(blueprint)
 
-    logger.info("Start Flask on 0.0.0.0:%s" % port)
-    http_server = WSGIServer(('0.0.0.0', port), app)
-    http_server.serve_forever()
+    try:
+        from gevent.pywsgi import WSGIServer
+
+        logger.info('Start Gevent server on 0.0.0.0:%s' % port)
+        http_server = WSGIServer(('0.0.0.0', port), app)
+        http_server.serve_forever()
+    except ImportError:
+
+        logger.info('Start Flask on 0.0.0.0:%s' % port)
+        logger.warning('Use a server like gevent or gunicorn for production!')
+        app.run('0.0.0.0', port)

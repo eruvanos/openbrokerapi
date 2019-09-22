@@ -6,7 +6,7 @@ setup(
     version='3.2.6',
     python_requires='>=3.5',
     packages=find_packages(exclude=['tests']),
-    install_requires=['flask', 'gevent'],
+    install_requires=['flask'],
     test_suite="tests",
 
     # Metadata
@@ -42,9 +42,14 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
+
+    # Optional installations
     extras_require={
         'docs': [
             'sphinx >= 1.4',
-            'sphinx_rtd_theme']}
+            'sphinx_rtd_theme'
+        ],
+        'gevent': ['gevent']
+    }
 
 )
