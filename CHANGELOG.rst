@@ -10,6 +10,7 @@ Changelog
 **Incompatibility**
   - Changed parameter order in UnbindDetails, DeprovisionDetails
   - Changed parameter name of provision
+  - Removed deprecated `ServicePlanMetaData` (use `ServicePlanMetadata`)
 
 
 **v3.2**

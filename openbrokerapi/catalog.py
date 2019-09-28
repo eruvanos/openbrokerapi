@@ -55,10 +55,6 @@ class ServicePlanMetadata:
         self.__dict__.update(kwargs)
 
 
-# FIXME Deprecated spelling
-ServicePlanMetaData = ServicePlanMetadata
-
-
 class Schemas:
     def __init__(self,
                  service_instance: Dict = None,
@@ -72,7 +68,7 @@ class ServicePlan:
                  id: str,
                  name: str,
                  description: str,
-                 metadata: ServicePlanMetaData = None,
+                 metadata: ServicePlanMetadata = None,
                  free: bool = None,
                  bindable: bool = None,
                  schemas: Schemas = None
