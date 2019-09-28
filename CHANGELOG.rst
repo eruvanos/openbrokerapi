@@ -5,6 +5,7 @@ Changelog
   - Extract routing mechanism into a `Router` class
   - Clean `ServiceBroker` interface
   - `gevent` is now optional and can be installed by `pip install openbrokerapi[gevent]`
+  - Added endpoint to get last binding operation
 
 **Incompatibility**
   - Changed parameter order in UnbindDetails, DeprovisionDetails

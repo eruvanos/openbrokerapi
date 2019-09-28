@@ -348,6 +348,25 @@ class ServiceBroker:
 
         :param instance_id: Instance id provided by the platform
         :param operation_data: Operation data received from async operation
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
+        :rtype: LastOperation
+        """
+        raise NotImplementedError()
+
+    def last_binding_operation(self,
+                               instance_id: str,
+                               binding_id: str,
+                               operation_data: Optional[str],
+                               **kwargs
+                               ) -> LastOperation:
+        """
+        Further readings `CF Broker API#LastOperationForBindings <https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#polling-last-operation-for-service-bindings>`_
+        Must be implemented if `Provision`, `Update`, or `Deprovision` are async.
+
+        :param instance_id: Instance id provided by the platform
+        :param binding_id: Binding id provided by the platform
+        :param operation_data: Operation data received from async operation
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: LastOperation
         """
         raise NotImplementedError()
