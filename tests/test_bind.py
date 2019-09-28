@@ -16,7 +16,6 @@ expected_credentials = {"uri": "mysql://mysqluser:pass@mysqlhost:3306/dbname",
 
 
 class BindTest(BrokerTestCase):
-
     def setUp(self):
         self.broker.catalog.return_value = [
             Service(

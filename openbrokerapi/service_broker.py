@@ -265,13 +265,16 @@ class ServiceBroker:
     def provision(self,
                   instance_id: str,
                   details: ProvisionDetails,
-                  async_allowed: bool) -> ProvisionedServiceSpec:
+                  async_allowed: bool,
+                  **kwargs
+                  ) -> ProvisionedServiceSpec:
         """
         Further readings `CF Broker API#Provisioning <https://docs.cloudfoundry.org/services/api.html#provisioning>`_
 
         :param instance_id: Instance id provided by the platform
         :param details: Details about the service to create
         :param async_allowed: Client allows async creation
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: ProvisionedServiceSpec
         :raises ErrInstanceAlreadyExists: If instance already exists
         :raises ErrAsyncRequired: If async is required but not supported
@@ -281,13 +284,16 @@ class ServiceBroker:
     def update(self,
                instance_id: str,
                details: UpdateDetails,
-               async_allowed: bool) -> UpdateServiceSpec:
+               async_allowed: bool,
+               **kwargs
+               ) -> UpdateServiceSpec:
         """
         Further readings `CF Broker API#Update <https://docs.cloudfoundry.org/services/api.html#updating_service_instance>`_
 
         :param instance_id: Instance id provided by the platform
         :param details: Details about the service to update
         :param async_allowed: Client allows async creation
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: UpdateServiceSpec
         :raises ErrAsyncRequired: If async is required but not supported
         """
@@ -296,13 +302,16 @@ class ServiceBroker:
     def deprovision(self,
                     instance_id: str,
                     details: DeprovisionDetails,
-                    async_allowed: bool) -> DeprovisionServiceSpec:
+                    async_allowed: bool,
+                    **kwargs
+                    ) -> DeprovisionServiceSpec:
         """
         Further readings `CF Broker API#Deprovisioning <https://docs.cloudfoundry.org/services/api.html#deprovisioning>`_
 
         :param instance_id: Instance id provided by the platform
         :param details: Details about the service to delete
         :param async_allowed: Client allows async creation
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: DeprovisionServiceSpec
         :raises ErrInstanceDoesNotExist: If instance does not exists
         :raises ErrAsyncRequired: If async is required but not supported
@@ -312,13 +321,18 @@ class ServiceBroker:
     def bind(self,
              instance_id: str,
              binding_id: str,
-             details: BindDetails) -> Binding:
+             details: BindDetails,
+             async_allowed: bool,
+             **kwargs
+             ) -> Binding:
         """
         Further readings `CF Broker API#Binding <https://docs.cloudfoundry.org/services/api.html#binding>`_
 
         :param instance_id: Instance id provided by the platform
         :param binding_id: Binding id provided by the platform
         :param details: Details about the binding to create
+        :param async_allowed: Client allows async binding
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: Binding
         :raises ErrBindingAlreadyExists: If binding already exists
         :raises ErrAppGuidNotProvided: If AppGuid is required but not provided
@@ -328,13 +342,18 @@ class ServiceBroker:
     def unbind(self,
                instance_id: str,
                binding_id: str,
-               details: UnbindDetails):
+               details: UnbindDetails,
+               async_allowed: bool,
+               **kwargs
+               ):
         """
         Further readings `CF Broker API#Unbinding <https://docs.cloudfoundry.org/services/api.html#unbinding>`_
 
         :param instance_id: Instance id provided by the platform
         :param binding_id: Binding id provided by the platform
         :param details: Details about the binding to delete
+        :param async_allowed: Client allows async unbind
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: UnbindDetails
         :raises ErrBindingAlreadyExists: If binding already exists
         """
@@ -342,7 +361,9 @@ class ServiceBroker:
 
     def last_operation(self,
                        instance_id: str,
-                       operation_data: Optional[str]) -> LastOperation:
+                       operation_data: Optional[str],
+                       **kwargs
+                       ) -> LastOperation:
         """
         Further readings `CF Broker API#LastOperation <https://docs.cloudfoundry.org/services/api.html#polling>`_
 

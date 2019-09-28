@@ -3,11 +3,22 @@ from typing import List, Optional, Set
 
 from openbrokerapi import errors
 from openbrokerapi.helper import ensure_list
-from openbrokerapi.service_broker import ServiceBroker, Service, ProvisionDetails, ProvisionedServiceSpec, \
-    UpdateDetails, UpdateServiceSpec, DeprovisionDetails, DeprovisionServiceSpec, BindDetails, Binding, UnbindDetails, \
-    LastOperation
+from openbrokerapi.service_broker import (
+    ServiceBroker,
+    Service,
+    ProvisionDetails,
+    ProvisionedServiceSpec,
+    UpdateDetails,
+    UpdateServiceSpec,
+    DeprovisionDetails,
+    DeprovisionServiceSpec,
+    BindDetails,
+    Binding,
+    UnbindDetails,
+    LastOperation)
 
 logger = getLogger(__name__)
+
 
 class Router(ServiceBroker):
     def __init__(self, *service_brokers: ServiceBroker):
@@ -40,27 +51,31 @@ class Router(ServiceBroker):
     def provision(self,
                   instance_id: str,
                   details: ProvisionDetails,
-                  async_allowed: bool) -> ProvisionedServiceSpec:
+                  async_allowed: bool,
+                  **kwargs) -> ProvisionedServiceSpec:
         provider = self._get_provider_by_id(details.service_id)
 
-        result = provider.provision(instance_id, details, async_allowed)
+        result = provider.provision(instance_id, details, async_allowed, **kwargs)
         self.add_service_id_to_async_response(result, details.service_id)
 
         return result
 
     def update(self, instance_id: str,
                details: UpdateDetails,
-               async_allowed: bool) -> UpdateServiceSpec:
+               async_allowed: bool,
+               **kwargs) -> UpdateServiceSpec:
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.update(instance_id, details, async_allowed)
+        result = provider.update(instance_id, details, async_allowed, **kwargs)
         self.add_service_id_to_async_response(result, details.service_id)
 
         return result
 
-    def deprovision(self, instance_id: str, details: DeprovisionDetails,
-                    async_allowed: bool) -> DeprovisionServiceSpec:
+    def deprovision(self, instance_id: str,
+                    details: DeprovisionDetails,
+                    async_allowed: bool,
+                    **kwargs) -> DeprovisionServiceSpec:
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.deprovision(instance_id, details, async_allowed)
+        result = provider.deprovision(instance_id, details, async_allowed, **kwargs)
         self.add_service_id_to_async_response(result, details.service_id)
 
         return result
@@ -68,24 +83,27 @@ class Router(ServiceBroker):
     def bind(self,
              instance_id: str,
              binding_id: str,
-             details: BindDetails) -> Binding:
+             details: BindDetails,
+             **kwargs) -> Binding:
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.bind(instance_id, binding_id, details)
+        result = provider.bind(instance_id, binding_id, details, **kwargs)
 
         return result
 
     def unbind(self,
                instance_id: str,
                binding_id: str,
-               details: UnbindDetails):
+               details: UnbindDetails,
+               **kwargs):
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.unbind(instance_id, binding_id, details)
+        result = provider.unbind(instance_id, binding_id, details, **kwargs)
 
         return result
 
     def last_operation(self,
                        instance_id: str,
-                       operation_data: Optional[str]) -> LastOperation:
+                       operation_data: Optional[str],
+                       **kwargs) -> LastOperation:
         data = operation_data.split(' ', maxsplit=1)
         service_id = data[0]
         if len(data) == 2:
@@ -99,5 +117,5 @@ class Router(ServiceBroker):
             logger.exception(e)
             raise errors.ErrInvalidParameters('Invalid operation string')
 
-        result = provider.last_operation(instance_id, operation_data)
+        result = provider.last_operation(instance_id, operation_data, **kwargs)
         return result
