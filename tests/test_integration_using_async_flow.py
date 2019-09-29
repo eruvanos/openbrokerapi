@@ -31,7 +31,7 @@ class FullBrokerTestCase(TestCase):
         self.broker = InMemoryBroker(self.service_guid, self.plan_guid)
 
         def run_server():
-            api.serve(self.broker, api.BrokerCredentials(broker_username, broker_passsword))
+            api.serve(self.broker, api.BrokerCredentials(broker_username, broker_passsword), port=5001)
 
         # self.server = Process(target=run_server)
         self.server = Thread(target=run_server)
@@ -76,7 +76,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_unbind(self, binding_guid, instace_guid):
         response = requests.delete(
-            "http://localhost:5000/v2/service_instances/{}/service_bindings/{}".format(instace_guid, binding_guid),
+            "http://localhost:5001/v2/service_instances/{}/service_bindings/{}".format(instace_guid, binding_guid),
             params={
                 "service_id": self.service_guid,
                 "plan_id": self.plan_guid,
@@ -91,7 +91,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_last_operation_after_bind(self, binding_guid, instace_guid, operation):
         response = requests.get(
-            'http://localhost:5000/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instace_guid,
+            'http://localhost:5001/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instace_guid,
                                                                                                       binding_guid),
             params={
                 'service_id': self.service_guid,
@@ -104,7 +104,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_last_operation_after_unbind(self, binding_guid, instace_guid, operation):
         response = requests.get(
-            'http://localhost:5000/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instace_guid,
+            'http://localhost:5001/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instace_guid,
                                                                                                       binding_guid),
             params={
                 'service_id': self.service_guid,
@@ -117,7 +117,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_bind(self, binding_guid, instace_guid):
         response = requests.put(
-            "http://localhost:5000/v2/service_instances/{}/service_bindings/{}?accepts_incomplete=true".format(
+            "http://localhost:5001/v2/service_instances/{}/service_bindings/{}?accepts_incomplete=true".format(
                 instace_guid, binding_guid),
             data=json.dumps({
                 "service_id": self.service_guid,
@@ -132,7 +132,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_deprovision_after_deprovision_done(self, instace_guid):
         response = requests.delete(
-            "http://localhost:5000/v2/service_instances/{}".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}".format(instace_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -143,7 +143,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_deprovision(self, instace_guid, operation):
         response = requests.delete(
-            "http://localhost:5000/v2/service_instances/{}".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}".format(instace_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -157,7 +157,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_last_operation_after_deprovision(self, instace_guid, operation):
         response = requests.get(
-            "http://localhost:5000/v2/service_instances/{}/last_operation".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}/last_operation".format(instace_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -169,7 +169,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_last_operation_after_provision(self, instace_guid, operation):
         response = requests.get(
-            "http://localhost:5000/v2/service_instances/{}/last_operation".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}/last_operation".format(instace_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -181,7 +181,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_provision(self, instace_guid, org_guid, space_guid, service_guid, plan_guid):
         response = requests.put(
-            "http://localhost:5000/v2/service_instances/{}?accepts_incomplete=true".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}?accepts_incomplete=true".format(instace_guid),
             data=json.dumps({
                 "organization_guid": org_guid,
                 "space_guid": space_guid,
@@ -201,7 +201,7 @@ class FullBrokerTestCase(TestCase):
         return operation
 
     def check_catalog(self, service_guid, plan_guid):
-        response = requests.get('http://localhost:5000/v2/catalog', **self.request_ads)
+        response = requests.get('http://localhost:5001/v2/catalog', **self.request_ads)
         catalog = response.json()
         self.assertEqual(HTTPStatus.OK, response.status_code)
         # find service
