@@ -52,7 +52,7 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_binding_id, actual_details = self.broker.bind.call_args[0]
+        actual_instance_id, actual_binding_id, actual_details, async_allowed = self.broker.bind.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -64,6 +64,8 @@ class BindTest(BrokerTestCase):
         self.assertIsInstance(actual_details.bind_resource, BindResource)
         self.assertEqual(actual_details.bind_resource.app_guid, "app-guid-here")
         self.assertEqual(actual_details.bind_resource.route, "route-here")
+
+        self.assertFalse(async_allowed)
 
     def test_bind_called_just_with_required_fields(self):
         self.broker.bind.return_value = Binding(
@@ -82,7 +84,7 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_binding_id, actual_details = self.broker.bind.call_args[0]
+        actual_instance_id, actual_binding_id, actual_details, async_allowed = self.broker.bind.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -93,6 +95,8 @@ class BindTest(BrokerTestCase):
         self.assertIsNone(actual_details.app_guid)
         self.assertIsNone(actual_details.parameters)
         self.assertIsNone(actual_details.bind_resource)
+
+        self.assertFalse(async_allowed)
 
     def test_bind_ignores_unknown_parameters(self):
         self.broker.bind.return_value = Binding(
@@ -115,7 +119,7 @@ class BindTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        actual_instance_id, actual_binding_id, actual_details = self.broker.bind.call_args[0]
+        actual_instance_id, actual_binding_id, actual_details, async_allowed = self.broker.bind.call_args[0]
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -126,6 +130,8 @@ class BindTest(BrokerTestCase):
         self.assertIsNone(actual_details.app_guid)
         self.assertIsNone(actual_details.parameters)
         self.assertIsNotNone(actual_details.bind_resource)
+
+        self.assertFalse(async_allowed)
 
     def test_returns_201_if_binding_has_been_created(self):
         self.broker.bind.return_value = Binding(
@@ -151,6 +157,30 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.json, dict(
             credentials=expected_credentials
         ))
+
+    def test_returns_202_for_async_binding(self):
+        self.broker.bind.return_value = Binding(
+            state=BindState.IS_ASYNC,
+            operation='bind'
+        )
+
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id&accepts_incomplete=true",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "bind_resource": {
+                    "app_guid": "app-guid-here"
+                }
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(http.HTTPStatus.ACCEPTED, response.status_code)
+        self.assertEqual(response.json, {'operation': 'bind'})
 
     def test_supports_volume_mounts(self):
         self.broker.bind.return_value = Binding(

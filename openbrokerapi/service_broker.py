@@ -192,6 +192,23 @@ class Binding:
         self.syslog_drain_url = syslog_drain_url
         self.route_service_url = route_service_url
         self.volume_mounts = volume_mounts
+        self.operation = operation
+
+
+class GetBindingSpec:
+    def __init__(self,
+                 credentials: dict = None,
+                 syslog_drain_url: str = None,
+                 route_service_url: str = None,
+                 volume_mounts: List[VolumeMount] = None,
+                 parameters: Optional[dict] = None,
+                 **kwargs
+                 ):
+        self.credentials = credentials
+        self.syslog_drain_url = syslog_drain_url
+        self.route_service_url = route_service_url
+        self.volume_mounts = volume_mounts
+        self.parameters = parameters
 
 
 class UnbindDetails:
@@ -204,6 +221,15 @@ class UnbindDetails:
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
         self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
+
+
+class UnbindSpec:
+    def __init__(self,
+                 is_async: bool,
+                 operation: str = None
+                 ):
+        self.is_async = is_async
+        self.operation = operation
 
 
 class OperationState(Enum):

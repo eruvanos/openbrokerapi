@@ -37,12 +37,19 @@ class BindResponse:
                  credentials: dict = None,
                  syslog_drain_url: str = None,
                  route_service_url: str = None,
-                 volume_mounts: List[VolumeMount] = None
+                 volume_mounts: List[VolumeMount] = None,
+                 operation: Optional[str] = None
                  ):
         self.credentials = credentials
         self.syslog_drain_url = syslog_drain_url
         self.route_service_url = route_service_url
         self.volume_mounts = volume_mounts
+        self.operation = operation
+
+
+class UnbindResponse(AsyncResponse):
+    def __init__(self, operation: str):
+        self.operation = operation
 
 
 class UpdateResponse(AsyncResponse):

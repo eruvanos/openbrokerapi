@@ -4,8 +4,20 @@ from uuid import uuid4
 
 from openbrokerapi.catalog import ServicePlan
 from openbrokerapi.router import Router
-from openbrokerapi.service_broker import Service, ProvisionDetails, ProvisionedServiceSpec, ProvisionState, \
-    DeprovisionDetails, DeprovisionServiceSpec, BindDetails, Binding, UnbindDetails, UpdateDetails, UpdateServiceSpec
+from openbrokerapi.service_broker import (
+    Service,
+    ProvisionDetails,
+    ProvisionedServiceSpec,
+    ProvisionState,
+    DeprovisionDetails,
+    DeprovisionServiceSpec,
+    BindDetails,
+    Binding,
+    UnbindDetails,
+    UpdateDetails,
+    UpdateServiceSpec,
+    LastOperation,
+    OperationState)
 
 
 class RouterTestCase(unittest.TestCase):
@@ -72,13 +84,13 @@ class RouterTestCase(unittest.TestCase):
         self.assertTrue(self.b1.deprovision.called)
 
     def test_routes_last_operation(self):
+        instance_id = str(uuid4())
         operation_str = str(uuid4())
-        self.b1.last_operation.return_value = DeprovisionServiceSpec(is_async=True, operation=operation_str)
+        self.b1.last_operation.return_value = LastOperation(state=OperationState.IN_PROGRESS)
 
-        deprovision = self.router.last_operation(str(uuid4()), DeprovisionDetails('s1', 'p1'), True)
+        _ = self.router.last_operation(instance_id, 's1 ' + operation_str)
 
-        self.assertEqual('s1 ' + operation_str, deprovision.operation)
-        self.assertTrue(self.b1.deprovision.called)
+        self.b1.last_operation.assert_called_with(instance_id, operation_str)
 
 
 if __name__ == '__main__':
