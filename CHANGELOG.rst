@@ -7,6 +7,8 @@ Changelog
   - `gevent` is now optional and can be installed by `pip install openbrokerapi[gevent]`
   - Added endpoint to get last binding operation
   - Introduce `**kwargs` into some signatures to improve backwards compatibility in the future
+  - Fixed responses with status 412 don't contain body (https://github.com/pallets/werkzeug/issues/1231)
+  - `ServiceBroker` provides methods to fetch instance and binding
 
 **Incompatibility**
   - Changed parameter order in `UnbindDetails`, `DeprovisionDetails`

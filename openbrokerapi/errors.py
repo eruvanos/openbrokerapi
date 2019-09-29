@@ -55,3 +55,8 @@ class ErrPlanChangeNotSupported(ServiceException):
 class ErrAppGuidNotProvided(ServiceException):
     def __init__(self):
         super().__init__("app_guid is a required field but was not provided")
+
+
+class ErrConcurrentInstanceAccess(ServiceException):
+    def __init__(self):
+        super().__init__("ConcurrencyError")

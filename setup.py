@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='openbrokerapi',
-    version='3.2.6',
+    version='4.0.0',
     python_requires='>=3.5',
     packages=find_packages(exclude=['tests']),
     install_requires=['flask'],

@@ -31,12 +31,21 @@ class InMemBroker(ServiceBroker):
             ]
         )
 
-    def provision(self, instance_id: str, service_details: ProvisionDetails,
-                  async_allowed: bool) -> ProvisionedServiceSpec:
-        self.instances[instance_id] = service_details
+    def provision(self,
+                  instance_id: str,
+                  details: ProvisionDetails,
+                  async_allowed: bool,
+                  **kwargs
+                  ) -> ProvisionedServiceSpec:
+        self.instances[instance_id] = details
         return ProvisionedServiceSpec()
 
-    def deprovision(self, instance_id: str, details: DeprovisionDetails, async_allowed: bool) -> DeprovisionServiceSpec:
+    def deprovision(self,
+                    instance_id: str,
+                    details: DeprovisionDetails,
+                    async_allowed: bool,
+                    **kwargs
+                    ) -> DeprovisionServiceSpec:
         del self.instances[instance_id]
         return DeprovisionServiceSpec(is_async=False)
 
@@ -129,9 +138,11 @@ class ServeTest(TestCase):
         server.join()
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), dict(services=[{'bindable': False,
+        self.assertDictEqual(response.json(), dict(services=[{'bindable': False,
                                                           'description': 'description',
                                                           'id': 'id',
                                                           'name': 'name',
+                                                          'instances_retrievable': False,
+                                                          'bindings_retrievable': False,
                                                           'plan_updateable': False,
                                                           'plans': []}]))

@@ -55,6 +55,19 @@ class ProvisionedServiceSpec:
         return self.state == ProvisionState.IS_ASYNC
 
 
+class GetInstanceDetailsSpec:
+    def __init__(self,
+                 service_id: str,
+                 plan_id: str,
+                 dashboard_url: Optional[str] = None,
+                 parameters: Optional[dict] = None
+                 ):
+        self.service_id = service_id
+        self.plan_id = plan_id
+        self.dashboard_url = dashboard_url
+        self.parameters = parameters
+
+
 class DeprovisionDetails:
     def __init__(self,
                  service_id: str,
@@ -175,6 +188,7 @@ class VolumeMount:
 
 
 class BindState(Enum):
+    IS_ASYNC = "is_async"
     SUCCESSFUL_BOUND = "successfully created"
     IDENTICAL_ALREADY_EXISTS = "exists with identical config"
 
@@ -185,7 +199,8 @@ class Binding:
                  credentials: dict = None,
                  syslog_drain_url: str = None,
                  route_service_url: str = None,
-                 volume_mounts: List[VolumeMount] = None
+                 volume_mounts: List[VolumeMount] = None,
+                 operation: Optional[str] = None
                  ):
         self.state = state
         self.credentials = credentials
@@ -258,7 +273,9 @@ class Service:
                  requires: List[str] = None,
                  metadata: ServiceMetadata = None,
                  dashboard_client: ServiceDashboardClient = None,
-                 plan_updateable: bool = False
+                 plan_updateable: bool = False,
+                 instances_retrievable: bool = False,
+                 bindings_retrievable: bool = False,
                  ):
         """
         :param requires:  syslog_drain, route_forwarding or volume_mount
@@ -273,6 +290,8 @@ class Service:
         self.metadata = metadata
         self.dashboard_client = dashboard_client
         self.plan_updateable = plan_updateable
+        self.instances_retrievable = instances_retrievable
+        self.bindings_retrievable = bindings_retrievable
 
 
 class ServiceBroker:
@@ -371,7 +390,7 @@ class ServiceBroker:
                details: UnbindDetails,
                async_allowed: bool,
                **kwargs
-               ):
+               ) -> UnbindSpec:
         """
         Further readings `CF Broker API#Unbinding <https://docs.cloudfoundry.org/services/api.html#unbinding>`_
 
@@ -383,6 +402,39 @@ class ServiceBroker:
         :rtype: UnbindDetails
         :raises ErrBindingAlreadyExists: If binding already exists
         """
+        raise NotImplementedError()
+
+    def get_instance(self,
+                     instance_id: str,
+                     **kwargs
+                     ) -> GetInstanceDetailsSpec:
+        """
+        Further readings `CF Broker API#FetchServiceInstance <https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance>`_
+        Must be implemented if `"bindings_retrievable" :true` is declared for a service in `catalog`.
+
+        :param instance_id: Instance id provided by the platform
+        :param kwargs: May contain additional information, improves compatibility with upstream versions
+        :rtype: GetInstanceDetailsSpec
+        :raises ErrInstanceDoesNotExist: If instance does not exists
+        :raises ErrConcurrentInstanceAccess: If instance is being updated
+        """
+        raise NotImplementedError()
+
+    def get_binding(self,
+                    instance_id: str,
+                    binding_id: str,
+                    **kwargs
+                    ) -> GetBindingSpec:
+        """
+                Further readings `CF Broker API#FetchServiceInstance <https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance>`_
+                Must be implemented if `"instances_retrievable" :true` is declared for a service in `catalog`.
+
+                :param instance_id: Instance id provided by the platform
+                :param binding_id: Instance id provided by the platform
+                :param kwargs: May contain additional information, improves compatibility with upstream versions
+                :rtype: GetBindingSpec
+                :raises ErrBindingDoesNotExist: If binding does not exist
+                """
         raise NotImplementedError()
 
     def last_operation(self,

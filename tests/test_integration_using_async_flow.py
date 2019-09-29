@@ -11,9 +11,23 @@ from requests.auth import HTTPBasicAuth
 
 from openbrokerapi import api, errors
 from openbrokerapi.catalog import ServicePlan
-from openbrokerapi.service_broker import ServiceBroker, Service, ProvisionDetails, ProvisionedServiceSpec, \
-    ProvisionState, LastOperation, OperationState, DeprovisionDetails, DeprovisionServiceSpec, BindDetails, Binding, \
-    BindState, UnbindDetails, UnbindSpec
+from openbrokerapi.service_broker import (
+    ServiceBroker,
+    Service,
+    ProvisionDetails,
+    ProvisionedServiceSpec,
+    ProvisionState,
+    LastOperation,
+    OperationState,
+    DeprovisionDetails,
+    DeprovisionServiceSpec,
+    BindDetails,
+    Binding,
+    BindState,
+    UnbindDetails,
+    UnbindSpec,
+    GetInstanceDetailsSpec,
+    GetBindingSpec)
 
 
 class FullBrokerTestCase(TestCase):
@@ -54,14 +68,18 @@ class FullBrokerTestCase(TestCase):
         self.check_last_operation_after_provision(instace_guid, operation)
 
         # GET INSTANCE
-        # todo missing endpoints
+        self.check_instance_retrievable(instace_guid)
 
         # ASYNC BIND
         operation = self.check_bind(binding_guid, instace_guid)
         self.check_last_operation_after_bind(binding_guid, instace_guid, operation)
 
         # GET BINDING
-        # todo missing endpoints
+        response = requests.get(
+            "http://localhost:5001/v2/service_instances/{}/service_bindings/{}".format(instace_guid, binding_guid),
+            **self.request_ads)
+        self.assertEqual(HTTPStatus.OK, response.status_code)
+        self.assertDictEqual({}, response.json())
 
         # ASYNC UNBIND
         operation = self.check_unbind(binding_guid, instace_guid)
@@ -73,6 +91,13 @@ class FullBrokerTestCase(TestCase):
 
         # DEPROVISION TWICE
         self.check_deprovision_after_deprovision_done(instace_guid)
+
+    def check_instance_retrievable(self, instace_guid):
+        response = requests.get(
+            "http://localhost:5001/v2/service_instances/{}".format(instace_guid), **self.request_ads)
+        self.assertEqual(HTTPStatus.OK, response.status_code)
+        self.assertEqual(self.service_guid, response.json()['service_id'])
+        self.assertEqual(self.plan_guid, response.json()['plan_id'])
 
     def check_unbind(self, binding_guid, instace_guid):
         response = requests.delete(
@@ -212,6 +237,8 @@ class FullBrokerTestCase(TestCase):
             service = None
         self.assertIsNotNone(service)
         self.assertEqual(service_guid, service.get('id'))
+        self.assertTrue(service.get('instances_retrievable'))
+        self.assertTrue(service.get('bindings_retrievable'))
 
         # find plan
         for plan in service['plans']:
@@ -250,7 +277,9 @@ class InMemoryBroker(ServiceBroker):
                     description='standard plan',
                     free=False,
                 )
-            ]
+            ],
+            instances_retrievable=True,
+            bindings_retrievable=True
         )
 
     def provision(self,
@@ -328,3 +357,21 @@ class InMemoryBroker(ServiceBroker):
         elif instance.get('state') == self.UNBINDING:
             instance['state'] = self.CREATED
             return LastOperation(OperationState.SUCCEEDED)
+
+    def get_instance(self, instance_id: str, **kwargs) -> GetInstanceDetailsSpec:
+        instance = self.service_instances.get(instance_id)
+        if instance is None:
+            raise errors.ErrInstanceDoesNotExist()
+
+        return GetInstanceDetailsSpec(
+            self.service_guid,
+            self.plan_guid
+        )
+
+    def get_binding(self, instance_id: str, binding_id: str, **kwargs) -> GetBindingSpec:
+        instance = self.service_instances.get(instance_id)
+        if instance is None:
+            raise errors.ErrInstanceDoesNotExist()
+
+        if instance.get('state') == self.BOUND:
+            return GetBindingSpec()

@@ -105,6 +105,8 @@ class CatalogTest(BrokerTestCase):
                                  dict(id='s1',
                                       name='service_name',
                                       description='service_description',
+                                      instances_retrievable=False,
+                                      bindings_retrievable=False,
                                       bindable=True,
                                       plans=[dict(
                                           id='p1',
@@ -165,6 +167,8 @@ class CatalogTest(BrokerTestCase):
                                      id='s1',
                                      name='service_name',
                                      description='service_description',
+                                     instances_retrievable=False,
+                                     bindings_retrievable=False,
                                      bindable=True,
                                      plan_updateable=False,
                                      plans=[dict(id='p1', name='default', description='plan_description')]
@@ -223,6 +227,8 @@ class CatalogTest(BrokerTestCase):
                     name='service_name1',
                     description='service_description1',
                     bindable=True,
+                    instances_retrievable=False,
+                    bindings_retrievable=False,
                     plan_updateable=False,
                     plans=[dict(id='p1', name='default1', description='plan_description1')]
                 ),
@@ -231,6 +237,8 @@ class CatalogTest(BrokerTestCase):
                     name='service_name2',
                     description='service_description2',
                     bindable=True,
+                    instances_retrievable=False,
+                    bindings_retrievable=False,
                     plan_updateable=False,
                     plans=[dict(id='p2', name='default2', description='plan_description2')]
                 )

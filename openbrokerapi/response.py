@@ -32,6 +32,19 @@ class ProvisioningResponse(AsyncResponse):
         self.operation = operation
 
 
+class GetInstanceResponse:
+    def __init__(self,
+                 service_id: str,
+                 plan_id: str,
+                 dashboard_url: Optional[str] = None,
+                 parameters: Optional[dict] = None
+                 ):
+        self.service_id = service_id
+        self.plan_id = plan_id
+        self.dashboard_url = dashboard_url
+        self.parameters = parameters
+
+
 class BindResponse:
     def __init__(self,
                  credentials: dict = None,
@@ -46,6 +59,19 @@ class BindResponse:
         self.volume_mounts = volume_mounts
         self.operation = operation
 
+class GetBindingResponse:
+    def __init__(self,
+                 credentials: dict = None,
+                 syslog_drain_url: str = None,
+                 route_service_url: str = None,
+                 volume_mounts: List[VolumeMount] = None,
+                 parameters: Optional[dict] = None
+                 ):
+        self.credentials = credentials
+        self.syslog_drain_url = syslog_drain_url
+        self.route_service_url = route_service_url
+        self.volume_mounts = volume_mounts
+        self.parameters = parameters
 
 class UnbindResponse(AsyncResponse):
     def __init__(self, operation: str):

@@ -24,7 +24,9 @@ from openbrokerapi.response import (
     LastOperationResponse,
     ProvisioningResponse,
     UpdateResponse,
-    UnbindResponse)
+    UnbindResponse,
+    GetInstanceResponse,
+    GetBindingResponse)
 from openbrokerapi.router import Router
 from openbrokerapi.service_broker import (
     BindDetails,
@@ -322,6 +324,40 @@ def get_blueprint(service_broker: ServiceBroker,
         operation_data = request.args.get("operation", None)
         result = service_broker.last_binding_operation(instance_id, binding_id, operation_data)
         return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
+
+    @openbroker.route("/v2/service_instances/<instance_id>", methods=['GET'])
+    def get_instance(instance_id):
+        try:
+            result = service_broker.get_instance(instance_id)
+            response = GetInstanceResponse(
+                service_id=result.service_id,
+                plan_id=result.plan_id,
+                dashboard_url=result.dashboard_url,
+                parameters=result.parameters,
+            )
+            return to_json_response(response), HTTPStatus.OK
+
+        except errors.ErrInstanceDoesNotExist:
+            return to_json_response(EmptyResponse()), HTTPStatus.NOT_FOUND
+        except errors.ErrConcurrentInstanceAccess:
+            error_response = ErrorResponse(error='ConcurrencyError',
+                                           description='The Service Broker does not support concurrent requests that mutate the same resource.')
+            return to_json_response(error_response), HTTPStatus.UNPROCESSABLE_ENTITY
+
+    @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>", methods=['GET'])
+    def get_binding(instance_id, binding_id):
+        try:
+            result = service_broker.get_binding(instance_id, binding_id)
+            response = GetBindingResponse(
+                credentials=result.credentials,
+                syslog_drain_url=result.syslog_drain_url,
+                route_service_url=result.route_service_url,
+                volume_mounts=result.volume_mounts,
+                parameters=result.parameters,
+            )
+            return to_json_response(response), HTTPStatus.OK
+        except errors.ErrBindingDoesNotExist:
+            return to_json_response(EmptyResponse()), HTTPStatus.NOT_FOUND
 
     return openbroker
 
