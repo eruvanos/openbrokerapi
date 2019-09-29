@@ -6,11 +6,14 @@ Changelog
   - Clean `ServiceBroker` interface
   - `gevent` is now optional and can be installed by `pip install openbrokerapi[gevent]`
   - Added endpoint to get last binding operation
+  - Introduce `**kwargs` into some signatures to improve backwards compatibility in the future
 
 **Incompatibility**
-  - Changed parameter order in UnbindDetails, DeprovisionDetails
-  - Changed parameter name of provision
+  - Changed parameter order in `UnbindDetails`, `DeprovisionDetails`
+  - Changed parameter name of `ServiceBroker.provision`
   - Removed deprecated `ServicePlanMetaData` (use `ServicePlanMetadata`)
+  - Unbind now returns `UnbindSpec`
+  - `ServiceBroker.bind` and `ServiceBroker.unbind` now receive `async_allowed` flag
 
 
 **v3.2**
