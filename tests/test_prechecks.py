@@ -40,7 +40,6 @@ class PrecheckTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.PRECONDITION_FAILED)
 
-    @skip('Skipped because of https://github.com/pallets/werkzeug/issues/1231')
     def test_returns_412_with_message_if_version_is_not_supported(self):
         response = self.client.put(
             "/v2/service_instances/abc",
