@@ -12,8 +12,8 @@ class ProvisionDetails:
     def __init__(self,
                  service_id: str,
                  plan_id: str,
-                 organization_guid: str,
-                 space_guid: str,
+                 organization_guid: str = None,
+                 space_guid: str = None,
                  parameters: dict = None,
                  context: dict = None,
                  **kwargs):
@@ -23,12 +23,20 @@ class ProvisionDetails:
         self.space_guid = space_guid
         self.parameters = parameters
         self.context = context
+
+        # Usage context information
         if isinstance(context, dict) and 'organization_guid' in context:
-            if context['organization_guid'] != organization_guid:
+            if organization_guid is not None and context['organization_guid'] != organization_guid:
                 raise TypeError('organization_guid does not match with context.organization_guid')
+            self.organization_guid = context['organization_guid']
         if isinstance(context, dict) and 'space_guid' in context:
-            if context['space_guid'] != space_guid:
+            if space_guid is not None and context['space_guid'] != space_guid:
                 raise TypeError('space_guid does not match with context.space_guid')
+            self.space_guid = context['space_guid']
+
+        if None in (self.organization_guid, self.space_guid):
+            raise TypeError('Organization and space guid are required.')
+
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
         self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header

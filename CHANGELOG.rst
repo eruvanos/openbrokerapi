@@ -9,6 +9,7 @@ Changelog
   - Introduce `**kwargs` into some signatures to improve backwards compatibility in the future
   - Fixed responses with status 412 don't contain body (https://github.com/pallets/werkzeug/issues/1231)
   - `ServiceBroker` provides methods to fetch instance and binding
+  - Provision does not require `organization_guid` and `space_guid` parameters, if they are available in the context object
 
 **Incompatibility**
   - Changed parameter order in `UnbindDetails`, `DeprovisionDetails`
@@ -17,6 +18,10 @@ Changelog
   - Unbind now returns `UnbindSpec`
   - `ServiceBroker.bind` and `ServiceBroker.unbind` now receive `async_allowed` flag
 
+        **Why breaking changes?**
+
+        To catch up with the newest features of the OpenServiceBroker API some breaking changes were neccessary.
+        While I was working on the new version I realised that there are a few things I really wanted to fix, which is at the end the reason, for some changes that may not be necessary but nice to have.
 
 **v3.2**
   - Add shareable to ServiceMetaData
@@ -82,10 +87,10 @@ Changelog
   - add log\_utils with basic\_config()
 
 **v0.1**
-  -  initial version
-  -  supported operations
-  -  provision
-  -  update
-  -  bind
-  -  unbind
-  -  deprovision
+    -  initial version
+    -  supported operations
+    -  provision
+    -  update
+    -  bind
+    -  unbind
+    -  deprovision

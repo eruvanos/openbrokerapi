@@ -65,13 +65,44 @@ class ProvisioningTest(BrokerTestCase):
             data=json.dumps({
                 "service_id": "service-guid-here",
                 "plan_id": "plan-guid-here",
-                "organization_guid": "org-guid-here",
-                "space_guid": "space-guid-here",
+                "context": {
+                    "organization_guid": "org-guid-here",
+                    "space_guid": "space-guid-here",
+                }
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
                 'Content-Type': 'application/json',
                 'Authorization': self.auth_header
+            })
+
+        actual_instance_id, actual_details, actual_async_allowed = self.broker.provision.call_args[0]
+        self.assertEqual(actual_instance_id, "here-instance-id")
+        self.assertEqual(actual_async_allowed, False)
+
+        self.assertIsInstance(actual_details, ProvisionDetails)
+        self.assertEqual(actual_details.service_id, "service-guid-here")
+        self.assertEqual(actual_details.plan_id, "plan-guid-here")
+        self.assertEqual(actual_details.organization_guid, "org-guid-here")
+        self.assertEqual(actual_details.space_guid, "space-guid-here")
+
+        self.assertIsNone(actual_details.parameters)
+
+    def test_provisining_optional_org_and_space_if_available_in_context(self):
+        self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
+
+        self.client.put(
+            "/v2/service_instances/here-instance-id",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+            }),
+            headers={
+                "X-Broker-Api-Version": "2.13",
+                "Content-Type": "application/json",
+                "Authorization": self.auth_header
             })
 
         actual_instance_id, actual_details, actual_async_allowed = self.broker.provision.call_args[0]
@@ -224,9 +255,9 @@ class ProvisioningTest(BrokerTestCase):
                 "space_guid": "space-guid-here",
             }),
             headers={
-                'X-Broker-Api-Version': '2.13',
-                'Content-Type': 'application/json',
-                'Authorization': self.auth_header
+                "X-Broker-Api-Version": "2.13",
+                "Content-Type": "application/json",
+                "Authorization": self.auth_header
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
@@ -235,6 +266,31 @@ class ProvisioningTest(BrokerTestCase):
             description="Required parameters not provided."
         ))
 
+    def test_returns_400_if_missing_org_and_space_guids_data(self):
+        self.broker.provision.return_value = self.broker.provision.return_value = ProvisionedServiceSpec(
+            ProvisionState.IS_ASYNC,
+            "dash_url",
+            "operation_str"
+        )
+
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
+        self.assertEqual(dict(
+            description="Organization and space guid are required."
+        ), response.json)
 
     def test_returns_200_if_identical_service_exists(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
@@ -287,7 +343,6 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(response.json,
                          dict(description='Improper Content-Type header. Expecting "application/json"'))
-
 
     def test_returns_400_if_context_organization_guid_mismatch(self):
         response = self.client.put(
