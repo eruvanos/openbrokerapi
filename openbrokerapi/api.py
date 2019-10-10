@@ -11,10 +11,8 @@ from openbrokerapi.helper import to_json_response, ensure_list
 from openbrokerapi.request_filter import (
     print_request,
     check_originating_identity,
-    get_auth_filter,
-    check_version,
-    requires_application_json
-)
+    requires_application_json,
+    AuthFilter, VersionFilter)
 from openbrokerapi.response import (
     BindResponse,
     CatalogResponse,
@@ -88,7 +86,7 @@ def get_blueprint(service_broker: ServiceBroker,
         )
     else:
         logger.debug("Apply check_version filter for version %s" % str(MIN_VERSION))
-        openbroker.before_request(check_version)
+        openbroker.before_request(VersionFilter())
 
     logger.debug("Apply check_originating_identity filter")
     openbroker.before_request(check_originating_identity)
@@ -96,7 +94,7 @@ def get_blueprint(service_broker: ServiceBroker,
     if broker_credentials is not None:
         broker_credentials = ensure_list(broker_credentials)
         logger.debug("Apply check_auth filter with {} credentials".format(len(broker_credentials)))
-        openbroker.before_request(get_auth_filter(broker_credentials))
+        openbroker.before_request(AuthFilter(broker_credentials))
 
     def extract_authorization_username(request: Request):
         if request.authorization is not None:

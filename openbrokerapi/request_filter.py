@@ -2,6 +2,7 @@ import base64
 import functools
 import logging
 from http import HTTPStatus
+from typing import List
 
 from openbrokerapi.helper import to_json_response, version_tuple
 from openbrokerapi.response import ErrorResponse
@@ -57,28 +58,30 @@ def requires_application_json(f):
     return wrapped
 
 
-def get_auth_filter(broker_credentials):
-    def requires_auth():
+class AuthFilter:
+    def __init__(self, broker_credentials: List):
+        self.broker_credentials = broker_credentials
+
+    def __call__(self, *args, **kwargs):
         """Check authentication over all provided usernames else sends a 401 response that enables basic auth"""
         from flask import request
         auth = request.authorization
         if auth:
-            for credentials in broker_credentials:
+            for credentials in self.broker_credentials:
                 if auth.username == credentials.username and auth.password == credentials.password:
                     return
         return to_json_response(ErrorResponse(
             description='Could not verify your access level for that URL.\nYou have to login with proper credentials'
         )), HTTPStatus.UNAUTHORIZED, {'WWW-Authenticate': 'Basic realm="Login Required"'}
 
-    return requires_auth
 
-
-def check_version():
-    from flask import request
-    version = request.headers.get("X-Broker-Api-Version", None)
-    if not version:
-        return to_json_response(ErrorResponse(description="No X-Broker-Api-Version found.")), HTTPStatus.BAD_REQUEST
-    if MIN_VERSION > version_tuple(version):
-        return to_json_response(ErrorResponse(
-            description="Service broker requires version %d.%d+." % MIN_VERSION)
-        ), HTTPStatus.PRECONDITION_FAILED
+class VersionFilter:
+    def __call__(self, *args, **kwargs):
+        from flask import request
+        version = request.headers.get("X-Broker-Api-Version", None)
+        if not version:
+            return to_json_response(ErrorResponse(description="No X-Broker-Api-Version found.")), HTTPStatus.BAD_REQUEST
+        if MIN_VERSION > version_tuple(version):
+            return to_json_response(ErrorResponse(
+                description="Service broker requires version %d.%d+." % MIN_VERSION)
+            ), HTTPStatus.PRECONDITION_FAILED
