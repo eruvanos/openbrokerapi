@@ -278,8 +278,6 @@ class ProvisioningTest(BrokerTestCase):
             data=json.dumps({
                 "service_id": "service-guid-here",
                 "plan_id": "plan-guid-here",
-                "organization_guid": "org-guid-here",
-                "space_guid": "space-guid-here",
             }),
             headers={
                 'X-Broker-Api-Version': '2.13',
