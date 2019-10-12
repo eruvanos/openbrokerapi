@@ -38,3 +38,9 @@ twine upload dist/*
 pip install -i https://testpypi.python.org/simple openbrokerapi
 ```
 
+### Create docs
+
+```
+cd doc
+sphinx-build -b html . _build
+```

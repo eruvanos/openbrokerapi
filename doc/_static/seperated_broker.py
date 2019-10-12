@@ -66,7 +66,8 @@ class MyServiceBroker2(ServiceBroker):
     def provision(self,
                   instance_id: str,
                   details: ProvisionDetails,
-                  async_allowed: bool) -> ProvisionedServiceSpec:
+                  async_allowed: bool,
+                  **kwargs) -> ProvisionedServiceSpec:
         # Create service instance
         # ...
 
@@ -75,7 +76,8 @@ class MyServiceBroker2(ServiceBroker):
     def deprovision(self,
                     instance_id: str,
                     details: DeprovisionDetails,
-                    async_allowed: bool) -> DeprovisionServiceSpec:
+                    async_allowed: bool,
+                    **kwargs) -> DeprovisionServiceSpec:
         # Delete service instance
         # ...
 

@@ -43,84 +43,80 @@ You can start with a `skeleton project <https://github.com/eruvanos/openbrokerap
 
 .. code:: python
 
-   from flask import Flask
-   from openbrokerapi import api
-   from openbrokerapi.catalog import (
-       ServicePlan,
-   )
-   from openbrokerapi.log_util import basic_config
-   from openbrokerapi.service_broker import (
-       ServiceBroker,
-       Service,
-       ProvisionedServiceSpec,
-       UpdateServiceSpec,
-       Binding,
-       DeprovisionServiceSpec,
-       LastOperation,
-       UnbindDetails,
-       ProvisionDetails,
-       UpdateDetails,
-       BindDetails,
-       DeprovisionDetails
-   )
+    from typing import Union, List
+
+    import openbrokerapi
+    from openbrokerapi import api
+    from openbrokerapi.api import ServiceBroker
+    from openbrokerapi.catalog import ServicePlan
+    from openbrokerapi.service_broker import (
+        Service,
+        ProvisionDetails,
+        ProvisionedServiceSpec,
+        DeprovisionDetails,
+        DeprovisionServiceSpec
+    )
 
 
-   class ExampleServiceBroker(ServiceBroker):
-       def catalog(self):
-           return Service(
-               id='00000000-0000-0000-0000-000000000000',
-               name='example-service',
-               description='Example Service does nothing',
-               bindable=True,
-               plans=[
-                   ServicePlan(
-                       id='00000000-0000-0000-0000-000000000000',
-                       name='small',
-                       description='example service plan',
-                   ),
-               ],
-               tags=['example', 'service'],
-               plan_updateable=True,
-           )
+    class MyServiceBroker(ServiceBroker):
+        def catalog(self) -> Union[Service, List[Service]]:
+            return Service(
+                id='service id',
+                name='service name',
+                description='service description',
+                bindable=False,
+                plans=[
+                    ServicePlan(
+                        id='plan id',
+                        name='plan name',
+                        description='plan description',
+                    )
+                ]
+            )
 
-       def provision(self, instance_id: str, service_details: ProvisionDetails,
-                     async_allowed: bool) -> ProvisionedServiceSpec:
-           pass
+        def provision(self,
+                      instance_id: str,
+                      details: ProvisionDetails,
+                      async_allowed: bool,
+                      **kwargs) -> ProvisionedServiceSpec:
+            # Create service instance
+            # ...
 
-       def bind(self, instance_id: str, binding_id: str, details: BindDetails) -> Binding:
-           pass
+            return ProvisionedServiceSpec()
 
-       def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool) -> UpdateServiceSpec:
-           pass
+        def deprovision(self,
+                        instance_id: str,
+                        details: DeprovisionDetails,
+                        async_allowed: bool,
+                        **kwargs) -> DeprovisionServiceSpec:
+            # Delete service instance
+            # ...
 
-       def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails):
-           pass
+            return DeprovisionServiceSpec(is_async=False)
 
-       def deprovision(self, instance_id: str, details: DeprovisionDetails, async_allowed: bool) -> DeprovisionServiceSpec:
-           pass
+    print('Start server on 127.0.0.1:5000')
+    print('Check the catalog at:')
+    print('> curl 127.0.0.1:5000/v2/catalog -H "X-Broker-API-Version: 2.14"')
+    api.serve(MyServiceBroker(), None)
 
-       def last_operation(self, instance_id: str, operation_data: str) -> LastOperation:
-           pass
+    # Simply start the server
+    # api.serve(ExampleServiceBroker(), api.BrokerCredentials("", ""))
 
+    # or start the server without authentication
+    # api.serve(ExampleServiceBroker(), None)
 
-   # Simply start the server
-   api.serve(ExampleServiceBroker(), api.BrokerCredentials("", ""))
+    # or start the server with multiple authentication
+    # api.serve(ExampleServiceBroker(), [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
 
-   # or start the server without authentication
-   api.serve(ExampleServiceBroker(), None)
+    # or with multiple service brokers and multiple credentials
+    # api.serve_multiple([ExampleServiceBroker(), ExampleServiceBroker()], [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
 
-   # or start the server with multiple authentication
-   api.serve(ExampleServiceBroker(), [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
-
-   # or with multiple service brokers and multiple credentials
-   api.serve_multiple([ExampleServiceBroker(), ExampleServiceBroker()], [api.BrokerCredentials("", ""), api.BrokerCredentials("", "")])
-
-   # or register blueprint to your own FlaskApp instance
-   app = Flask(__name__)
-   logger = basic_config()  # Use root logger with a basic configuration provided by openbrokerapi.log_utils
-   openbroker_bp = api.get_blueprint(ExampleServiceBroker(), api.BrokerCredentials("", ""), logger)
-   app.register_blueprint(openbroker_bp)
-   app.run("0.0.0.0")
+    # or register blueprint to your own FlaskApp instance
+    # app = Flask(__name__)
+    # logger = basic_config()  # Use root logger with a basic configuration provided by openbrokerapi.log_utils
+    # openbroker_bp = api.get_blueprint(ExampleServiceBroker(), api.BrokerCredentials("", ""), logger)
+    # app.register_blueprint(openbroker_bp)
+    # app.run("0.0.0.0")
 
 Deployment
 ----------
@@ -139,10 +135,6 @@ from your ServiceBroker methods where appropriate, and openbrokerapi
 will do the "right thing" (™), and give Cloud Foundry an appropriate
 status code, as per the Service Broker API specification.
 
-Internal Notes
---------------
-
-- Context object from update 2.12 and 2.13 is made available, but partially checked (only organization_guid and space_guid). This can change, when an update removes the redundant fields.
 
 Bugs or Issues
 --------------
@@ -161,6 +153,7 @@ So let us check how you can contribute:
 - Create an issue in the `Github Issues`_. Please provide all information that you think are usefull to solve it.
 - Use the `Github Issues`_ to create a feature request, so we can discuss and find a good interface for that feature.
 - Create a Pull Request. There are some things that will make it easier to review your Pull Request:
+
     - Use a new branch for every Pull Request
     - Include just related commits in this branch
     - Less commits are better, one would be the best (You can squash them.)

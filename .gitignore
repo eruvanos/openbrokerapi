@@ -9,6 +9,7 @@ venv
 .venv
 
 __pycache__
+_build
 build
 
 dist

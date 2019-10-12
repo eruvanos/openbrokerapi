@@ -13,8 +13,11 @@ Welcome to openbrokerapi's documentation!
    :caption: Contents:
 
    Getting Started<readme>
+   overview
+
+   Full Example<full_example>
+
    changelog
-   indeep
 
    openbrokerapi
 
