@@ -21,6 +21,7 @@ bumpversion --tag --commit $args
 echo "Add version changes to commit"
 git add .bumpversion.cfg
 git add setup.py
+git add doc/conf.py
 git commit --amend --no-edit
 
 #seperate commit with version in comment

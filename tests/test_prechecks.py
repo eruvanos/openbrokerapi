@@ -83,9 +83,7 @@ class PrecheckTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
-        self.assertEqual(response.json, dict(
-            description='Improper "X-Broker-API-Originating-Identity" header. Incorrect padding'
-        ))
+        self.assertIn('Improper "X-Broker-API-Originating-Identity" header.', response.json['description'])
 
     def test_returns_400_if_request_contains_originating_identity_header_with_improper_json_value(self):
         response = self.client.put(
