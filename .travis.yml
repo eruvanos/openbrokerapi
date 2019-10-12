@@ -2,6 +2,7 @@ language: python
 python:
 - '3.5'
 - '3.6'
+- '3.7'
 addons:
   apt:
     packages:
@@ -9,8 +10,8 @@ addons:
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
-- pip install coveralls
-script: coverage run --source=openbrokerapi ./setup.py test
+- pip install coveralls pytest-cov
+script: pytest --cov=openbrokerapi
 after_success: coveralls
 deploy:
 #  - provider: pypi
@@ -31,4 +32,4 @@ deploy:
     on:
       tags: true
       branch: master
-      python: '3.5'
+      python: '3.6'

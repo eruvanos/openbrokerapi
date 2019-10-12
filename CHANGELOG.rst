@@ -1,6 +1,10 @@
 Changelog
 =============
 
+**v4.1**
+  - Drop Python 3.5 support
+
+
 **v4.0**
   - Extract routing mechanism into a `Router` class
   - Clean `ServiceBroker` interface
