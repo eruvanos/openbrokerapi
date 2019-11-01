@@ -49,7 +49,8 @@ setup(
             'sphinx >= 1.4',
             'sphinx_rtd_theme'
         ],
-        'gevent': ['gevent']
+        'gevent': ['gevent'],
+        'gunicorn': ['gunicorn']
     }
 
 )
