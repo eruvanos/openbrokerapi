@@ -29,6 +29,9 @@ This package is available for Python 3.6+.
 
     # including gevent as server
     pip3 install openbrokerapi[gevent]
+    
+    # recommended production setup
+    pip3 install openbrokerapi[gunicorn]
 
 Or install the development version from github:
 
