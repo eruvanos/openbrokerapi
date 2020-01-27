@@ -11,4 +11,4 @@ greenlet==0.4.15          # via gevent
 itsdangerous==1.1.0        # via flask
 jinja2==2.10.3              # via flask
 markupsafe==1.1.1           # via jinja2
-werkzeug==0.16.0          # via flask
+werkzeug==0.16.1          # via flask
