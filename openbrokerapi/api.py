@@ -112,11 +112,18 @@ def get_blueprint(service_broker: ServiceBroker,
         )), HTTPStatus.INTERNAL_SERVER_ERROR
 
     @openbroker.errorhandler(NotImplementedError)
-    def error_handler(e):
+    def error_handler_not_implemented(e):
         logger.exception(e)
         return to_json_response(ErrorResponse(
             description=str(e)
         )), HTTPStatus.NOT_IMPLEMENTED
+
+    @openbroker.errorhandler(errors.ErrBadRequest)
+    def error_handler_bad_request(e):
+        logger.exception(e)
+        return to_json_response(ErrorResponse(
+            description=str(e)
+        )), HTTPStatus.BAD_REQUEST
 
     @openbroker.route("/v2/catalog", methods=['GET'])
     def catalog():
