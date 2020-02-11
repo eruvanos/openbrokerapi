@@ -60,3 +60,11 @@ class ErrAppGuidNotProvided(ServiceException):
 class ErrConcurrentInstanceAccess(ServiceException):
     def __init__(self):
         super().__init__("ConcurrencyError")
+
+
+class ErrBadRequest(ServiceException):
+    """
+    Raise if malformed or missing mandatory data
+    """
+    def __init__(self, msg='Malformed or missing data'):
+        super().__init__(msg)
