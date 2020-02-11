@@ -27,19 +27,25 @@ class ServiceDashboardClient:
     def __init__(self,
                  redirect_uri: str,
                  id: str = None,
-                 secret: str = None
+                 secret: str = None,
+                 **kwargs
                  ):
         self.id = id
         self.secret = secret
         self.redirect_uri = redirect_uri
 
+        self.__dict__.update(kwargs)
+
 
 class ServicePlanCost:
     def __init__(self,
                  amount: Dict[str, int],
-                 unit: str):
+                 unit: str,
+                 **kwargs):
         self.amount = amount
         self.unit = unit
+
+        self.__dict__.update(kwargs)
 
 
 class ServicePlanMetadata:
@@ -52,15 +58,19 @@ class ServicePlanMetadata:
         self.displayName = displayName
         self.bullets = bullets
         self.costs = costs
+
         self.__dict__.update(kwargs)
 
 
 class Schemas:
     def __init__(self,
                  service_instance: Dict = None,
-                 service_binding: Dict = None):
+                 service_binding: Dict = None,
+                 **kwargs):
         self.service_instance = service_instance
         self.service_binding = service_binding
+
+        self.__dict__.update(kwargs)
 
 
 class ServicePlan:
@@ -71,8 +81,8 @@ class ServicePlan:
                  metadata: ServicePlanMetadata = None,
                  free: bool = None,
                  bindable: bool = None,
-                 schemas: Schemas = None
-                 ):
+                 schemas: Schemas = None,
+                 **kwargs):
         self.id = id
         self.name = name
         self.description = description
@@ -80,3 +90,5 @@ class ServicePlan:
         self.free = free
         self.bindable = bindable
         self.schemas = schemas
+
+        self.__dict__.update(kwargs)

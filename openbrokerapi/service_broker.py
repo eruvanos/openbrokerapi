@@ -284,6 +284,7 @@ class Service:
                  plan_updateable: bool = False,
                  instances_retrievable: bool = False,
                  bindings_retrievable: bool = False,
+                 **kwargs
                  ):
         """
         :param requires:  syslog_drain, route_forwarding or volume_mount
@@ -300,6 +301,8 @@ class Service:
         self.plan_updateable = plan_updateable
         self.instances_retrievable = instances_retrievable
         self.bindings_retrievable = bindings_retrievable
+
+        self.__dict__.update(kwargs)
 
 
 class ServiceBroker:
