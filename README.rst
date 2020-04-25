@@ -1,4 +1,5 @@
 |Build Status| |Coverage Status| |Known Vulnerabilities| |PYUP|
+[ ~ Dependencies scanned by PyUp.io ~ ]
 
 Open Broker API
 ===============
