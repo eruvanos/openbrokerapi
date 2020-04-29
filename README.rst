@@ -163,6 +163,8 @@ So let us check how you can contribute:
     - Always add tests for your feature, if you are not familiar with writing tests, ask for help.
     - Hint: To update your fork with the newest changes, follow `these instructions <https://stackoverflow.com/a/7244456/2947505>`_.
 
+[ ~ Dependencies scanned by PyUp.io ~ ]
+
 .. _Github Issues: https://github.com/eruvanos/openbrokerapi/issues
 
 .. |Build Status| image:: https://travis-ci.org/eruvanos/openbrokerapi.svg?branch=master

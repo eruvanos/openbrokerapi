@@ -24,7 +24,7 @@ def version_tuple(v):
 
 def ensure_list(x: Union[Iterable, Any]):
     import collections
-    if isinstance(x, collections.Iterable):
+    if isinstance(x, collections.abc.Iterable):
         return x
     else:
         return [x]
