@@ -1,3 +1,3 @@
-pytest==5.3.5
+pytest==5.4.3
 flask-testing==0.8.0
 requests>=2.20.0
