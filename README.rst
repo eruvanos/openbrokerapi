@@ -116,7 +116,7 @@ You can start with a `skeleton project <https://github.com/eruvanos/openbrokerap
 
     # or register blueprint to your own FlaskApp instance
     # app = Flask(__name__)
-    # logger = basic_config()  # Use root logger with a basic configuration provided by openbrokerapi.log_utils
+    # logger = basic_config()  # Use root logger with a basic configuration provided by openbrokerapi.log_util
     # openbroker_bp = api.get_blueprint(ExampleServiceBroker(), api.BrokerCredentials("", ""), logger)
     # app.register_blueprint(openbroker_bp)
     # app.run("0.0.0.0")
