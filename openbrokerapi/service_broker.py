@@ -34,9 +34,6 @@ class ProvisionDetails:
                 raise TypeError('space_guid does not match with context.space_guid')
             self.space_guid = context['space_guid']
 
-        if None in (self.organization_guid, self.space_guid):
-            raise TypeError('Organization and space guid are required.')
-
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
         self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
