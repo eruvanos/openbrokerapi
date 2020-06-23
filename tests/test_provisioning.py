@@ -266,6 +266,31 @@ class ProvisioningTest(BrokerTestCase):
             description="Required parameters not provided."
         ))
 
+    def test_returns_202_if_missing_org_and_space_guids_data(self):
+        self.broker.provision.return_value = self.broker.provision.return_value = ProvisionedServiceSpec(
+            ProvisionState.IS_ASYNC,
+            "dash_url",
+            "operation_str"
+        )
+
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
+        self.assertEqual(response.json, dict(
+            dashboard_url="dash_url",
+            operation="operation_str"
+        ))
+
     def test_returns_200_if_identical_service_exists(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
 
