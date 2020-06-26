@@ -7,7 +7,7 @@
 click==7.1.2                # via flask
 flask==1.1.1
 gevent==20.6.2
-greenlet==0.4.15          # via gevent
+greenlet==0.4.16          # via gevent
 itsdangerous==1.1.0        # via flask
 jinja2==2.11.2              # via flask
 markupsafe==1.1.1           # via jinja2
