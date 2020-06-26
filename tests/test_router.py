@@ -54,7 +54,7 @@ class RouterTestCase(unittest.TestCase):
     def test_routes_bind(self):
         self.b1.bind.return_value = Binding()
 
-        _ = self.router.bind(str(uuid4()), str(uuid4()), BindDetails('s1', 'p1'))
+        _ = self.router.bind(str(uuid4()), str(uuid4()), BindDetails('s1', 'p1'), True)
 
         self.assertTrue(self.b1.bind.called)
 
@@ -70,7 +70,7 @@ class RouterTestCase(unittest.TestCase):
     def test_routes_unbind(self):
         self.b1.unbind.return_value = None
 
-        _ = self.router.unbind(str(uuid4()), str(uuid4()), UnbindDetails('s1', 'p1'))
+        _ = self.router.unbind(str(uuid4()), str(uuid4()), UnbindDetails('s1', 'p1'), True)
 
         self.assertTrue(self.b1.unbind.called)
 

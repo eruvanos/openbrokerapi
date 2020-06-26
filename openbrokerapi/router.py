@@ -84,9 +84,10 @@ class Router(ServiceBroker):
              instance_id: str,
              binding_id: str,
              details: BindDetails,
+             async_allowed: bool,
              **kwargs) -> Binding:
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.bind(instance_id, binding_id, details, **kwargs)
+        result = provider.bind(instance_id, binding_id, details, async_allowed, **kwargs)
 
         return result
 
@@ -94,9 +95,10 @@ class Router(ServiceBroker):
                instance_id: str,
                binding_id: str,
                details: UnbindDetails,
+               async_allowed: bool,
                **kwargs):
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.unbind(instance_id, binding_id, details, **kwargs)
+        result = provider.unbind(instance_id, binding_id, details, async_allowed, **kwargs)
 
         return result
 
