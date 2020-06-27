@@ -6,7 +6,7 @@ from openbrokerapi.catalog import (
     ServiceMetadata,
     ServicePlan,
 )
-
+from openbrokerapi.settings import DISABLE_SPACE_ORG_GUID_CHECK
 
 class ProvisionDetails:
     def __init__(self,
@@ -33,6 +33,11 @@ class ProvisionDetails:
             if space_guid is not None and context['space_guid'] != space_guid:
                 raise TypeError('space_guid does not match with context.space_guid')
             self.space_guid = context['space_guid']
+
+        if DISABLE_SPACE_ORG_GUID_CHECK:
+            pass
+        elif None in (self.organization_guid, self.space_guid):
+            raise TypeError('Organization and space guid are required.')
 
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
