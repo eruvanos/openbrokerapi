@@ -421,7 +421,7 @@ class ServiceBroker:
                      ) -> GetInstanceDetailsSpec:
         """
         Further readings `CF Broker API#FetchServiceInstance <https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance>`_
-        Must be implemented if `"bindings_retrievable" :true` is declared for a service in `catalog`.
+        Must be implemented if `"instances_retrievable" :true` is declared for a service in `catalog`.
 
         :param instance_id: Instance id provided by the platform
         :param kwargs: May contain additional information, improves compatibility with upstream versions
@@ -437,8 +437,8 @@ class ServiceBroker:
                     **kwargs
                     ) -> GetBindingSpec:
         """
-                Further readings `CF Broker API#FetchServiceInstance <https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-instance>`_
-                Must be implemented if `"instances_retrievable" :true` is declared for a service in `catalog`.
+                Further readings `CF Broker API#FetchServiceBinding <https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding>`_
+                Must be implemented if `"bindings_retrievable" :true` is declared for a service in `catalog`.
 
                 :param instance_id: Instance id provided by the platform
                 :param binding_id: Instance id provided by the platform
