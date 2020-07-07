@@ -1,11 +1,13 @@
 import http
 import json
 
+import openbrokerapi
 from openbrokerapi import errors
 from openbrokerapi.catalog import ServicePlan
 from openbrokerapi.service_broker import ProvisionedServiceSpec, ProvisionDetails, ProvisionState, Service
 from tests import BrokerTestCase
 
+from _pytest.monkeypatch import MonkeyPatch
 
 class ProvisioningTest(BrokerTestCase):
     def setUp(self):
@@ -289,6 +291,34 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(dict(
             description="Organization and space guid are required."
         ), response.json)
+
+    def test_returns_202_if_missing_org_and_space_guids_data_org_space_check_flag_true(self):
+        mp = MonkeyPatch()
+        mp.setattr(openbrokerapi.service_broker, "DISABLE_SPACE_ORG_GUID_CHECK", True)
+        self.broker.provision.return_value = self.broker.provision.return_value = ProvisionedServiceSpec(
+            ProvisionState.IS_ASYNC,
+            "dash_url",
+            "operation_str"
+        )
+        response = self.client.put(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+
+        self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
+        self.assertEqual(response.json, dict(
+            dashboard_url="dash_url",
+            operation="operation_str"
+        ))
+        mp.setattr(openbrokerapi.service_broker, "DISABLE_SPACE_ORG_GUID_CHECK", False)
 
     def test_returns_200_if_identical_service_exists(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(ProvisionState.IDENTICAL_ALREADY_EXISTS)
