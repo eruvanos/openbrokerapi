@@ -39,7 +39,7 @@ class ServiceDashboardClient:
 
 class ServicePlanCost:
     def __init__(self,
-                 amount: Dict[str, int],
+                 amount: Dict[str, float],
                  unit: str,
                  **kwargs):
         self.amount = amount
