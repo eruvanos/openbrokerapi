@@ -12,9 +12,11 @@ from openbrokerapi.service_broker import Service, ProvisionedServiceSpec, Servic
 
 
 class InMemBroker(ServiceBroker):
-    service_guid = 'service-test-guid'
-    plan_guid = 'plan-test-guid'
     instances = dict()
+
+    def __init__(self, service_guid='service-test-guid', plan_guid='plan-test-guid'):
+        self.service_guid = service_guid
+        self.plan_guid = plan_guid
 
     def catalog(self) -> Service:
         return Service(

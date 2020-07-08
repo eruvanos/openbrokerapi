@@ -51,12 +51,15 @@ class RouterTestCase(unittest.TestCase):
         self.assertEqual('s1 ' + operation_str, provision.operation)
         self.assertTrue(self.b1.provision.called)
 
-    def test_routes_bind(self):
+    def test_routes_bind_and_enforces_allow_async_false(self):
         self.b1.bind.return_value = Binding()
+        instace_guid = str(uuid4())
+        binding_id = str(uuid4())
+        bind_details = BindDetails('s1', 'p1')
 
-        _ = self.router.bind(str(uuid4()), str(uuid4()), BindDetails('s1', 'p1'), True)
+        _ = self.router.bind(instace_guid, binding_id, bind_details, True)
 
-        self.assertTrue(self.b1.bind.called)
+        self.b1.bind.assert_called_once_with(instace_guid, binding_id, bind_details, False)
 
     def test_routes_update(self):
         operation_str = str(uuid4())
@@ -67,12 +70,15 @@ class RouterTestCase(unittest.TestCase):
         self.assertEqual('s1 ' + operation_str, update.operation)
         self.assertTrue(self.b1.update.called)
 
-    def test_routes_unbind(self):
+    def test_routes_unbind_and_enforces_allow_async_false(self):
         self.b1.unbind.return_value = None
+        instace_guid = str(uuid4())
+        binding_id = str(uuid4())
+        unbind_details = UnbindDetails('s1', 'p1')
 
-        _ = self.router.unbind(str(uuid4()), str(uuid4()), UnbindDetails('s1', 'p1'), True)
+        _ = self.router.unbind(instace_guid, binding_id, unbind_details, True)
 
-        self.assertTrue(self.b1.unbind.called)
+        self.b1.unbind.assert_called_once_with(instace_guid, binding_id, unbind_details, False)
 
     def test_routes_deprovision(self):
         operation_str = str(uuid4())

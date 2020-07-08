@@ -87,7 +87,7 @@ class Router(ServiceBroker):
              async_allowed: bool,
              **kwargs) -> Binding:
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.bind(instance_id, binding_id, details, async_allowed, **kwargs)
+        result = provider.bind(instance_id, binding_id, details, False, **kwargs)
 
         return result
 
@@ -98,7 +98,7 @@ class Router(ServiceBroker):
                async_allowed: bool,
                **kwargs):
         provider = self._get_provider_by_id(details.service_id)
-        result = provider.unbind(instance_id, binding_id, details, async_allowed, **kwargs)
+        result = provider.unbind(instance_id, binding_id, details, False, **kwargs)
 
         return result
 
