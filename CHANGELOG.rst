@@ -3,7 +3,17 @@ Changelog
 
 **v4.1**
   - Drop Python 3.5 support
+  - Fix ´bind´ in multi broker setup (#117); thx @vaxvms
+  - Removing requirement to have a space_guid and an organization_guid (#116); thx @rajahaidar
+  - Improve documentation; thx @vaxvms
+  - Fix collections.abc deprecation; thx @tammersaleh
 
+**v4.0.2**
+  - Introduce new error to return BadRequest
+  - Add **kwargs to catalog classes
+
+**v4.0.1**
+  - Add gunicorn installation
 
 **v4.0**
   - Extract routing mechanism into a `Router` class
