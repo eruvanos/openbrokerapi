@@ -50,14 +50,32 @@ class InMemBroker(ServiceBroker):
         return DeprovisionServiceSpec(is_async=False)
 
 
+def run_serve_provision_without_auth():
+    api.serve(InMemBroker(), credentials=None)
+
+
+def run_serve_starts_server():
+    broker = Mock()
+    broker.catalog.return_value = []
+    api.serve(broker, api.BrokerCredentials("", ""))
+
+
+def run_serve_starts_server_without_auth():
+    broker = Mock()
+    broker.catalog.return_value = []
+    api.serve(broker, credentials=None)
+
+
+def run_serve_starts_with_single_instance():
+    broker = Mock()
+    broker.catalog.return_value = Service('id', 'name', 'description', False, [])
+    api.serve(broker, [api.BrokerCredentials("cfy-login", "cfy-pwd"),
+                       api.BrokerCredentials("k8s-login", "k8s-pwd")])
+
+
 class ServeTest(TestCase):
     def test_serve_starts_server(self):
-        def run_server():
-            broker = Mock()
-            broker.catalog.return_value = []
-            api.serve(broker, api.BrokerCredentials("", ""))
-
-        server = Process(target=run_server)
+        server = Process(target=run_serve_starts_server)
         server.start()
 
         time.sleep(2)
@@ -71,12 +89,7 @@ class ServeTest(TestCase):
         self.assertEqual(response.json(), dict(services=[]))
 
     def test_serve_starts_server_without_auth(self):
-        def run_server():
-            broker = Mock()
-            broker.catalog.return_value = []
-            api.serve(broker, credentials=None)
-
-        server = Process(target=run_server)
+        server = Process(target=run_serve_starts_server_without_auth)
         server.start()
 
         time.sleep(2)
@@ -90,10 +103,7 @@ class ServeTest(TestCase):
         self.assertEqual(response.json(), dict(services=[]))
 
     def test_provision_without_auth(self):
-        def run_server():
-            api.serve(InMemBroker(), credentials=None)
-
-        server = Process(target=run_server)
+        server = Process(target=run_serve_provision_without_auth)
         server.start()
 
         time.sleep(2)
@@ -121,13 +131,7 @@ class ServeTest(TestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_serve_starts_with_single_instance(self):
-        def run_server():
-            broker = Mock()
-            broker.catalog.return_value = Service('id', 'name', 'description', False, [])
-            api.serve(broker, [api.BrokerCredentials("cfy-login", "cfy-pwd"),
-                               api.BrokerCredentials("k8s-login", "k8s-pwd")])
-
-        server = Process(target=run_server)
+        server = Process(target=run_serve_starts_with_single_instance)
         server.start()
 
         time.sleep(2)
@@ -139,10 +143,10 @@ class ServeTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), dict(services=[{'bindable': False,
-                                                          'description': 'description',
-                                                          'id': 'id',
-                                                          'name': 'name',
-                                                          'instances_retrievable': False,
-                                                          'bindings_retrievable': False,
-                                                          'plan_updateable': False,
-                                                          'plans': []}]))
+                                                              'description': 'description',
+                                                              'id': 'id',
+                                                              'name': 'name',
+                                                              'instances_retrievable': False,
+                                                              'bindings_retrievable': False,
+                                                              'plan_updateable': False,
+                                                              'plans': []}]))
