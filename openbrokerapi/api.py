@@ -1,6 +1,8 @@
 import logging
 from http import HTTPStatus
 from json.decoder import JSONDecodeError
+import jsonschema
+from jsonschema import draft4_format_checker, ValidationError
 from typing import List, Union
 
 from flask import Blueprint, Request
@@ -41,6 +43,9 @@ from openbrokerapi.settings import (
     MIN_VERSION,
     DISABLE_VERSION_CHECK
 )
+from openbrokerapi.catalog import (
+    ServicePlan
+)
 
 
 class BrokerCredentials:
@@ -63,6 +68,19 @@ def _check_plan_id(broker: ServiceBroker, plan_id) -> bool:
             if plan.id == plan_id:
                 return True
     return False
+
+
+def _get_plan_id(broker: ServiceBroker, plan_id) -> ServicePlan:
+    """
+    Return the service plan for the plan_id in the catalog
+    :return: ServicePlan
+    """
+    for service in ensure_list(broker.catalog()):
+        for plan in service.plans:
+            if plan.id == plan_id:
+                return plan
+    return False
+
 
 
 def get_blueprint(service_broker: ServiceBroker,
@@ -148,6 +166,21 @@ def get_blueprint(service_broker: ServiceBroker,
         except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
+
+        schema = {}
+        try:
+            plan = _get_plan_id(service_broker, provision_details.plan_id)
+            schema = plan.schemas.service_instance['create']['parameters']
+        except (AttributeError):
+            pass
+        try:
+            print(schema)
+            jsonschema.validate(instance=provision_details.parameters,
+                                schema=schema,
+                                format_checker=draft4_format_checker)
+        except (ValidationError) as e:
+            logger.exception(e)
+            return to_json_response(ErrorResponse('InvalidParameters', str(e))), HTTPStatus.BAD_REQUEST
 
         try:
             result = service_broker.provision(instance_id, provision_details, accepts_incomplete)
