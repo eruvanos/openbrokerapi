@@ -1,6 +1,7 @@
 import base64
 import http
 
+from openbrokerapi import constants
 from openbrokerapi.catalog import (
     ServiceDashboardClient,
     ServiceMetadata,
@@ -190,7 +191,7 @@ class CatalogTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
         self.assertEqual(response.json,
                          dict(
-                             description='ERROR'
+                             description=constants.DEFAULT_EXCEPTION_ERROR_MESSAGE
                          ))
 
     def test_catalog_can_return_multiple_services(self):

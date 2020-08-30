@@ -6,7 +6,7 @@ from typing import List, Union
 from flask import Blueprint, Request
 from flask import json, request
 
-from openbrokerapi import errors
+from openbrokerapi import errors, constants
 from openbrokerapi.helper import to_json_response, ensure_list
 from openbrokerapi.request_filter import (
     print_request,
@@ -41,7 +41,6 @@ from openbrokerapi.settings import (
     MIN_VERSION,
     DISABLE_VERSION_CHECK
 )
-
 
 class BrokerCredentials:
     """
@@ -108,21 +107,21 @@ def get_blueprint(service_broker: ServiceBroker,
     def error_handler(e):
         logger.exception(e)
         return to_json_response(ErrorResponse(
-            description=str(e)
+            description=constants.DEFAULT_EXCEPTION_ERROR_MESSAGE
         )), HTTPStatus.INTERNAL_SERVER_ERROR
 
     @openbroker.errorhandler(NotImplementedError)
     def error_handler_not_implemented(e):
         logger.exception(e)
         return to_json_response(ErrorResponse(
-            description=str(e)
+            description=constants.DEFAULT_NOT_IMPLEMENTED_ERROR_MESSAGE
         )), HTTPStatus.NOT_IMPLEMENTED
 
     @openbroker.errorhandler(errors.ErrBadRequest)
     def error_handler_bad_request(e):
         logger.exception(e)
         return to_json_response(ErrorResponse(
-            description=str(e)
+            description=constants.DEFAULT_BAD_REQUEST_ERROR_MESSAGE
         )), HTTPStatus.BAD_REQUEST
 
     @openbroker.route("/v2/catalog", methods=['GET'])

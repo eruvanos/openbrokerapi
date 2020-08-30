@@ -2,7 +2,7 @@ import http
 import base64
 from unittest import skip
 
-from openbrokerapi import errors
+from openbrokerapi import errors, constants
 from openbrokerapi.catalog import ServicePlan
 from openbrokerapi.service_broker import Service
 from tests import BrokerTestCase
@@ -110,7 +110,7 @@ class PrecheckTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
-        self.assertEqual(response.json["description"], "Boooom!")
+        self.assertEqual(response.json["description"], constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)
 
     def test_returns_500_with_json_body_if_service_exception_was_raised(self):
         self.broker.deprovision.side_effect = errors.ServiceException("Boooom!")
@@ -123,7 +123,7 @@ class PrecheckTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
-        self.assertEqual(response.json["description"], "Boooom!")
+        self.assertEqual(response.json["description"], constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)
 
     def test_returns_400_if_request_did_not_include_data(self):
         response = self.client.put(
