@@ -10,8 +10,10 @@ The project is checked and build with [Travis](https://travis-ci.com/eruvanos/op
 To publish a release use bumpversion. This will update the `setup.py` and tag the commit.
 Travis will then push the new release to [PyPi](https://pypi.python.org/pypi/openbrokerapi).
 
+> To trigger the whole build process use `ship.sh`.
+
 ```bash
-bumpversion patch|minor
+./ship.sh patch|minor 
 ``` 
 
 
