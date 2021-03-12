@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     name='openbrokerapi',
     version='4.1.1',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     packages=find_packages(exclude=['tests']),
     install_requires=['flask'],
     test_suite="tests",
@@ -41,6 +41,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
 
     # Optional installations
