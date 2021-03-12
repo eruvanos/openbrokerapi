@@ -167,12 +167,11 @@ So let us check how you can contribute:
 
 .. _Github Issues: https://github.com/eruvanos/openbrokerapi/issues
 
-.. |Build Status| image:: https://travis-ci.org/eruvanos/openbrokerapi.svg?branch=master
-   :target: https://travis-ci.org/eruvanos/openbrokerapi
+.. |Build Status| image:: https://www.travis-ci.com/eruvanos/openbrokerapi.svg?branch=main
+    :target: https://www.travis-ci.com/eruvanos/openbrokerapi
 .. |Coverage Status| image:: https://coveralls.io/repos/github/eruvanos/openbrokerapi/badge.svg?branch=master
    :target: https://coveralls.io/github/eruvanos/openbrokerapi?branch=master
 .. |Known Vulnerabilities| image:: https://snyk.io/test/github/eruvanos/openbrokerapi/badge.svg?targetFile=requirements.txt
    :target: https://snyk.io/test/github/eruvanos/openbrokerapi?targetFile=requirements.txt
 .. |PYUP| image:: https://pyup.io/repos/github/eruvanos/openbrokerapi/shield.svg
      :target: https://pyup.io/repos/github/eruvanos/openbrokerapi/
-   
