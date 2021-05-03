@@ -47,7 +47,7 @@ class ErrAsyncRequired(ServiceException):
         super().__init__("This service plan requires client support for asynchronous service operations.")
 
 
-class ErrPlanChangeNotSupported(ServiceException):
+class ErrPlanChangeNotSupported(ErrInvalidParameters):
     def __init__(self):
         super().__init__("The requested plan migration cannot be performed")
 
