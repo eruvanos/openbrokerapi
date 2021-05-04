@@ -91,3 +91,20 @@ class UnbindTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+
+    def test_returns_422_if_instance_is_in_use(self):
+        self.broker.unbind.side_effect = errors.ErrConcurrentInstanceAccess()
+
+        query = "service_id=service-guid-here&plan_id=plan-guid-here"
+        response = self.client.delete(
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
+            description='The Service Broker does not support concurrent requests that mutate the same resource.',
+            error='ConcurrencyError'
+        ))

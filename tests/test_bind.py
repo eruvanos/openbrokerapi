@@ -326,3 +326,25 @@ class BindTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(response.json, dict())
+
+    def test_returns_422_if_instance_is_in_use(self):
+        self.broker.bind.side_effect = errors.ErrConcurrentInstanceAccess()
+
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "bind_resource": {}
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
+            description='The Service Broker does not support concurrent requests that mutate the same resource.',
+            error='ConcurrencyError'
+        ))

@@ -224,7 +224,7 @@ class UpdateTest(BrokerTestCase):
             description="This service plan requires client support for asynchronous service operations."
         ))
 
-    def test_returns_422_if_async_if_missing_mandatory_data(self):
+    def test_returns_400_if_missing_mandatory_data(self):
         self.broker.update.side_effect = errors.ErrInvalidParameters('Required parameters not provided.')
 
         response = self.client.patch(
@@ -286,3 +286,24 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(response.json,
                          dict(description="Improper Content-Type header. Expecting \"application/json\""))
+
+    def test_returns_422_if_instance_is_in_use(self):
+        self.broker.update.side_effect = errors.ErrConcurrentInstanceAccess()
+
+        response = self.client.patch(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
+            description='The Service Broker does not support concurrent requests that mutate the same resource.',
+            error='ConcurrencyError'
+        ))
