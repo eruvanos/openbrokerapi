@@ -91,3 +91,27 @@ class UnbindTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+
+    def test_returns_400_wrong_service_id(self):
+        query = "service_id=wrong-service-guid-here&plan_id=plan-guid-here"
+        response = self.client.delete(
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="service_id not found in this service broker."))
+
+    def test_returns_400_wrong_plan_id(self):
+        query = "service_id=service-guid-here&plan_id=wrong-plan-guid-here"
+        response = self.client.delete(
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="plan_id not found in this service broker."))

@@ -119,3 +119,29 @@ class DeprovisioningTest(BrokerTestCase):
             })
 
         self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)
+
+    def test_returns_400_with_wrong_service_id(self):
+        response = self.client.delete(
+            "/v2/service_instances/abc?service_id=wrong-service-guid-here&plan_id=plan-guid-here",
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(
+            description="service_id not found in this service broker."
+        ))
+
+    def test_returns_400_with_wrong_plan_id(self):
+        response = self.client.delete(
+            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=wrong-plan-guid-here",
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(
+            description="plan_id not found in this service broker."
+        ))

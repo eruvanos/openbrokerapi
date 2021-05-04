@@ -326,3 +326,37 @@ class BindTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(response.json, dict())
+
+    def test_returns_400_wrong_service_id(self):
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data=json.dumps({
+                "service_id": "wrong-service-guid-here",
+                "plan_id": "plan-guid-here",
+                "bind_resource": {}
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="service_id not found in this service broker."))
+
+    def test_returns_400_wrong_plan_id(self):
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "wrong-plan-guid-here",
+                "bind_resource": {}
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="plan_id not found in this service broker."))
