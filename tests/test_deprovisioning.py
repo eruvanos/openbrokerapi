@@ -111,6 +111,22 @@ class DeprovisioningTest(BrokerTestCase):
             description="This service plan requires client support for asynchronous service operations."
         ))
 
+    def test_returns_422_if_instance_is_in_use(self):
+        self.broker.deprovision.side_effect = errors.ErrConcurrentInstanceAccess()
+
+        response = self.client.delete(
+            "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-guid-here",
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.json, dict(
+            description='The Service Broker does not support concurrent requests that mutate the same resource.',
+            error='ConcurrencyError'
+        ))
+
     def test_returns_401_if_request_not_contain_auth_header(self):
         response = self.client.delete(
             "/v2/service_instances/abc",
