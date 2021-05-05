@@ -1,5 +1,5 @@
 -r requirements.txt
 
-pytest==6.2.2
+pytest==6.2.4
 flask-testing==0.8.1
 requests>=2.25.1
