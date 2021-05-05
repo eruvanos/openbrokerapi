@@ -308,14 +308,13 @@ def get_blueprint(service_broker: ServiceBroker,
 
     @openbroker.route("/v2/service_instances/<instance_id>/last_operation", methods=['GET'])
     def last_operation(instance_id):
-        # TODO: forward them
-        # service_id = request.args.get("service_id", None)
-        # plan_id = request.args.get("plan_id", None)
+        service_id = request.args.get("service_id", None)
+        plan_id = request.args.get("plan_id", None)
 
         operation_data = request.args.get("operation", None)
 
         try:
-            result = service_broker.last_operation(instance_id, operation_data)
+            result = service_broker.last_operation(instance_id, operation_data, service_id, plan_id)
             return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
         except errors.ErrInstanceDoesNotExist:
             return to_json_response(LastOperationResponse(OperationState.SUCCEEDED, '')), HTTPStatus.GONE
@@ -323,12 +322,11 @@ def get_blueprint(service_broker: ServiceBroker,
     @openbroker.route("/v2/service_instances/<instance_id>/service_bindings/<binding_id>/last_operation",
                       methods=['GET'])
     def last_binding_operation(instance_id, binding_id):
-        # TODO: forward them
-        # service_id = request.args.get("service_id", None)
-        # plan_id = request.args.get("plan_id", None)
+        service_id = request.args.get("service_id", None)
+        plan_id = request.args.get("plan_id", None)
 
         operation_data = request.args.get("operation", None)
-        result = service_broker.last_binding_operation(instance_id, binding_id, operation_data)
+        result = service_broker.last_binding_operation(instance_id, binding_id, operation_data, service_id, plan_id)
         return to_json_response(LastOperationResponse(result.state, result.description)), HTTPStatus.OK
 
     @openbroker.route("/v2/service_instances/<instance_id>", methods=['GET'])

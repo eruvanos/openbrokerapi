@@ -57,51 +57,51 @@ class FullBrokerTestCase(TestCase):
         # GIVEN
         org_guid = str(uuid4())
         space_guid = str(uuid4())
-        instace_guid = str(uuid4())
+        instance_guid = str(uuid4())
         binding_guid = str(uuid4())
 
         # CATALOG
         self.check_catalog(self.service_guid, self.plan_guid)
 
         # ASYNC PROVISION
-        operation = self.check_provision(instace_guid, org_guid, space_guid, self.service_guid, self.plan_guid)
-        self.check_last_operation_after_provision(instace_guid, operation)
+        operation = self.check_provision(instance_guid, org_guid, space_guid, self.service_guid, self.plan_guid)
+        self.check_last_operation_after_provision(instance_guid, operation)
 
         # GET INSTANCE
-        self.check_instance_retrievable(instace_guid)
+        self.check_instance_retrievable(instance_guid)
 
         # ASYNC BIND
-        operation = self.check_bind(binding_guid, instace_guid)
-        self.check_last_operation_after_bind(binding_guid, instace_guid, operation)
+        operation = self.check_bind(binding_guid, instance_guid)
+        self.check_last_operation_after_bind(binding_guid, instance_guid, operation)
 
         # GET BINDING
         response = requests.get(
-            "http://localhost:5001/v2/service_instances/{}/service_bindings/{}".format(instace_guid, binding_guid),
+            "http://localhost:5001/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
             **self.request_ads)
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertDictEqual({}, response.json())
 
         # ASYNC UNBIND
-        operation = self.check_unbind(binding_guid, instace_guid)
-        self.check_last_operation_after_unbind(binding_guid, instace_guid, operation)
+        operation = self.check_unbind(binding_guid, instance_guid)
+        self.check_last_operation_after_unbind(binding_guid, instance_guid, operation)
 
         # ASYNC DEPROVISION
-        operation = self.check_deprovision(instace_guid, operation)
-        self.check_last_operation_after_deprovision(instace_guid, operation)
+        operation = self.check_deprovision(instance_guid, operation)
+        self.check_last_operation_after_deprovision(instance_guid, operation)
 
         # DEPROVISION TWICE
-        self.check_deprovision_after_deprovision_done(instace_guid)
+        self.check_deprovision_after_deprovision_done(instance_guid)
 
-    def check_instance_retrievable(self, instace_guid):
+    def check_instance_retrievable(self, instance_guid):
         response = requests.get(
-            "http://localhost:5001/v2/service_instances/{}".format(instace_guid), **self.request_ads)
+            "http://localhost:5001/v2/service_instances/{}".format(instance_guid), **self.request_ads)
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual(self.service_guid, response.json()['service_id'])
         self.assertEqual(self.plan_guid, response.json()['plan_id'])
 
-    def check_unbind(self, binding_guid, instace_guid):
+    def check_unbind(self, binding_guid, instance_guid):
         response = requests.delete(
-            "http://localhost:5001/v2/service_instances/{}/service_bindings/{}".format(instace_guid, binding_guid),
+            "http://localhost:5001/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
             params={
                 "service_id": self.service_guid,
                 "plan_id": self.plan_guid,
@@ -114,9 +114,9 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual('unbind', operation)
         return operation
 
-    def check_last_operation_after_bind(self, binding_guid, instace_guid, operation):
+    def check_last_operation_after_bind(self, binding_guid, instance_guid, operation):
         response = requests.get(
-            'http://localhost:5001/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instace_guid,
+            'http://localhost:5001/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instance_guid,
                                                                                                       binding_guid),
             params={
                 'service_id': self.service_guid,
@@ -127,9 +127,9 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual('succeeded', response.json()['state'])
 
-    def check_last_operation_after_unbind(self, binding_guid, instace_guid, operation):
+    def check_last_operation_after_unbind(self, binding_guid, instance_guid, operation):
         response = requests.get(
-            'http://localhost:5001/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instace_guid,
+            'http://localhost:5001/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instance_guid,
                                                                                                       binding_guid),
             params={
                 'service_id': self.service_guid,
@@ -140,10 +140,10 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual('succeeded', response.json()['state'])
 
-    def check_bind(self, binding_guid, instace_guid):
+    def check_bind(self, binding_guid, instance_guid):
         response = requests.put(
             "http://localhost:5001/v2/service_instances/{}/service_bindings/{}?accepts_incomplete=true".format(
-                instace_guid, binding_guid),
+                instance_guid, binding_guid),
             data=json.dumps({
                 "service_id": self.service_guid,
                 "plan_id": self.plan_guid
@@ -155,9 +155,9 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual('bind', operation)
         return operation
 
-    def check_deprovision_after_deprovision_done(self, instace_guid):
+    def check_deprovision_after_deprovision_done(self, instance_guid):
         response = requests.delete(
-            "http://localhost:5001/v2/service_instances/{}".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}".format(instance_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -166,9 +166,9 @@ class FullBrokerTestCase(TestCase):
             **self.request_ads)
         self.assertEqual(HTTPStatus.GONE, response.status_code)
 
-    def check_deprovision(self, instace_guid, operation):
+    def check_deprovision(self, instance_guid, operation):
         response = requests.delete(
-            "http://localhost:5001/v2/service_instances/{}".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}".format(instance_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -180,9 +180,9 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual('deprovision', operation)
         return operation
 
-    def check_last_operation_after_deprovision(self, instace_guid, operation):
+    def check_last_operation_after_deprovision(self, instance_guid, operation):
         response = requests.get(
-            "http://localhost:5001/v2/service_instances/{}/last_operation".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}/last_operation".format(instance_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -192,9 +192,9 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual(HTTPStatus.GONE, response.status_code)
         self.assertEqual('succeeded', response.json()['state'])
 
-    def check_last_operation_after_provision(self, instace_guid, operation):
+    def check_last_operation_after_provision(self, instance_guid, operation):
         response = requests.get(
-            "http://localhost:5001/v2/service_instances/{}/last_operation".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}/last_operation".format(instance_guid),
             params={
                 'service_id': self.service_guid,
                 'plan_id': self.plan_guid,
@@ -204,9 +204,9 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual('succeeded', response.json()['state'])
 
-    def check_provision(self, instace_guid, org_guid, space_guid, service_guid, plan_guid):
+    def check_provision(self, instance_guid, org_guid, space_guid, service_guid, plan_guid):
         response = requests.put(
-            "http://localhost:5001/v2/service_instances/{}?accepts_incomplete=true".format(instace_guid),
+            "http://localhost:5001/v2/service_instances/{}?accepts_incomplete=true".format(instance_guid),
             data=json.dumps({
                 "organization_guid": org_guid,
                 "space_guid": space_guid,
@@ -332,7 +332,7 @@ class InMemoryBroker(ServiceBroker):
             instance['state'] = self.DELETING
             return DeprovisionServiceSpec(True, 'deprovision')
 
-    def last_operation(self, instance_id: str, operation_data: Optional[str], **kwargs) -> LastOperation:
+    def last_operation(self, instance_id: str, operation_data: Optional[str], service_id: Optional[str], plan_id: Optional[str], **kwargs) -> LastOperation:
         instance = self.service_instances.get(instance_id)
         if instance is None:
             raise errors.ErrInstanceDoesNotExist()
@@ -348,6 +348,8 @@ class InMemoryBroker(ServiceBroker):
                                instance_id: str,
                                binding_id: str,
                                operation_data: Optional[str],
+                               service_id: Optional[str],
+                               plan_id: Optional[str],
                                **kwargs
                                ) -> LastOperation:
         instance = self.service_instances.get(instance_id, {})
