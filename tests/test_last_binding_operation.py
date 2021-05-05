@@ -18,7 +18,7 @@ class LastBindingOperationTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
-        self.broker.last_binding_operation.assert_called_once_with('here-instance_id', 'binding_id', None)
+        self.broker.last_binding_operation.assert_called_once_with('here-instance_id', 'binding_id', None, None, None)
 
     def test_last_operation_called_with_operation_data(self):
         self.broker.last_binding_operation.return_value = LastOperation(OperationState.IN_PROGRESS, 'Running...')
@@ -32,7 +32,7 @@ class LastBindingOperationTest(BrokerTestCase):
             })
 
         self.broker.last_binding_operation.assert_called_once_with('here-instance_id', 'binding_id',
-                                                                   'service-guid-here operation-data')
+                                                                   'service-guid-here operation-data', "", "456")
 
     def test_returns_200_with_given_state(self):
         self.broker.last_binding_operation.return_value = LastOperation(OperationState.IN_PROGRESS, 'Running...')
@@ -45,6 +45,8 @@ class LastBindingOperationTest(BrokerTestCase):
                 'Authorization': self.auth_header
             })
 
+        self.broker.last_binding_operation.assert_called_once_with('here-instance_id', 'binding_id',
+                                                                   'service-guid-here operation-data', "123", "456")
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(response.json, dict(
             state=OperationState.IN_PROGRESS.value,

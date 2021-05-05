@@ -453,6 +453,8 @@ class ServiceBroker:
     def last_operation(self,
                        instance_id: str,
                        operation_data: Optional[str],
+                       service_id: Optional[str],
+                       plan_id: Optional[str],
                        **kwargs
                        ) -> LastOperation:
         """
@@ -460,6 +462,8 @@ class ServiceBroker:
 
         :param instance_id: Instance id provided by the platform
         :param operation_data: Operation data received from async operation
+        :param service_id: service identifier
+        :param plan_id: plan identifier
         :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: LastOperation
         """
@@ -469,6 +473,8 @@ class ServiceBroker:
                                instance_id: str,
                                binding_id: str,
                                operation_data: Optional[str],
+                               service_id: Optional[str],
+                               plan_id: Optional[str],
                                **kwargs
                                ) -> LastOperation:
         """
@@ -478,6 +484,8 @@ class ServiceBroker:
         :param instance_id: Instance id provided by the platform
         :param binding_id: Binding id provided by the platform
         :param operation_data: Operation data received from async operation
+        :param service_id: service identifier
+        :param plan_id: plan identifier
         :param kwargs: May contain additional information, improves compatibility with upstream versions
         :rtype: LastOperation
         """
