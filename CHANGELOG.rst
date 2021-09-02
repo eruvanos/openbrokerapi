@@ -1,6 +1,8 @@
 Changelog
 =============
 
+  - check service_id
+
 **v4.1**
   - Drop Python 3.5 support
   - Fix ´bind´ in multi broker setup (#117); thx @vaxvms

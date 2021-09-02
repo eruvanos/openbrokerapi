@@ -286,3 +286,71 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(response.json,
                          dict(description="Improper Content-Type header. Expecting \"application/json\""))
+
+    def test_returns_400_if_unknown_service_id(self):
+        response = self.client.patch(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "wrong-service-guid-here",
+                "plan_id": "plan-guid-here",
+                "previous_values": {
+                    "plan_id": "old-plan-guid-here",
+                    "service_id": "service-guid-here",
+                    "organization_id": "org-guid-here",
+                    "space_id": "space-guid-here"
+                }
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json,
+                         dict(description="service_id not found in this service broker."))
+
+    def test_returns_400_if_unknown_plan_id(self):
+        response = self.client.patch(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "wrong-plan-guid-here",
+                "previous_values": {
+                    "plan_id": "old-plan-guid-here",
+                    "service_id": "service-guid-here",
+                    "organization_id": "org-guid-here",
+                    "space_id": "space-guid-here"
+                }
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json,
+                         dict(description="plan_id not found in this service broker."))
+
+    def test_returns_200_without_plan_id(self):
+        self.broker.update.return_value = UpdateServiceSpec(False, "operation")
+
+        response = self.client.patch(
+            "/v2/service_instances/abc",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "previous_values": {
+                    "service_id": "service-guid-here",
+                    "organization_id": "org-guid-here",
+                    "space_id": "space-guid-here"
+                }
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(response.json, dict())

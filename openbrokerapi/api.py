@@ -1,7 +1,7 @@
 import logging
 from http import HTTPStatus
 from json.decoder import JSONDecodeError
-from typing import List, Union
+from typing import List, Optional, Union
 
 from flask import Blueprint, Request
 from flask import json, request
@@ -52,16 +52,24 @@ class BrokerCredentials:
         self.password = password
 
 
-def _check_plan_id(broker: ServiceBroker, plan_id) -> bool:
+def _check_service_plan_ids(service_broker: ServiceBroker, service_id: str, plan_id: Optional[str]) -> str:
     """
-    Checks that the plan_id exists in the catalog
-    :return: boolean
+    Checks that the service_id and plan_id exist in the catalog of the supplied service broker.
+
+    :param ServiceBroker service_broker: Services that this broker exposes
+    :param str service_id: service identifier
+    :param Optional[str] plan_id: plan identifier
+    :return str: Empty string on success, or "service_id" if supplied service identifier was not found, or "plan_id" if supplied plan identifier was not found.
     """
-    for service in ensure_list(broker.catalog()):
-        for plan in service.plans:
-            if plan.id == plan_id:
-                return True
-    return False
+    for service in ensure_list(service_broker.catalog()):
+        if service.id == service_id:
+            if plan_id is None:
+                return ""
+            for plan in service.plans:
+                if plan.id == plan_id:
+                    return ""
+            return "plan_id"
+    return "service_id"
 
 
 def get_blueprint(service_broker: ServiceBroker,
@@ -142,8 +150,9 @@ def get_blueprint(service_broker: ServiceBroker,
             provision_details.originating_identity = request.originating_identity
             provision_details.authorization_username = extract_authorization_username(request)
 
-            if not _check_plan_id(service_broker, provision_details.plan_id):
-                raise TypeError('plan_id not found in this service.')
+            check = _check_service_plan_ids(service_broker, provision_details.service_id, provision_details.plan_id)
+            if check:
+                raise TypeError(f'{check} not found in this service broker.')
         except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
@@ -180,9 +189,9 @@ def get_blueprint(service_broker: ServiceBroker,
             update_details = UpdateDetails(**json.loads(request.data))
             update_details.originating_identity = request.originating_identity
             update_details.authorization_username = extract_authorization_username(request)
-            plan_id = update_details.plan_id
-            if plan_id and not _check_plan_id(service_broker, plan_id):
-                raise TypeError('plan_id not found in this service.')
+            check = _check_service_plan_ids(service_broker, update_details.service_id, update_details.plan_id)
+            if check:
+                raise TypeError(f'{check} not found in this service broker.')
         except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
@@ -212,8 +221,9 @@ def get_blueprint(service_broker: ServiceBroker,
             binding_details = BindDetails(**json.loads(request.data))
             binding_details.originating_identity = request.originating_identity
             binding_details.authorization_username = extract_authorization_username(request)
-            if not _check_plan_id(service_broker, binding_details.plan_id):
-                raise TypeError('plan_id not found in this service.')
+            check = _check_service_plan_ids(service_broker, binding_details.service_id, binding_details.plan_id)
+            if check:
+                raise TypeError(f'{check} not found in this service broker.')
         except (TypeError, KeyError, JSONDecodeError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
@@ -256,8 +266,9 @@ def get_blueprint(service_broker: ServiceBroker,
             unbind_details = UnbindDetails(service_id=service_id, plan_id=plan_id)
             unbind_details.originating_identity = request.originating_identity
             unbind_details.authorization_username = extract_authorization_username(request)
-            if not _check_plan_id(service_broker, unbind_details.plan_id):
-                raise TypeError('plan_id not found in this service.')
+            check = _check_service_plan_ids(service_broker, unbind_details.service_id, unbind_details.plan_id)
+            if check:
+                raise TypeError(f'{check} not found in this service broker.')
         except (TypeError, KeyError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST
@@ -283,8 +294,9 @@ def get_blueprint(service_broker: ServiceBroker,
             deprovision_details = DeprovisionDetails(service_id=service_id, plan_id=plan_id)
             deprovision_details.originating_identity = request.originating_identity
             deprovision_details.authorization_username = extract_authorization_username(request)
-            if not _check_plan_id(service_broker, deprovision_details.plan_id):
-                raise TypeError('plan_id not found in this service.')
+            check = _check_service_plan_ids(service_broker, deprovision_details.service_id, deprovision_details.plan_id)
+            if check:
+                raise TypeError(f'{check} not found in this service broker.')
         except (TypeError, KeyError) as e:
             logger.exception(e)
             return to_json_response(ErrorResponse(description=str(e))), HTTPStatus.BAD_REQUEST

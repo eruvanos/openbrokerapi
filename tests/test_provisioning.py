@@ -57,7 +57,7 @@ class ProvisioningTest(BrokerTestCase):
         self.assertEqual(actual_details.context["organization_guid"], "org-guid-here")
         self.assertEqual(actual_details.context["space_guid"], "space-guid-here")
 
-    def test_provisining_called_just_with_required_fields(self):
+    def test_provisioning_called_just_with_required_fields(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         self.client.put(
@@ -88,7 +88,7 @@ class ProvisioningTest(BrokerTestCase):
 
         self.assertIsNone(actual_details.parameters)
 
-    def test_provisining_optional_org_and_space_if_available_in_context(self):
+    def test_provisioning_optional_org_and_space_if_available_in_context(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         self.client.put(
@@ -117,7 +117,7 @@ class ProvisioningTest(BrokerTestCase):
 
         self.assertIsNone(actual_details.parameters)
 
-    def test_provisining_ignores_unknown_parameters(self):
+    def test_provisioning_ignores_unknown_parameters(self):
         self.broker.provision.return_value = ProvisionedServiceSpec(dashboard_url="dash_url", operation="operation_str")
 
         self.client.put(
@@ -421,3 +421,45 @@ class ProvisioningTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(response.json, dict(description="space_guid does not match with context.space_guid"))
+
+    def test_returns_400_with_wrong_service_id(self):
+        response = self.client.put(
+            "/v2/service_instances/here-instance-id?accepts_incomplete=true",
+            data=json.dumps({
+                "service_id": "wrong-service-guid-here",
+                "plan_id": "plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+                "parameters": {
+                    "parameter1": 1
+                },
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="service_id not found in this service broker."))
+
+    def test_returns_400_with_wrong_plan_id(self):
+        response = self.client.put(
+            "/v2/service_instances/here-instance-id?accepts_incomplete=true",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "wrong-plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+                "parameters": {
+                    "parameter1": 1
+                },
+            }),
+            headers={
+                'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
+                'Authorization': self.auth_header
+            })
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, dict(description="plan_id not found in this service broker."))
