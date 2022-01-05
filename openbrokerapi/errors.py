@@ -68,3 +68,10 @@ class ErrBadRequest(ServiceException):
     """
     def __init__(self, msg='Malformed or missing data'):
         super().__init__(msg)
+
+class ErrUnauthorized(ServiceException):
+    """
+    Raise if authorization is missing or is not valid
+    """
+    def __init__(self, msg='Unauthorized'):
+        super().__init__(msg)

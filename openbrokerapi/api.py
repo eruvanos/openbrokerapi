@@ -124,6 +124,13 @@ def get_blueprint(service_broker: ServiceBroker,
             description=constants.DEFAULT_BAD_REQUEST_ERROR_MESSAGE
         )), HTTPStatus.BAD_REQUEST
 
+    @openbroker.errorhandler(errors.ErrUnauthorized)
+    def error_handler_unauthorized(e):
+        logger.exception(e)
+        return to_json_response(ErrorResponse(
+            description=str(e)
+        )), HTTPStatus.UNAUTHORIZED
+
     @openbroker.route("/v2/catalog", methods=['GET'])
     def catalog():
         """

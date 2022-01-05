@@ -107,14 +107,27 @@ class BadRequest(BrokerTestCase):
 
         self.assert400(response)
 
-    def test_deprovisioning_is_called_with_the_right_values(self):
-        self.broker.deprovision.side_effect = errors.ErrBadRequest('BadRequest')
+    def test_provisioning_unathorized(self):
+        self.broker.provision.side_effect = errors.ErrUnauthorized('Unauthorized')
 
-        response = self.client.delete(
-            "/v2/service_instances/here_instance_id?service_id=service-guid-here&plan_id=plan-guid-here&accepts_incomplete=true",
+        response = self.client.put(
+            "/v2/service_instances/here-instance-id?accepts_incomplete=true",
+            data=json.dumps({
+                "service_id": "service-guid-here",
+                "plan_id": "plan-guid-here",
+                "organization_guid": "org-guid-here",
+                "space_guid": "space-guid-here",
+                "parameters": {
+                    "parameter1": 1
+                },
+                "context": {
+                    "organization_guid": "org-guid-here",
+                    "space_guid": "space-guid-here",
+                }
+            }),
             headers={
                 'X-Broker-Api-Version': '2.13',
+                'Content-Type': 'application/json',
                 'Authorization': self.auth_header
             })
-
-        self.assert400(response)
+        self.assert401(response)
