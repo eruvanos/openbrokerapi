@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file requirements.txt setup.py
 #
-click==8.0.3                # via flask
+click==8.0.4                # via flask
 flask==2.0.2
 gevent==21.8.0
 greenlet==1.1.2          # via gevent
