@@ -18,24 +18,22 @@ class GetInstanceTest(BrokerTestCase):
             service_guid,
             plan_guid,
             dashboard_url=dashboard_url,
-            parameters={'key': parameters}
+            parameters={"key": parameters},
         )
 
         response = self.client.get(
             "/v2/service_instances/{}".format(instance_guid),
-            headers={
-                'X-Broker-Api-Version': '2.14',
-                'Authorization': self.auth_header
-            })
+            headers={"X-Broker-Api-Version": "2.14", "Authorization": self.auth_header},
+        )
 
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.broker.get_instance.assert_called_once_with(instance_guid)
 
         info = response.json
-        self.assertEqual(service_guid, info.get('service_id'))
-        self.assertEqual(plan_guid, info.get('plan_id'))
-        self.assertEqual(dashboard_url, info.get('dashboard_url'))
-        self.assertDictEqual({'key': parameters}, info.get('parameters'))
+        self.assertEqual(service_guid, info.get("service_id"))
+        self.assertEqual(plan_guid, info.get("plan_id"))
+        self.assertEqual(dashboard_url, info.get("dashboard_url"))
+        self.assertDictEqual({"key": parameters}, info.get("parameters"))
 
     def test_returns_404_if_instance_not_exists(self):
         instance_guid = str(uuid4())
@@ -44,10 +42,8 @@ class GetInstanceTest(BrokerTestCase):
 
         response = self.client.get(
             "/v2/service_instances/{}".format(instance_guid),
-            headers={
-                'X-Broker-Api-Version': '2.14',
-                'Authorization': self.auth_header
-            })
+            headers={"X-Broker-Api-Version": "2.14", "Authorization": self.auth_header},
+        )
 
         self.assertEqual(HTTPStatus.NOT_FOUND, response.status_code)
         self.assertEqual({}, response.json)
@@ -59,13 +55,14 @@ class GetInstanceTest(BrokerTestCase):
 
         response = self.client.get(
             "/v2/service_instances/{}".format(instance_guid),
-            headers={
-                'X-Broker-Api-Version': '2.14',
-                'Authorization': self.auth_header
-            })
+            headers={"X-Broker-Api-Version": "2.14", "Authorization": self.auth_header},
+        )
 
         self.assertEqual(HTTPStatus.UNPROCESSABLE_ENTITY, response.status_code)
-        self.assertEqual(response.json, dict(
-            description='The Service Broker does not support concurrent requests that mutate the same resource.',
-            error='ConcurrencyError'
-        ))
+        self.assertEqual(
+            response.json,
+            dict(
+                description="The Service Broker does not support concurrent requests that mutate the same resource.",
+                error="ConcurrencyError",
+            ),
+        )

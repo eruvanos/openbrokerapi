@@ -1,7 +1,8 @@
 # Development commands and notes
 
+## Contributing
 
-
+Use black to format your code!
 
 ## Build pipeline
 

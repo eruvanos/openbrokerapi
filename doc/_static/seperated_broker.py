@@ -8,39 +8,37 @@ from openbrokerapi.service_broker import (
     ProvisionDetails,
     ProvisionedServiceSpec,
     DeprovisionDetails,
-    DeprovisionServiceSpec
+    DeprovisionServiceSpec,
 )
 
 
 class MyServiceBroker1(ServiceBroker):
     def catalog(self) -> Union[Service, List[Service]]:
         return Service(
-            id='service id 1',
-            name='service name 1',
-            description='service description 1',
+            id="service id 1",
+            name="service name 1",
+            description="service description 1",
             bindable=False,
             plans=[
                 ServicePlan(
-                    id='plan id',
-                    name='plan name',
-                    description='plan description',
+                    id="plan id",
+                    name="plan name",
+                    description="plan description",
                 )
-            ]
+            ],
         )
 
-    def provision(self,
-                  instance_id: str,
-                  details: ProvisionDetails,
-                  async_allowed: bool) -> ProvisionedServiceSpec:
+    def provision(
+        self, instance_id: str, details: ProvisionDetails, async_allowed: bool
+    ) -> ProvisionedServiceSpec:
         # Create service instance
         # ...
 
         return ProvisionedServiceSpec()
 
-    def deprovision(self,
-                    instance_id: str,
-                    details: DeprovisionDetails,
-                    async_allowed: bool) -> DeprovisionServiceSpec:
+    def deprovision(
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool
+    ) -> DeprovisionServiceSpec:
         # Delete service instance
         # ...
 
@@ -50,34 +48,34 @@ class MyServiceBroker1(ServiceBroker):
 class MyServiceBroker2(ServiceBroker):
     def catalog(self) -> Union[Service, List[Service]]:
         return Service(
-            id='service id 2',
-            name='service name 2',
-            description='service description 2',
+            id="service id 2",
+            name="service name 2",
+            description="service description 2",
             bindable=False,
             plans=[
                 ServicePlan(
-                    id='plan id',
-                    name='plan name',
-                    description='plan description',
+                    id="plan id",
+                    name="plan name",
+                    description="plan description",
                 )
-            ]
+            ],
         )
 
-    def provision(self,
-                  instance_id: str,
-                  details: ProvisionDetails,
-                  async_allowed: bool,
-                  **kwargs) -> ProvisionedServiceSpec:
+    def provision(
+        self, instance_id: str, details: ProvisionDetails, async_allowed: bool, **kwargs
+    ) -> ProvisionedServiceSpec:
         # Create service instance
         # ...
 
         return ProvisionedServiceSpec()
 
-    def deprovision(self,
-                    instance_id: str,
-                    details: DeprovisionDetails,
-                    async_allowed: bool,
-                    **kwargs) -> DeprovisionServiceSpec:
+    def deprovision(
+        self,
+        instance_id: str,
+        details: DeprovisionDetails,
+        async_allowed: bool,
+        **kwargs
+    ) -> DeprovisionServiceSpec:
         # Delete service instance
         # ...
 

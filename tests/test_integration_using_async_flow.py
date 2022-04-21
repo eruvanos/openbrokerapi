@@ -27,17 +27,20 @@ from openbrokerapi.service_broker import (
     UnbindDetails,
     UnbindSpec,
     GetInstanceDetailsSpec,
-    GetBindingSpec)
+    GetBindingSpec,
+)
 
 
 class FullBrokerTestCase(TestCase):
-
     def setUp(self) -> None:
         broker_username = str(uuid4())
         broker_passsword = str(uuid4())
         self.request_ads = {
-            'auth': HTTPBasicAuth(broker_username, broker_passsword),
-            'headers': {'X-Broker-Api-Version': '2.15', 'Content-Type': 'application/json'}
+            "auth": HTTPBasicAuth(broker_username, broker_passsword),
+            "headers": {
+                "X-Broker-Api-Version": "2.15",
+                "Content-Type": "application/json",
+            },
         }
 
         self.service_guid = str(uuid4())
@@ -45,7 +48,12 @@ class FullBrokerTestCase(TestCase):
         self.broker = InMemoryBroker(self.service_guid, self.plan_guid)
 
         def run_server():
-            api.serve(self.broker, api.BrokerCredentials(broker_username, broker_passsword), port=5003)
+            api.serve(
+                self.broker,
+                api.BrokerCredentials(broker_username, broker_passsword),
+                host="127.0.0.1",
+                port=5003,
+            )
 
         # self.server = Process(target=run_server)
         self.server = Thread(target=run_server)
@@ -64,7 +72,9 @@ class FullBrokerTestCase(TestCase):
         self.check_catalog(self.service_guid, self.plan_guid)
 
         # ASYNC PROVISION
-        operation = self.check_provision(instance_guid, org_guid, space_guid, self.service_guid, self.plan_guid)
+        operation = self.check_provision(
+            instance_guid, org_guid, space_guid, self.service_guid, self.plan_guid
+        )
         self.check_last_operation_after_provision(instance_guid, operation)
 
         # GET INSTANCE
@@ -76,8 +86,11 @@ class FullBrokerTestCase(TestCase):
 
         # GET BINDING
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
-            **self.request_ads)
+            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(
+                instance_guid, binding_guid
+            ),
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertDictEqual({}, response.json())
 
@@ -94,169 +107,192 @@ class FullBrokerTestCase(TestCase):
 
     def check_instance_retrievable(self, instance_guid):
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}".format(instance_guid), **self.request_ads)
+            "http://localhost:5003/v2/service_instances/{}".format(instance_guid),
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.assertEqual(self.service_guid, response.json()['service_id'])
-        self.assertEqual(self.plan_guid, response.json()['plan_id'])
+        self.assertEqual(self.service_guid, response.json()["service_id"])
+        self.assertEqual(self.plan_guid, response.json()["plan_id"])
 
     def check_unbind(self, binding_guid, instance_guid):
         response = requests.delete(
-            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
+            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(
+                instance_guid, binding_guid
+            ),
             params={
                 "service_id": self.service_guid,
                 "plan_id": self.plan_guid,
-                'accepts_incomplete': 'true'
+                "accepts_incomplete": "true",
             },
             **self.request_ads
         )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
-        operation = response.json().get('operation')
-        self.assertEqual('unbind', operation)
+        operation = response.json().get("operation")
+        self.assertEqual("unbind", operation)
         return operation
 
     def check_last_operation_after_bind(self, binding_guid, instance_guid, operation):
         response = requests.get(
-            'http://localhost:5003/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instance_guid,
-                                                                                                      binding_guid),
+            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}/last_operation".format(
+                instance_guid, binding_guid
+            ),
             params={
-                'service_id': self.service_guid,
-                'plan_id': self.plan_guid,
-                'operation': operation,
+                "service_id": self.service_guid,
+                "plan_id": self.plan_guid,
+                "operation": operation,
             },
-            **self.request_ads)
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.assertEqual('succeeded', response.json()['state'])
+        self.assertEqual("succeeded", response.json()["state"])
 
     def check_last_operation_after_unbind(self, binding_guid, instance_guid, operation):
         response = requests.get(
-            'http://localhost:5003/v2/service_instances/{}/service_bindings/{}/last_operation'.format(instance_guid,
-                                                                                                      binding_guid),
+            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}/last_operation".format(
+                instance_guid, binding_guid
+            ),
             params={
-                'service_id': self.service_guid,
-                'plan_id': self.plan_guid,
-                'operation': operation,
+                "service_id": self.service_guid,
+                "plan_id": self.plan_guid,
+                "operation": operation,
             },
-            **self.request_ads)
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.assertEqual('succeeded', response.json()['state'])
+        self.assertEqual("succeeded", response.json()["state"])
 
     def check_bind(self, binding_guid, instance_guid):
         response = requests.put(
             "http://localhost:5003/v2/service_instances/{}/service_bindings/{}?accepts_incomplete=true".format(
-                instance_guid, binding_guid),
-            data=json.dumps({
-                "service_id": self.service_guid,
-                "plan_id": self.plan_guid
-            }),
+                instance_guid, binding_guid
+            ),
+            data=json.dumps(
+                {"service_id": self.service_guid, "plan_id": self.plan_guid}
+            ),
             **self.request_ads
         )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
-        operation = response.json().get('operation')
-        self.assertEqual('bind', operation)
+        operation = response.json().get("operation")
+        self.assertEqual("bind", operation)
         return operation
 
     def check_deprovision_after_deprovision_done(self, instance_guid):
         response = requests.delete(
             "http://localhost:5003/v2/service_instances/{}".format(instance_guid),
             params={
-                'service_id': self.service_guid,
-                'plan_id': self.plan_guid,
-                'accepts_incomplete': 'true'
+                "service_id": self.service_guid,
+                "plan_id": self.plan_guid,
+                "accepts_incomplete": "true",
             },
-            **self.request_ads)
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.GONE, response.status_code)
 
     def check_deprovision(self, instance_guid, operation):
         response = requests.delete(
             "http://localhost:5003/v2/service_instances/{}".format(instance_guid),
             params={
-                'service_id': self.service_guid,
-                'plan_id': self.plan_guid,
-                'accepts_incomplete': 'true'
+                "service_id": self.service_guid,
+                "plan_id": self.plan_guid,
+                "accepts_incomplete": "true",
             },
-            **self.request_ads)
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
-        operation = response.json()['operation']
-        self.assertEqual('deprovision', operation)
+        operation = response.json()["operation"]
+        self.assertEqual("deprovision", operation)
         return operation
 
     def check_last_operation_after_deprovision(self, instance_guid, operation):
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}/last_operation".format(instance_guid),
+            "http://localhost:5003/v2/service_instances/{}/last_operation".format(
+                instance_guid
+            ),
             params={
-                'service_id': self.service_guid,
-                'plan_id': self.plan_guid,
-                'operation': operation
+                "service_id": self.service_guid,
+                "plan_id": self.plan_guid,
+                "operation": operation,
             },
-            **self.request_ads)
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.GONE, response.status_code)
-        self.assertEqual('succeeded', response.json()['state'])
+        self.assertEqual("succeeded", response.json()["state"])
 
     def check_last_operation_after_provision(self, instance_guid, operation):
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}/last_operation".format(instance_guid),
+            "http://localhost:5003/v2/service_instances/{}/last_operation".format(
+                instance_guid
+            ),
             params={
-                'service_id': self.service_guid,
-                'plan_id': self.plan_guid,
-                'operation': operation
+                "service_id": self.service_guid,
+                "plan_id": self.plan_guid,
+                "operation": operation,
             },
-            **self.request_ads)
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.assertEqual('succeeded', response.json()['state'])
+        self.assertEqual("succeeded", response.json()["state"])
 
-    def check_provision(self, instance_guid, org_guid, space_guid, service_guid, plan_guid):
+    def check_provision(
+        self, instance_guid, org_guid, space_guid, service_guid, plan_guid
+    ):
         response = requests.put(
-            "http://localhost:5003/v2/service_instances/{}?accepts_incomplete=true".format(instance_guid),
-            data=json.dumps({
-                "organization_guid": org_guid,
-                "space_guid": space_guid,
-                "service_id": service_guid,
-                "plan_id": plan_guid,
-                # "context": {
-                #     "organization_guid": "org-guid-here",
-                #     "space_guid": "space-guid-here",
-                # }
-            }),
-            **self.request_ads)
+            "http://localhost:5003/v2/service_instances/{}?accepts_incomplete=true".format(
+                instance_guid
+            ),
+            data=json.dumps(
+                {
+                    "organization_guid": org_guid,
+                    "space_guid": space_guid,
+                    "service_id": service_guid,
+                    "plan_id": plan_guid,
+                    # "context": {
+                    #     "organization_guid": "org-guid-here",
+                    #     "space_guid": "space-guid-here",
+                    # }
+                }
+            ),
+            **self.request_ads
+        )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
 
-        operation = response.json().get('operation')
-        self.assertEqual('provision', operation)
+        operation = response.json().get("operation")
+        self.assertEqual("provision", operation)
 
         return operation
 
     def check_catalog(self, service_guid, plan_guid):
-        response = requests.get('http://localhost:5003/v2/catalog', **self.request_ads)
+        response = requests.get("http://localhost:5003/v2/catalog", **self.request_ads)
         catalog = response.json()
         self.assertEqual(HTTPStatus.OK, response.status_code)
         # find service
-        for service in catalog['services']:
-            if service['name'] == 'InMemService':
+        for service in catalog["services"]:
+            if service["name"] == "InMemService":
                 break
         else:
             service = None
         self.assertIsNotNone(service)
-        self.assertEqual(service_guid, service.get('id'))
-        self.assertTrue(service.get('instances_retrievable'))
-        self.assertTrue(service.get('bindings_retrievable'))
+        self.assertEqual(service_guid, service.get("id"))
+        self.assertTrue(service.get("instances_retrievable"))
+        self.assertTrue(service.get("bindings_retrievable"))
 
         # find plan
-        for plan in service['plans']:
-            if plan['name'] == 'standard':
+        for plan in service["plans"]:
+            if plan["name"] == "standard":
                 break
         else:
             plan = None
         self.assertIsNotNone(plan)
-        self.assertEqual(plan_guid, plan.get('id'))
+        self.assertEqual(plan_guid, plan.get("id"))
 
 
 class InMemoryBroker(ServiceBroker):
-    CREATING = 'CREATING'
-    CREATED = 'CREATED'
-    BINDING = 'BINDING'
-    BOUND = 'BOUND'
-    UNBINDING = 'UNBINDING'
-    DELETING = 'DELETING'
+    CREATING = "CREATING"
+    CREATED = "CREATED"
+    BINDING = "BINDING"
+    BOUND = "BOUND"
+    UNBINDING = "UNBINDING"
+    DELETING = "DELETING"
 
     def __init__(self, service_guid, plan_guid):
         self.service_guid = service_guid
@@ -267,60 +303,75 @@ class InMemoryBroker(ServiceBroker):
     def catalog(self) -> Union[Service, List[Service]]:
         return Service(
             id=self.service_guid,
-            name='InMemService',
-            description='InMemService',
+            name="InMemService",
+            description="InMemService",
             bindable=True,
             plans=[
                 ServicePlan(
                     id=self.plan_guid,
-                    name='standard',
-                    description='standard plan',
+                    name="standard",
+                    description="standard plan",
                     free=False,
                 )
             ],
             instances_retrievable=True,
-            bindings_retrievable=True
+            bindings_retrievable=True,
         )
 
-    def provision(self,
-                  instance_id: str,
-                  details: ProvisionDetails,
-                  async_allowed: bool,
-                  **kwargs) -> ProvisionedServiceSpec:
+    def provision(
+        self, instance_id: str, details: ProvisionDetails, async_allowed: bool, **kwargs
+    ) -> ProvisionedServiceSpec:
         if not async_allowed:
             raise errors.ErrAsyncRequired()
 
         self.service_instances[instance_id] = {
-            'provision_details': details,
-            'state': self.CREATING
+            "provision_details": details,
+            "state": self.CREATING,
         }
 
         return ProvisionedServiceSpec(
-            state=ProvisionState.IS_ASYNC,
-            operation='provision'
+            state=ProvisionState.IS_ASYNC, operation="provision"
         )
 
-    def bind(self, instance_id: str, binding_id: str, details: BindDetails, async_allowed: bool, **kwargs) -> Binding:
+    def bind(
+        self,
+        instance_id: str,
+        binding_id: str,
+        details: BindDetails,
+        async_allowed: bool,
+        **kwargs
+    ) -> Binding:
         if not async_allowed:
             raise errors.ErrAsyncRequired()
 
         instance = self.service_instances.get(instance_id, {})
-        if instance and instance.get('state') == self.CREATED:
-            instance['state'] = self.BINDING
-            return Binding(BindState.IS_ASYNC, operation='bind')
+        if instance and instance.get("state") == self.CREATED:
+            instance["state"] = self.BINDING
+            return Binding(BindState.IS_ASYNC, operation="bind")
 
-    def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails, async_allowed: bool,
-               **kwargs) -> UnbindSpec:
+    def unbind(
+        self,
+        instance_id: str,
+        binding_id: str,
+        details: UnbindDetails,
+        async_allowed: bool,
+        **kwargs
+    ) -> UnbindSpec:
         if not async_allowed:
             raise errors.ErrAsyncRequired()
 
         instance = self.service_instances.get(instance_id, {})
-        if instance and instance.get('state') == self.BOUND:
-            instance['state'] = self.UNBINDING
-            return UnbindSpec(True, 'unbind')
+        if instance and instance.get("state") == self.BOUND:
+            instance["state"] = self.UNBINDING
+            return UnbindSpec(True, "unbind")
 
-    def deprovision(self, instance_id: str, details: DeprovisionDetails, async_allowed: bool,
-                    **kwargs) -> DeprovisionServiceSpec:
+    def deprovision(
+        self,
+        instance_id: str,
+        details: DeprovisionDetails,
+        async_allowed: bool,
+        **kwargs
+    ) -> DeprovisionServiceSpec:
         if not async_allowed:
             raise errors.ErrAsyncRequired()
 
@@ -328,36 +379,44 @@ class InMemoryBroker(ServiceBroker):
         if instance is None:
             raise errors.ErrInstanceDoesNotExist()
 
-        if instance.get('state') == self.CREATED:
-            instance['state'] = self.DELETING
-            return DeprovisionServiceSpec(True, 'deprovision')
+        if instance.get("state") == self.CREATED:
+            instance["state"] = self.DELETING
+            return DeprovisionServiceSpec(True, "deprovision")
 
-    def last_operation(self, instance_id: str, operation_data: Optional[str], service_id: Optional[str], plan_id: Optional[str], **kwargs) -> LastOperation:
+    def last_operation(
+        self,
+        instance_id: str,
+        operation_data: Optional[str],
+        service_id: Optional[str],
+        plan_id: Optional[str],
+        **kwargs
+    ) -> LastOperation:
         instance = self.service_instances.get(instance_id)
         if instance is None:
             raise errors.ErrInstanceDoesNotExist()
 
-        if instance.get('state') == self.CREATING:
-            instance['state'] = self.CREATED
+        if instance.get("state") == self.CREATING:
+            instance["state"] = self.CREATED
             return LastOperation(OperationState.SUCCEEDED)
-        elif instance.get('state') == self.DELETING:
+        elif instance.get("state") == self.DELETING:
             del self.service_instances[instance_id]
             raise errors.ErrInstanceDoesNotExist()
 
-    def last_binding_operation(self,
-                               instance_id: str,
-                               binding_id: str,
-                               operation_data: Optional[str],
-                               service_id: Optional[str],
-                               plan_id: Optional[str],
-                               **kwargs
-                               ) -> LastOperation:
+    def last_binding_operation(
+        self,
+        instance_id: str,
+        binding_id: str,
+        operation_data: Optional[str],
+        service_id: Optional[str],
+        plan_id: Optional[str],
+        **kwargs
+    ) -> LastOperation:
         instance = self.service_instances.get(instance_id, {})
-        if instance.get('state') == self.BINDING:
-            instance['state'] = self.BOUND
+        if instance.get("state") == self.BINDING:
+            instance["state"] = self.BOUND
             return LastOperation(OperationState.SUCCEEDED)
-        elif instance.get('state') == self.UNBINDING:
-            instance['state'] = self.CREATED
+        elif instance.get("state") == self.UNBINDING:
+            instance["state"] = self.CREATED
             return LastOperation(OperationState.SUCCEEDED)
 
     def get_instance(self, instance_id: str, **kwargs) -> GetInstanceDetailsSpec:
@@ -365,15 +424,14 @@ class InMemoryBroker(ServiceBroker):
         if instance is None:
             raise errors.ErrInstanceDoesNotExist()
 
-        return GetInstanceDetailsSpec(
-            self.service_guid,
-            self.plan_guid
-        )
+        return GetInstanceDetailsSpec(self.service_guid, self.plan_guid)
 
-    def get_binding(self, instance_id: str, binding_id: str, **kwargs) -> GetBindingSpec:
+    def get_binding(
+        self, instance_id: str, binding_id: str, **kwargs
+    ) -> GetBindingSpec:
         instance = self.service_instances.get(instance_id)
         if instance is None:
             raise errors.ErrInstanceDoesNotExist()
 
-        if instance.get('state') == self.BOUND:
+        if instance.get("state") == self.BOUND:
             return GetBindingSpec()

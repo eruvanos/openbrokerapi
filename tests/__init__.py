@@ -1,5 +1,6 @@
 try:
     from gevent import monkey
+
     monkey.patch_all()
 except ImportError:
     # fine if no gevent is available
@@ -17,7 +18,7 @@ from openbrokerapi.log_util import basic_config
 
 
 class BrokerTestCase(TestCase):
-    auth_header = 'Basic ' + base64.b64encode(b":").decode("ascii")
+    auth_header = "Basic " + base64.b64encode(b":").decode("ascii")
 
     def create_app(self):
         from openbrokerapi.api import get_blueprint
@@ -26,9 +27,8 @@ class BrokerTestCase(TestCase):
         self.broker = Mock()
 
         app.register_blueprint(
-            get_blueprint(self.broker,
-                          BrokerCredentials("", ""),
-                          basic_config(level=logging.WARN)
-                          )
+            get_blueprint(
+                self.broker, BrokerCredentials("", ""), basic_config(level=logging.WARN)
+            )
         )
         return app
