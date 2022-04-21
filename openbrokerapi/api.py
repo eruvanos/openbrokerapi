@@ -398,6 +398,7 @@ def serve_multiple(service_brokers: List[ServiceBroker],
 def serve(service_broker: ServiceBroker,
           credentials: Union[List[BrokerCredentials], BrokerCredentials, None],
           logger: logging.Logger = logging.root,
+          host="0.0.0.0",
           port=5000,
           debug=False):
     """
@@ -407,6 +408,7 @@ def serve(service_broker: ServiceBroker,
     :param service_broker: ServicesBroker for services to provide
     :param credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior
+    :param host: Host, defaults to all interfaces (0.0.0.0)
     :param port: Port
     :param debug: Enables debugging in flask app
     """
@@ -423,11 +425,11 @@ def serve(service_broker: ServiceBroker,
     try:
         from gevent.pywsgi import WSGIServer
 
-        logger.info('Start Gevent server on 0.0.0.0:%s' % port)
-        http_server = WSGIServer(('0.0.0.0', port), app)
+        logger.info(f'Start Gevent server on {host}:{port}')
+        http_server = WSGIServer((host, port), app)
         http_server.serve_forever()
     except ImportError:
 
-        logger.info('Start Flask on 0.0.0.0:%s' % port)
+        logger.info(f'Start Flask on {host}:{port}')
         logger.warning('Use a server like gevent or gunicorn for production!')
-        app.run('0.0.0.0', port)
+        app.run(host, port)

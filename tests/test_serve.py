@@ -53,19 +53,19 @@ class InMemBroker(ServiceBroker):
 
 
 def run_serve_provision_without_auth():
-    api.serve(InMemBroker(), credentials=None, port=5001)
+    api.serve(InMemBroker(), credentials=None, host="127.0.0.1", port=5001)
 
 
 def run_serve_starts_server():
     broker = Mock()
     broker.catalog.return_value = []
-    api.serve(broker, api.BrokerCredentials("", ""), port=5001)
+    api.serve(broker, api.BrokerCredentials("", ""), host="127.0.0.1", port=5001)
 
 
 def run_serve_starts_server_without_auth():
     broker = Mock()
     broker.catalog.return_value = []
-    api.serve(broker, credentials=None, port=5001)
+    api.serve(broker, credentials=None, host="127.0.0.1", port=5001)
 
 
 def run_serve_starts_with_single_instance():
@@ -73,7 +73,7 @@ def run_serve_starts_with_single_instance():
     broker.catalog.return_value = Service('id', 'name', 'description', False, [])
     api.serve(broker, [api.BrokerCredentials("cfy-login", "cfy-pwd"),
                        api.BrokerCredentials("k8s-login", "k8s-pwd")],
-              port=5001)
+              host="127.0.0.1", port=5001)
 
 
 class ServeTest(TestCase):
