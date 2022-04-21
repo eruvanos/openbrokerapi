@@ -53,26 +53,27 @@ class InMemBroker(ServiceBroker):
 
 
 def run_serve_provision_without_auth():
-    api.serve(InMemBroker(), credentials=None)
+    api.serve(InMemBroker(), credentials=None, port=5001)
 
 
 def run_serve_starts_server():
     broker = Mock()
     broker.catalog.return_value = []
-    api.serve(broker, api.BrokerCredentials("", ""))
+    api.serve(broker, api.BrokerCredentials("", ""), port=5001)
 
 
 def run_serve_starts_server_without_auth():
     broker = Mock()
     broker.catalog.return_value = []
-    api.serve(broker, credentials=None)
+    api.serve(broker, credentials=None, port=5001)
 
 
 def run_serve_starts_with_single_instance():
     broker = Mock()
     broker.catalog.return_value = Service('id', 'name', 'description', False, [])
     api.serve(broker, [api.BrokerCredentials("cfy-login", "cfy-pwd"),
-                       api.BrokerCredentials("k8s-login", "k8s-pwd")])
+                       api.BrokerCredentials("k8s-login", "k8s-pwd")],
+              port=5001)
 
 
 class ServeTest(TestCase):
@@ -81,10 +82,10 @@ class ServeTest(TestCase):
         server.start()
 
         time.sleep(2)
-        response = requests.get("http://localhost:5000/v2/catalog",
+        response = requests.get("http://localhost:5001/v2/catalog",
                                 auth=("", ""),
                                 headers={'X-Broker-Api-Version': '2.13'})
-        server.terminate()
+        server.kill()
         server.join()
 
         self.assertEqual(response.status_code, 200)
@@ -95,10 +96,10 @@ class ServeTest(TestCase):
         server.start()
 
         time.sleep(2)
-        response = requests.get("http://localhost:5000/v2/catalog",
+        response = requests.get("http://localhost:5001/v2/catalog",
                                 headers={'X-Broker-Api-Version': '2.13'})
 
-        server.terminate()
+        server.kill()
         server.join()
 
         self.assertEqual(response.status_code, 200)
@@ -111,7 +112,7 @@ class ServeTest(TestCase):
         time.sleep(2)
 
         response = requests.put(
-            "http://localhost:5000/v2/service_instances/here-instance-id?accepts_incomplete=true",
+            "http://localhost:5001/v2/service_instances/here-instance-id?accepts_incomplete=true",
             json={
                 "service_id": "service-test-guid",
                 "plan_id": "plan-test-guid",
@@ -127,7 +128,7 @@ class ServeTest(TestCase):
             },
             headers={'X-Broker-Api-Version': '2.13'})
 
-        server.terminate()
+        server.kill()
         server.join()
 
         self.assertEqual(response.status_code, 201)
@@ -137,10 +138,10 @@ class ServeTest(TestCase):
         server.start()
 
         time.sleep(2)
-        response = requests.get("http://localhost:5000/v2/catalog",
+        response = requests.get("http://localhost:5001/v2/catalog",
                                 auth=("k8s-login", "k8s-pwd"),
                                 headers={'X-Broker-Api-Version': '2.13'})
-        server.terminate()
+        server.kill()
         server.join()
 
         self.assertEqual(response.status_code, 200)
