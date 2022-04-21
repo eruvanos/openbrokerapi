@@ -29,7 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install poetry
         poetry install
-        poetry run pip install flake8
+        poetry run pip install flake8 coveralls pytest-cov
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -38,4 +38,4 @@ jobs:
         poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        poetry run pytest
+        poetry run pytest --cov=openbrokerapi
