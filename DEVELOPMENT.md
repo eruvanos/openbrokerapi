@@ -5,10 +5,8 @@
 
 ## Build pipeline
 
-The project is checked and build with [Travis](https://travis-ci.com/eruvanos/openbrokerapi).
-
-To publish a release use bumpversion. This will update the `setup.py` and tag the commit.
-Travis will then push the new release to [PyPi](https://pypi.python.org/pypi/openbrokerapi).
+To publish a release use bumpversion. This will update the `pyproject.toml` and tag the commit.
+#TODO a Github action will pick up the new tag and publish a new version on pypi
 
 > To trigger the whole build process use `ship.sh`.
 
@@ -21,18 +19,20 @@ Travis will then push the new release to [PyPi](https://pypi.python.org/pypi/ope
 
 ### Test
 ```
-./setup.py test
+poetry run pytest .
 ```
 
 ### Build
 ```
-./setup.py sdist bdist_wheel
+poetry build
 ```
 
 ### Upload
 ```
-twine upload -r testpypi dist/*
-twine upload dist/*
+# Test PyPI
+poetry publish --build -r testpypi
+# PyPI
+poetry publish --build
 ```
 
 ### Install from testpypi

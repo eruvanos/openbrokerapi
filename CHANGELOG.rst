@@ -1,9 +1,11 @@
 Changelog
 =============
 
+**v4.2 - WIP**
   - ErrConcurrentInstanceAccess exception on an instance update, an instance deprovision, a binding or unbinding must return 422 not 500.
   - ErrPlanChangeNotSupported exception must return 400 not 500.
 
+  - Drop Python 3.6 support
 
 **v4.1**
   - Drop Python 3.5 support
