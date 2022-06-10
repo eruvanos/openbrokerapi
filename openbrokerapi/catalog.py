@@ -25,7 +25,7 @@ class ServiceMetadata:
 
 
 class ServiceDashboardClient:
-    def __init__(self, redirect_uri: str, id: str = None, secret: str = None, **kwargs):
+    def __init__(self, *, id: str, secret: str = None, redirect_uri: str=None, **kwargs):
         self.id = id
         self.secret = secret
         self.redirect_uri = redirect_uri
