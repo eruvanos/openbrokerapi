@@ -1,4 +1,5 @@
 import logging
+import warnings
 from http import HTTPStatus
 from json.decoder import JSONDecodeError
 from typing import List, Union
@@ -177,6 +178,10 @@ def get_blueprint(
             result = service_broker.provision(
                 instance_id, provision_details, accepts_incomplete
             )
+            if result is None:
+                warnings.warn("Provision has to return ProvisionedServiceSpec")
+                raise errors.ServiceException("Internal broker error")
+
         except errors.ErrInstanceAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
@@ -248,6 +253,9 @@ def get_blueprint(
             result = service_broker.update(
                 instance_id, update_details, accepts_incomplete
             )
+            if result is None:
+                warnings.warn("Update has to return UpdateServiceSpec")
+                raise errors.ServiceException("Internal broker error")
         except errors.ErrInvalidParameters as e:
             return (
                 to_json_response(ErrorResponse("InvalidParameters", str(e))),
@@ -314,6 +322,9 @@ def get_blueprint(
             result = service_broker.bind(
                 instance_id, binding_id, binding_details, accepts_incomplete
             )
+            if result is None:
+                warnings.warn("Bind has to return a Binding")
+                raise errors.ServiceException("Internal broker error")
         except errors.ErrBindingAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
@@ -385,6 +396,9 @@ def get_blueprint(
             result = service_broker.unbind(
                 instance_id, binding_id, unbind_details, accepts_incomplete
             )
+            if result is None:
+                warnings.warn("Unbind has to return a UnbindSpec")
+                raise errors.ServiceException("Internal broker error")
         except errors.ErrBindingDoesNotExist as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
@@ -433,6 +447,9 @@ def get_blueprint(
             result = service_broker.deprovision(
                 instance_id, deprovision_details, accepts_incomplete
             )
+            if result is None:
+                warnings.warn("Deprovision has to return a DeprovisionServiceSpec")
+                raise errors.ServiceException("Internal broker error")
         except errors.ErrInstanceDoesNotExist as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.GONE
@@ -476,6 +493,9 @@ def get_blueprint(
             result = service_broker.last_operation(
                 instance_id, operation_data, service_id, plan_id
             )
+            if result is None:
+                warnings.warn("Last Operation has to return a LastOperation")
+                raise errors.ServiceException("Internal broker error")
             return (
                 to_json_response(
                     LastOperationResponse(result.state, result.description)
@@ -500,6 +520,9 @@ def get_blueprint(
         result = service_broker.last_binding_operation(
             instance_id, binding_id, operation_data, service_id, plan_id
         )
+        if result is None:
+            warnings.warn("Last Binding Operation has to return a LastOperation")
+            raise errors.ServiceException("Internal broker error")
         return (
             to_json_response(LastOperationResponse(result.state, result.description)),
             HTTPStatus.OK,
@@ -509,6 +532,10 @@ def get_blueprint(
     def get_instance(instance_id):
         try:
             result = service_broker.get_instance(instance_id)
+            if result is None:
+                warnings.warn("Get Instance has to return GetInstanceDetailsSpec")
+                raise errors.ServiceException("Internal broker error")
+
             response = GetInstanceResponse(
                 service_id=result.service_id,
                 plan_id=result.plan_id,
@@ -533,6 +560,10 @@ def get_blueprint(
     def get_binding(instance_id, binding_id):
         try:
             result = service_broker.get_binding(instance_id, binding_id)
+            if result is None:
+                warnings.warn("Get Binding has to return a GetBindingSpec")
+                raise errors.ServiceException("Internal broker error")
+
             response = GetBindingResponse(
                 credentials=result.credentials,
                 syslog_drain_url=result.syslog_drain_url,
