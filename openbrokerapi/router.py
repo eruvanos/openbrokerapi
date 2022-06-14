@@ -110,18 +110,16 @@ class Router(ServiceBroker):
     def last_operation(
         self, instance_id: str, operation_data: Optional[str], **kwargs
     ) -> LastOperation:
+        if operation_data is None:
+            raise errors.ErrInvalidParameters("Invalid operation string")
+
         data = operation_data.split(" ", maxsplit=1)
         service_id = data[0]
-        if len(data) == 2:
-            operation_data = data[1]
-        else:
-            operation_data = None
-
+        operation_data = data[1] if len(data) == 2 else None
         try:
             provider = self._get_provider_by_id(service_id)
         except KeyError as e:
             logger.exception(e)
             raise errors.ErrInvalidParameters("Invalid operation string")
 
-        result = provider.last_operation(instance_id, operation_data, **kwargs)
-        return result
+        return provider.last_operation(instance_id, operation_data, **kwargs)

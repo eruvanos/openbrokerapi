@@ -1,5 +1,4 @@
 import json
-import time
 from http import HTTPStatus
 from threading import Thread
 from typing import Union, List
@@ -25,6 +24,7 @@ from openbrokerapi.service_broker import (
     UnbindDetails,
     UnbindSpec,
 )
+from tests import wait_for_port
 
 
 class FullRouterTestCase(TestCase):
@@ -48,13 +48,12 @@ class FullRouterTestCase(TestCase):
                 api.BrokerCredentials(broker_username, broker_passsword),
                 host="127.0.0.1",
                 port=5002,
-                debug=True,
             )
 
         self.server = Thread(target=run_server)
         self.server.setDaemon(True)
         self.server.start()
-        time.sleep(2)
+        wait_for_port(5002, timeout=10)
 
     def test_lifecycle(self):
         # GIVEN
@@ -90,73 +89,71 @@ class FullRouterTestCase(TestCase):
 
     def check_instance_retrievable(self, instace_guid):
         response = requests.get(
-            "http://localhost:5002/v2/service_instances/{}".format(instace_guid),
-            **self.request_ads
+            f"http://localhost:5002/v2/service_instances/{instace_guid}",
+            **self.request_ads,
         )
+
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual(self.broker_1.service_guid, response.json()["service_id"])
         self.assertEqual(self.broker_1.plan_guid, response.json()["plan_id"])
 
     def check_unbind(self, binding_guid, instace_guid):
         response = requests.delete(
-            "http://localhost:5002/v2/service_instances/{}/service_bindings/{}".format(
-                instace_guid, binding_guid
-            ),
+            f"http://localhost:5002/v2/service_instances/{instace_guid}/service_bindings/{binding_guid}",
             params={
                 "service_id": self.broker_1.service_guid,
                 "plan_id": self.broker_1.plan_guid,
                 "accepts_incomplete": "false",
             },
-            **self.request_ads
+            **self.request_ads,
         )
+
         self.assertEqual(HTTPStatus.OK, response.status_code)
 
     def check_bind(self, binding_guid, instace_guid):
         response = requests.put(
-            "http://localhost:5002/v2/service_instances/{}/service_bindings/{}?accepts_incomplete=false".format(
-                instace_guid, binding_guid
-            ),
+            f"http://localhost:5002/v2/service_instances/{instace_guid}/"
+            f"service_bindings/{binding_guid}?accepts_incomplete=false",
             data=json.dumps(
                 {
                     "service_id": self.broker_1.service_guid,
                     "plan_id": self.broker_1.plan_guid,
                 }
             ),
-            **self.request_ads
+            **self.request_ads,
         )
+
         self.assertEqual(HTTPStatus.CREATED, response.status_code)
 
     def check_deprovision_after_deprovision_done(self, instace_guid):
         response = requests.delete(
-            "http://localhost:5002/v2/service_instances/{}".format(instace_guid),
+            f"http://localhost:5002/v2/service_instances/{instace_guid}",
             params={
                 "service_id": self.broker_1.service_guid,
                 "plan_id": self.broker_1.plan_guid,
                 "accepts_incomplete": "false",
             },
-            **self.request_ads
+            **self.request_ads,
         )
+
         self.assertEqual(HTTPStatus.GONE, response.status_code)
 
     def check_deprovision(self, instace_guid):
         response = requests.delete(
-            "http://localhost:5002/v2/service_instances/{}".format(instace_guid),
+            f"http://localhost:5002/v2/service_instances/{instace_guid}",
             params={
                 "service_id": self.broker_1.service_guid,
                 "plan_id": self.broker_1.plan_guid,
                 "accepts_incomplete": "false",
             },
-            **self.request_ads
+            **self.request_ads,
         )
+
         self.assertEqual(HTTPStatus.OK, response.status_code)
 
-    def check_provision(
-        self, instace_guid, org_guid, space_guid, service_guid, plan_guid
-    ):
+    def check_provision(self, instace_guid, org_guid, space_guid, service_guid, plan_guid):
         response = requests.put(
-            "http://localhost:5002/v2/service_instances/{}?accepts_incomplete=false".format(
-                instace_guid
-            ),
+            f"http://localhost:5002/v2/service_instances/{instace_guid}?accepts_incomplete=false",
             data=json.dumps(
                 {
                     "organization_guid": org_guid,
@@ -169,8 +166,9 @@ class FullRouterTestCase(TestCase):
                     # }
                 }
             ),
-            **self.request_ads
+            **self.request_ads,
         )
+
         self.assertEqual(HTTPStatus.CREATED, response.status_code)
 
     def check_catalog(self, service_guid, plan_guid):
@@ -206,7 +204,7 @@ class InMemoryBroker(ServiceBroker):
         self.service_guid = service_guid
         self.plan_guid = plan_guid
 
-        self.service_instances = dict()
+        self.service_instances = {}
 
     def catalog(self) -> Union[Service, List[Service]]:
         return Service(
@@ -242,12 +240,14 @@ class InMemoryBroker(ServiceBroker):
         binding_id: str,
         details: BindDetails,
         async_allowed: bool,
-        **kwargs
+        **kwargs,
     ) -> Binding:
         instance = self.service_instances.get(instance_id, {})
         if instance and instance.get("state") == self.CREATED:
             instance["state"] = self.BOUND
             return Binding(BindState.SUCCESSFUL_BOUND)
+
+        raise NotImplementedError()
 
     def unbind(
         self,
@@ -255,19 +255,21 @@ class InMemoryBroker(ServiceBroker):
         binding_id: str,
         details: UnbindDetails,
         async_allowed: bool,
-        **kwargs
+        **kwargs,
     ) -> UnbindSpec:
         instance = self.service_instances.get(instance_id, {})
         if instance and instance.get("state") == self.BOUND:
             instance["state"] = self.CREATED
             return UnbindSpec(False)
 
+        raise NotImplementedError()
+
     def deprovision(
         self,
         instance_id: str,
         details: DeprovisionDetails,
         async_allowed: bool,
-        **kwargs
+        **kwargs,
     ) -> DeprovisionServiceSpec:
 
         instance = self.service_instances.get(instance_id)
@@ -277,3 +279,5 @@ class InMemoryBroker(ServiceBroker):
         if instance.get("state") == self.CREATED:
             del self.service_instances[instance_id]
             return DeprovisionServiceSpec(False)
+
+        raise NotImplementedError()
