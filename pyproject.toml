@@ -58,6 +58,7 @@ pytest = "^7.1.1"
 Flask-Testing = "^0.8.1"
 requests = "^2.27.1"
 black = "^22.3.0"
+pre-commit = "^2.19.0"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx_rtd_theme"]
