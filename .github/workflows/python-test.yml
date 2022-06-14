@@ -43,7 +43,6 @@ jobs:
       uses: AndreMiras/coveralls-python-action@develop
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: coverage.xml
         flag-name: run-${{ matrix.test_number }}
         parallel: true
 
