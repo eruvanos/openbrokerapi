@@ -19,3 +19,5 @@ dist
 
 README.html
 CHANGELOG.html
+
+.coverage
