@@ -65,6 +65,9 @@ docs = ["sphinx", "sphinx_rtd_theme"]
 gevent = ["gevent"]
 gunicorn = ["gunicorn"]
 
+[tool.poetry.group.dev.dependencies]
+bumpversion = "^0.6.0"
+
 [tool.black]
 line-length = 120
 exclude = '''
