@@ -1,11 +1,14 @@
 Changelog
 =============
 
-**v4.2 - WIP**
+**v4.2**
   - ErrConcurrentInstanceAccess exception on an instance update, an instance deprovision, a binding or unbinding must return 422 not 500.
   - ErrPlanChangeNotSupported exception must return 400 not 500.
+  - last_operation and last_binding_operation forward service and plan identifiers when provided
 
+  - Update dependencies
   - Drop Python 3.6 support
+  - Migrate to Poetry
 
 **v4.1**
   - Drop Python 3.5 support
