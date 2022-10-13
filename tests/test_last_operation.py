@@ -20,7 +20,10 @@ class LastOperationTest(BrokerTestCase):
         )
 
         self.broker.last_operation.assert_called_once_with(
-            "here-instance_id", None, None, None
+            instance_id="here-instance_id",
+            operation_data=None,
+            service_id=None,
+            plan_id=None
         )
 
     def test_last_operation_called_with_the_right_values(self):
@@ -35,7 +38,10 @@ class LastOperationTest(BrokerTestCase):
         )
 
         self.broker.last_operation.assert_called_once_with(
-            "here-instance_id", "service-guid-here operation-data", "", "456"
+            instance_id="here-instance_id",
+            operation_data="service-guid-here operation-data",
+            service_id="",
+            plan_id="456",
         )
 
     def test_returns_200_with_given_state(self):
@@ -52,7 +58,10 @@ class LastOperationTest(BrokerTestCase):
         )
 
         self.broker.last_operation.assert_called_once_with(
-            "here-instance_id", "service-guid-here operation-data", "123", "456"
+            instance_id="here-instance_id",
+            operation_data="service-guid-here operation-data",
+            service_id="123",
+            plan_id="456",
         )
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(

@@ -56,7 +56,7 @@ class ProvisioningTest(BrokerTestCase):
             actual_instance_id,
             actual_details,
             actual_async_allowed,
-        ) = self.broker.provision.call_args[0]
+        ) = self.broker.provision.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-instance-id")
         self.assertEqual(actual_async_allowed, True)
 
@@ -97,7 +97,7 @@ class ProvisioningTest(BrokerTestCase):
             actual_instance_id,
             actual_details,
             actual_async_allowed,
-        ) = self.broker.provision.call_args[0]
+        ) = self.broker.provision.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-instance-id")
         self.assertEqual(actual_async_allowed, False)
 
@@ -135,7 +135,7 @@ class ProvisioningTest(BrokerTestCase):
             actual_instance_id,
             actual_details,
             actual_async_allowed,
-        ) = self.broker.provision.call_args[0]
+        ) = self.broker.provision.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-instance-id")
         self.assertEqual(actual_async_allowed, False)
 
@@ -174,7 +174,7 @@ class ProvisioningTest(BrokerTestCase):
             actual_instance_id,
             actual_details,
             actual_async_allowed,
-        ) = self.broker.provision.call_args[0]
+        ) = self.broker.provision.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-instance-id")
         self.assertEqual(actual_async_allowed, False)
 

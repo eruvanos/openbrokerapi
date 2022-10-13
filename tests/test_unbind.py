@@ -33,7 +33,7 @@ class UnbindTest(BrokerTestCase):
             actual_binding_id,
             actual_details,
             async_allowed,
-        ) = self.broker.unbind.call_args[0]
+        ) = self.broker.unbind.call_args[1].values()
         self.assertEqual(actual_instance_id, "here_instance_id")
         self.assertEqual(actual_binding_id, "here_binding_id")
 

@@ -27,7 +27,7 @@ class GetInstanceTest(BrokerTestCase):
         )
 
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.broker.get_instance.assert_called_once_with(instance_guid)
+        self.broker.get_instance.assert_called_once_with(instance_id=instance_guid)
 
         info = response.json
         self.assertEqual(service_guid, info.get("service_id"))
