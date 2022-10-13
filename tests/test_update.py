@@ -49,9 +49,7 @@ class UpdateTest(BrokerTestCase):
             },
         )
 
-        actual_service_id, actual_details, actual_async = self.broker.update.call_args[
-            0
-        ]
+        actual_service_id, actual_details, actual_async = self.broker.update.call_args[1].values()
         self.assertEqual(actual_service_id, "here-service-instance-id")
         self.assertEqual(actual_async, True)
 
@@ -84,9 +82,7 @@ class UpdateTest(BrokerTestCase):
             },
         )
 
-        actual_instance_id, actual_details, actual_async = self.broker.update.call_args[
-            0
-        ]
+        actual_instance_id, actual_details, actual_async = self.broker.update.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-service-instance-id")
         self.assertEqual(actual_async, False)
 
@@ -146,9 +142,7 @@ class UpdateTest(BrokerTestCase):
             },
         )
 
-        actual_service_id, actual_details, actual_async = self.broker.update.call_args[
-            0
-        ]
+        actual_service_id, actual_details, actual_async = self.broker.update.call_args[1].values()
         self.assertEqual(actual_service_id, "here-service-instance-id")
         self.assertEqual(actual_async, True)
 

@@ -36,7 +36,7 @@ class DeprovisioningTest(BrokerTestCase):
             actual_instance_id,
             actual_details,
             actual_async_allowed,
-        ) = self.broker.deprovision.call_args[0]
+        ) = self.broker.deprovision.call_args[1].values()
         self.assertEqual(actual_instance_id, "here_instance_id")
 
         self.assertIsInstance(actual_details, DeprovisionDetails)
@@ -58,7 +58,7 @@ class DeprovisioningTest(BrokerTestCase):
             actual_instance_id,
             actual_details,
             actual_async_allowed,
-        ) = self.broker.deprovision.call_args[0]
+        ) = self.broker.deprovision.call_args[1].values()
         self.assertEqual(actual_instance_id, "here_instance_id")
 
         self.assertIsInstance(actual_details, DeprovisionDetails)

@@ -25,7 +25,10 @@ class GetBindingTest(BrokerTestCase):
         )
 
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.broker.get_binding.assert_called_once_with(instance_guid, binding_guid)
+        self.broker.get_binding.assert_called_once_with(
+            instance_id=instance_guid,
+            binding_id=binding_guid
+        )
 
         info = response.json
         self.assertDictEqual({"password": password}, info.get("credentials"))

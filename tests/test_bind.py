@@ -64,7 +64,7 @@ class BindTest(BrokerTestCase):
             actual_binding_id,
             actual_details,
             async_allowed,
-        ) = self.broker.bind.call_args[0]
+        ) = self.broker.bind.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -99,7 +99,7 @@ class BindTest(BrokerTestCase):
             actual_binding_id,
             actual_details,
             async_allowed,
-        ) = self.broker.bind.call_args[0]
+        ) = self.broker.bind.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
@@ -138,7 +138,7 @@ class BindTest(BrokerTestCase):
             actual_binding_id,
             actual_details,
             async_allowed,
-        ) = self.broker.bind.call_args[0]
+        ) = self.broker.bind.call_args[1].values()
         self.assertEqual(actual_instance_id, "here-instance_id")
         self.assertEqual(actual_binding_id, "here-binding_id")
 
