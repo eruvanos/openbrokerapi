@@ -1,0 +1,7 @@
+paths:
+  - openbrokerapi
+paths-ignore:
+  - 'docs/**'
+  - '.github/**'
+  - '.pytest_cache/**'
+  - 'tests/**'
