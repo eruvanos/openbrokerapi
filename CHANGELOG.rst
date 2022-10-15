@@ -1,6 +1,9 @@
 Changelog
 =============
 
+**v4.3**
+  - Fix [issue 211](https://github.com/eruvanos/openbrokerapi/issues/211) use keyword arguments to call broker functions from api
+
 **v4.2**
   - ErrConcurrentInstanceAccess exception on an instance update, an instance deprovision, a binding or unbinding must return 422 not 500.
   - ErrPlanChangeNotSupported exception must return 400 not 500.
