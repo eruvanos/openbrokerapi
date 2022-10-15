@@ -12,7 +12,7 @@ echo "Pull changes"
 git pull -r
 
 echo "Run tests"
-./setup.py test
+pytest .
 
 echo "Bump version"
 #Bump version

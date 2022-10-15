@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openbrokerapi"
-version = "4.1.2"
+version = "4.2.0"
 description = "A python package for the V2 CF Service Broker API and Open Broker API (version 2.13+)"
 authors = ["Maic Siemering <maic@siemering.tech>"]
 license = "MIT"
@@ -64,6 +64,9 @@ pre-commit = "^2.20.0"
 docs = ["sphinx", "sphinx_rtd_theme"]
 gevent = ["gevent"]
 gunicorn = ["gunicorn"]
+
+[tool.poetry.group.dev.dependencies]
+bumpversion = "^0.6.0"
 
 [tool.black]
 line-length = 120
