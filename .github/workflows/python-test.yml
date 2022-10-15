@@ -29,7 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install poetry
         poetry install
-        poetry run pip install flake8 coveralls pytest-cov coverage[toml]
+        poetry run pip install flake8 "coveralls[toml]" pytest-cov "coverage[toml]"
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -39,20 +39,22 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest --cov=openbrokerapi
-# FIXME THis fails due to missing toml support, somehow this should be posssible to preinstall like mentioned in the docs
-#    - name: Coveralls
-#      uses: AndreMiras/coveralls-python-action@develop
-#      with:
-#        github-token: ${{ secrets.GITHUB_TOKEN }}
-#        flag-name: run-${{ matrix.test_number }}
-#        parallel: true
+    - name: Upload coverage data to coveralls.io
+      run: poetry run coveralls --service=github
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
+        COVERALLS_PARALLEL: true
 
-  coveralls_finish:
+  coveralls:
+    name: Indicate completion to coveralls.io
     needs: test
     runs-on: ubuntu-latest
+    container: python:3-slim
     steps:
-      - uses: actions/checkout@v3
-#      - name: Coveralls Finished
-#        uses: AndreMiras/coveralls-python-action@develop
-#        with:
-#          parallel-finished: true
+    - name: Finished
+      run: |
+        pip3 install --upgrade "coveralls[toml]"
+        coveralls --service=github --finish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
