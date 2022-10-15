@@ -171,7 +171,7 @@ So let us check how you can contribute:
     :target: https://github.com/eruvanos/openbrokerapi/actions/workflows/python-test.yml
 .. |Coverage Status| image:: https://coveralls.io/repos/github/eruvanos/openbrokerapi/badge.svg?branch=master
    :target: https://coveralls.io/github/eruvanos/openbrokerapi?branch=main
-.. |Known Vulnerabilities| image:: https://snyk.io/test/github/eruvanos/openbrokerapi/badge.svg
-   :target: https://snyk.io/test/github/eruvanos/openbrokerapi
+.. |Known Vulnerabilities| image:: https://github.com/eruvanos/openbrokerapi/actions/workflows/codeql.yml/badge.svg
+   :target: https://github.com/eruvanos/openbrokerapi/actions/workflows/codeql.yml
 .. |PYUP| image:: https://pyup.io/repos/github/eruvanos/openbrokerapi/shield.svg
      :target: https://pyup.io/repos/github/eruvanos/openbrokerapi/
