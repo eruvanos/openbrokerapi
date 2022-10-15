@@ -167,8 +167,8 @@ So let us check how you can contribute:
 
 .. _Github Issues: https://github.com/eruvanos/openbrokerapi/issues
 
-.. |Build Status| image:: https://github.com/eruvanos/openbrokerapi/actions/workflows/python-package.yml/badge.svg
-    :target: https://github.com/eruvanos/openbrokerapi/actions/workflows/python-package.yml
+.. |Build Status| image:: https://github.com/eruvanos/openbrokerapi/actions/workflows/python-test.yml/badge.svg
+    :target: https://github.com/eruvanos/openbrokerapi/actions/workflows/python-test.yml
 .. |Coverage Status| image:: https://coveralls.io/repos/github/eruvanos/openbrokerapi/badge.svg?branch=master
    :target: https://coveralls.io/github/eruvanos/openbrokerapi?branch=main
 .. |Known Vulnerabilities| image:: https://snyk.io/test/github/eruvanos/openbrokerapi/badge.svg
