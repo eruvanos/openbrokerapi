@@ -138,7 +138,7 @@ def get_blueprint(
         logger.exception(e)
         return (
             to_json_response(
-                ErrorResponse(description=constants.DEFAULT_BAD_REQUEST_ERROR_MESSAGE)
+                ErrorResponse(description=str(e))
             ),
             HTTPStatus.BAD_REQUEST,
         )
