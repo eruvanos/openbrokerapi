@@ -1,6 +1,10 @@
 Changelog
 =============
 
+**v4.3.1**
+  - Pass error messages of `ErrBadRequest` to inform the platform about the issue details
+
+
 **v4.3**
   - Fix [issue 211](https://github.com/eruvanos/openbrokerapi/issues/211) use keyword arguments to call broker functions from api
 
