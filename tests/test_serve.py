@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import requests
 
+import openbrokerapi.auth
 from openbrokerapi import api
 from openbrokerapi.catalog import ServicePlan
 from openbrokerapi.service_broker import (
@@ -59,7 +60,7 @@ def run_serve_provision_without_auth():
 def run_serve_starts_server():
     broker = Mock()
     broker.catalog.return_value = []
-    api.serve(broker, api.BrokerCredentials("", ""), host="127.0.0.1", port=5001)
+    api.serve(broker, openbrokerapi.auth.BrokerCredentials("", ""), host="127.0.0.1", port=5001)
 
 
 def run_serve_starts_server_without_auth():
@@ -74,8 +75,8 @@ def run_serve_starts_with_single_instance():
     api.serve(
         broker,
         [
-            api.BrokerCredentials("cfy-login", "cfy-pwd"),
-            api.BrokerCredentials("k8s-login", "k8s-pwd"),
+            openbrokerapi.auth.BrokerCredentials("cfy-login", "cfy-pwd"),
+            openbrokerapi.auth.BrokerCredentials("k8s-login", "k8s-pwd"),
         ],
         host="127.0.0.1",
         port=5001,

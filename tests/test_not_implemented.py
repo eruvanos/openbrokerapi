@@ -4,7 +4,7 @@ import logging
 
 from flask import Flask
 
-from openbrokerapi.api import BrokerCredentials
+from openbrokerapi.auth import BrokerCredentials
 from openbrokerapi.log_util import basic_config
 from openbrokerapi.service_broker import ServiceBroker
 from tests import BrokerTestCase

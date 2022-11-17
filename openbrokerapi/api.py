@@ -2,7 +2,7 @@ import logging
 import warnings
 from http import HTTPStatus
 from json.decoder import JSONDecodeError
-from typing import List, Union
+from typing import List, Union, Optional
 
 from flask import Blueprint, Request
 from flask import json, request
@@ -12,10 +12,10 @@ from openbrokerapi.helper import to_json_response, ensure_list
 from openbrokerapi.request_filter import (
     print_request,
     check_originating_identity,
-    get_auth_filter,
     check_version,
     requires_application_json,
 )
+from openbrokerapi.auth import Authenticator, BasicAuthenticator, NoneAuthenticator, BrokerCredentials
 from openbrokerapi.response import (
     BindResponse,
     CatalogResponse,
@@ -44,16 +44,6 @@ from openbrokerapi.service_broker import (
 from openbrokerapi.settings import MIN_VERSION, DISABLE_VERSION_CHECK
 
 
-class BrokerCredentials:
-    """
-    Credentials, which will be used to validate authenticate requests
-    """
-
-    def __init__(self, username: str, password: str):
-        self.username = username
-        self.password = password
-
-
 def _check_plan_id(broker: ServiceBroker, plan_id) -> bool:
     """
     Checks that the plan_id exists in the catalog
@@ -70,6 +60,8 @@ def get_blueprint(
     service_broker: ServiceBroker,
     broker_credentials: Union[None, List[BrokerCredentials], BrokerCredentials],
     logger: logging.Logger,
+    *,
+    authenticator: Authenticator = None,
 ) -> Blueprint:
     """
     Returns the blueprint with service broker api.
@@ -77,6 +69,7 @@ def get_blueprint(
     :param service_broker: Services that this broker exposes
     :param broker_credentials: Optional Usernames and passwords that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior.
+    :param authenticator: provide an authenticator to secure endpoints, broker_credentials will be ignored
     :return: Blueprint to register with Flask app instance
     """
     openbroker = Blueprint("open_broker", __name__)
@@ -93,17 +86,24 @@ def get_blueprint(
         logger.debug("Apply check_version filter for version %s" % str(MIN_VERSION))
         openbroker.before_request(check_version)
 
+    # apply filter: global load X-Broker-API-Originating-Identity
     logger.debug("Apply check_originating_identity filter")
     openbroker.before_request(check_originating_identity)
 
-    if broker_credentials is not None:
+    # apply filter: authentication
+    if authenticator is None and broker_credentials is not None:
+        # setup BasicAuthenticator with broker_credentials
         broker_credentials = ensure_list(broker_credentials)
-        logger.debug(
-            "Apply check_auth filter with {} credentials".format(
-                len(broker_credentials)
-            )
-        )
-        openbroker.before_request(get_auth_filter(broker_credentials))
+        logger.debug(f"Apply check_auth filter with {broker_credentials} credentials")
+        authenticator = BasicAuthenticator(*broker_credentials)
+    elif authenticator and broker_credentials:
+        warnings.warn("Provided authenticator and broker_credential, only the authenticator is used")
+    elif authenticator is None and broker_credentials is None:
+        logger.warning(f"No authentication set, endpoints are not secured!")
+        authenticator = NoneAuthenticator()
+
+    logger.debug(f"Apply authentication filter")
+    openbroker.before_request(authenticator)
 
     def extract_authorization_username(request: Request):
         if request.authorization is not None:
@@ -624,6 +624,7 @@ def serve(
     service_broker: ServiceBroker,
     credentials: Union[List[BrokerCredentials], BrokerCredentials, None],
     logger: logging.Logger = logging.root,
+    authenticator: Optional[Authenticator] = None,
     host="0.0.0.0",
     port=5000,
     debug=False,
@@ -635,6 +636,7 @@ def serve(
     :param service_broker: ServicesBroker for services to provide
     :param credentials: Username and password that will be required to communicate with service broker
     :param logger: Used for api logs. This will not influence Flasks logging behavior
+    :param authenticator: provide an authenticator to secure endpoints, broker_credentials will be ignored
     :param host: Host, defaults to all interfaces (0.0.0.0)
     :param port: Port
     :param debug: Enables debugging in flask app
@@ -645,7 +647,12 @@ def serve(
     app = Flask(__name__)
     app.debug = debug
 
-    blueprint = get_blueprint(service_broker, credentials, logger)
+    blueprint = get_blueprint(
+        service_broker=service_broker,
+        broker_credentials=credentials,
+        logger=logger,
+        authenticator=authenticator
+    )
 
     logger.debug("Register openbrokerapi blueprint")
     app.register_blueprint(blueprint)

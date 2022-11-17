@@ -16,7 +16,7 @@ from unittest.mock import Mock
 from flask.app import Flask
 from flask_testing import TestCase
 
-from openbrokerapi.api import BrokerCredentials
+from openbrokerapi.auth import BrokerCredentials
 from openbrokerapi.log_util import basic_config
 
 

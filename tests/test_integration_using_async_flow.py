@@ -9,6 +9,7 @@ from uuid import uuid4
 import requests
 from requests.auth import HTTPBasicAuth
 
+import openbrokerapi.auth
 from openbrokerapi import api, errors
 from openbrokerapi.catalog import ServicePlan
 from openbrokerapi.service_broker import (
@@ -50,7 +51,7 @@ class FullBrokerTestCase(TestCase):
         def run_server():
             api.serve(
                 self.broker,
-                api.BrokerCredentials(broker_username, broker_passsword),
+                openbrokerapi.auth.BrokerCredentials(broker_username, broker_passsword),
                 host="127.0.0.1",
                 port=5003,
             )

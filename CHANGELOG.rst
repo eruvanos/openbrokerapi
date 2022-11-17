@@ -1,6 +1,9 @@
 Changelog
 =============
 
+**v4.4**
+  - Provide an option to provide a custom authentication implementing `openbrokerapi.auth.Authenticator`
+
 **v4.3.1**
   - Pass error messages of `ErrBadRequest` to inform the platform about the issue details
 

@@ -43,6 +43,14 @@ Service\_broker module
     :undoc-members:
     :show-inheritance:
 
+Authentication
+-------------------------------------
+
+.. automodule:: openbrokerapi.auth
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Errors module
 ----------------------------

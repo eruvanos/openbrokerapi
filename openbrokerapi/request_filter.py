@@ -70,32 +70,6 @@ def requires_application_json(f):
     return wrapped
 
 
-def get_auth_filter(broker_credentials):
-    def requires_auth():
-        """Check authentication over all provided usernames else sends a 401 response that enables basic auth"""
-        from flask import request
-
-        auth = request.authorization
-        if auth:
-            for credentials in broker_credentials:
-                if (
-                    auth.username == credentials.username
-                    and auth.password == credentials.password
-                ):
-                    return
-        return (
-            to_json_response(
-                ErrorResponse(
-                    description="Could not verify your access level for that URL.\nYou have to login with proper credentials"
-                )
-            ),
-            HTTPStatus.UNAUTHORIZED,
-            {"WWW-Authenticate": 'Basic realm="Login Required"'},
-        )
-
-    return requires_auth
-
-
 def check_version():
     from flask import request
 
