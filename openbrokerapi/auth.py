@@ -57,7 +57,7 @@ class BasicAuthenticator(Authenticator):
                     description="Could not verify your access level for that URL.\nYou have to login with proper credentials"
                 )
             ),
-            HTTPStatus.UNAUTHORIZED,
+            401,
             {"WWW-Authenticate": 'Basic realm="Login Required"'},
         )
 
