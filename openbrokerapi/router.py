@@ -111,8 +111,8 @@ class Router(ServiceBroker):
         self,
         instance_id: str,
         operation_data: Optional[str],
-        service_id: Optional[str],
-        plan_id: Optional[str],
+        service_id: Optional[str] = None,
+        plan_id: Optional[str] = None,
         **kwargs
     ) -> LastOperation:
         if operation_data is None:
