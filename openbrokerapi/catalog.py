@@ -25,7 +25,7 @@ class ServiceMetadata:
 
 
 class ServiceDashboardClient:
-    def __init__(self, *, id: str, secret: str = None, redirect_uri: str=None, **kwargs):
+    def __init__(self, *, id: str, secret: Optional[str] = None, redirect_uri: Optional[str]=None, **kwargs):
         self.id = id
         self.secret = secret
         self.redirect_uri = redirect_uri
@@ -44,9 +44,9 @@ class ServicePlanCost:
 class ServicePlanMetadata:
     def __init__(
         self,
-        displayName: str = None,
-        bullets: List[str] = None,
-        costs: List[ServicePlanCost] = None,
+        displayName: Optional[str] = None,
+        bullets: Optional[List[str]] = None,
+        costs: Optional[List[ServicePlanCost]] = None,
         **kwargs
     ):
         self.displayName = displayName
@@ -58,7 +58,7 @@ class ServicePlanMetadata:
 
 class Schemas:
     def __init__(
-        self, service_instance: Dict = None, service_binding: Dict = None, **kwargs
+        self, service_instance: Optional[Dict] = None, service_binding: Optional[Dict] = None, **kwargs
     ):
         self.service_instance = service_instance
         self.service_binding = service_binding
@@ -72,10 +72,10 @@ class ServicePlan:
         id: str,
         name: str,
         description: str,
-        metadata: ServicePlanMetadata = None,
-        free: bool = None,
-        bindable: bool = None,
-        schemas: Schemas = None,
+        metadata: Optional[ServicePlanMetadata] = None,
+        free: Optional[bool] = None,
+        bindable: Optional[bool] = None,
+        schemas: Optional[Schemas] = None,
         **kwargs
     ):
         self.id = id

@@ -61,7 +61,7 @@ def get_blueprint(
     broker_credentials: Union[None, List[BrokerCredentials], BrokerCredentials],
     logger: logging.Logger,
     *,
-    authenticator: Authenticator = None,
+    authenticator: Optional[Authenticator] = None,
 ) -> Blueprint:
     """
     Returns the blueprint with service broker api.

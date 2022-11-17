@@ -108,7 +108,12 @@ class Router(ServiceBroker):
         return result
 
     def last_operation(
-        self, instance_id: str, operation_data: Optional[str], **kwargs
+        self,
+        instance_id: str,
+        operation_data: Optional[str],
+        service_id: Optional[str],
+        plan_id: Optional[str],
+        **kwargs
     ) -> LastOperation:
         if operation_data is None:
             raise errors.ErrInvalidParameters("Invalid operation string")

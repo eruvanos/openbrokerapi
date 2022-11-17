@@ -8,7 +8,7 @@ class EmptyResponse:
 
 
 class ErrorResponse:
-    def __init__(self, error: str = None, description: str = None):
+    def __init__(self, error: Optional[str] = None, description: Optional[str] = None):
         self.error = error
         self.description = description
 
@@ -45,10 +45,10 @@ class GetInstanceResponse:
 class BindResponse:
     def __init__(
         self,
-        credentials: dict = None,
-        syslog_drain_url: str = None,
-        route_service_url: str = None,
-        volume_mounts: List[VolumeMount] = None,
+        credentials: Optional[dict] = None,
+        syslog_drain_url: Optional[str] = None,
+        route_service_url: Optional[str] = None,
+        volume_mounts: Optional[List[VolumeMount]] = None,
         operation: Optional[str] = None,
     ):
         self.credentials = credentials
@@ -61,10 +61,10 @@ class BindResponse:
 class GetBindingResponse:
     def __init__(
         self,
-        credentials: dict = None,
-        syslog_drain_url: str = None,
-        route_service_url: str = None,
-        volume_mounts: List[VolumeMount] = None,
+        credentials: Optional[dict] = None,
+        syslog_drain_url: Optional[str] = None,
+        route_service_url: Optional[str] = None,
+        volume_mounts: Optional[List[VolumeMount]] = None,
         parameters: Optional[dict] = None,
     ):
         self.credentials = credentials

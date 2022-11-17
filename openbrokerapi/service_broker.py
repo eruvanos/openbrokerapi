@@ -14,10 +14,10 @@ class ProvisionDetails:
         self,
         service_id: str,
         plan_id: str,
-        organization_guid: str = None,
-        space_guid: str = None,
-        parameters: dict = None,
-        context: dict = None,
+        organization_guid: Optional[str] = None,
+        space_guid: Optional[str] = None,
+        parameters: Optional[dict] = None,
+        context: Optional[dict] = None,
         **kwargs
     ):
         self.service_id = service_id
@@ -64,8 +64,8 @@ class ProvisionedServiceSpec:
     def __init__(
         self,
         state: ProvisionState = ProvisionState.SUCCESSFUL_CREATED,
-        dashboard_url: str = None,
-        operation: str = None,
+        dashboard_url: Optional[str] = None,
+        operation: Optional[str] = None,
     ):
         self.state = state
         self.dashboard_url = dashboard_url
@@ -102,7 +102,7 @@ class DeprovisionDetails:
 
 
 class DeprovisionServiceSpec:
-    def __init__(self, is_async: bool, operation: str = None):
+    def __init__(self, is_async: bool, operation: Optional[str] = None):
         self.is_async = is_async
         self.operation = operation
 
@@ -110,10 +110,10 @@ class DeprovisionServiceSpec:
 class PreviousValues:
     def __init__(
         self,
-        plan_id: str = None,
-        service_id: str = None,
-        organization_id: str = None,
-        space_id: str = None,
+        plan_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        organization_id: Optional[str] = None,
+        space_id: Optional[str] = None,
         **kwargs
     ):
         self.plan_id = plan_id
@@ -126,10 +126,10 @@ class UpdateDetails:
     def __init__(
         self,
         service_id: str,
-        plan_id: str = None,
-        parameters: dict = None,
-        previous_values: dict = None,
-        context: dict = None,
+        plan_id: Optional[str] = None,
+        parameters: Optional[dict] = None,
+        previous_values: Optional[dict] = None,
+        context: Optional[dict] = None,
         **kwargs
     ):
         self.service_id = service_id
@@ -159,7 +159,7 @@ class UpdateServiceSpec:
 
 
 class BindResource:
-    def __init__(self, app_guid: str = None, route: str = None, **kwargs):
+    def __init__(self, app_guid: Optional[str] = None, route: Optional[str] = None, **kwargs):
         self.app_guid = app_guid
         self.route = route
 
@@ -169,10 +169,10 @@ class BindDetails:
         self,
         service_id: str,
         plan_id: str,
-        app_guid: str = None,
-        bind_resource: dict = None,
-        parameters: dict = None,
-        context: dict = None,
+        app_guid: Optional[str] = None,
+        bind_resource: Optional[dict] = None,
+        parameters: Optional[dict] = None,
+        context: Optional[dict] = None,
         **kwargs
     ):
         self.app_guid = app_guid
@@ -189,7 +189,7 @@ class BindDetails:
 
 
 class SharedDevice:
-    def __init__(self, volume_id: str, mount_config: dict = None):
+    def __init__(self, volume_id: str, mount_config: Optional[dict] = None):
         self.volume_id = volume_id
         self.mount_config = mount_config
 
@@ -220,10 +220,10 @@ class Binding:
     def __init__(
         self,
         state=BindState.SUCCESSFUL_BOUND,
-        credentials: dict = None,
-        syslog_drain_url: str = None,
-        route_service_url: str = None,
-        volume_mounts: List[VolumeMount] = None,
+        credentials: Optional[dict] = None,
+        syslog_drain_url: Optional[str] = None,
+        route_service_url: Optional[str] = None,
+        volume_mounts: Optional[List[VolumeMount]] = None,
         operation: Optional[str] = None,
     ):
         self.state = state
@@ -237,10 +237,10 @@ class Binding:
 class GetBindingSpec:
     def __init__(
         self,
-        credentials: dict = None,
-        syslog_drain_url: str = None,
-        route_service_url: str = None,
-        volume_mounts: List[VolumeMount] = None,
+        credentials: Optional[dict] = None,
+        syslog_drain_url: Optional[str] = None,
+        route_service_url: Optional[str] = None,
+        volume_mounts: Optional[List[VolumeMount]] = None,
         parameters: Optional[dict] = None,
         **kwargs
     ):
@@ -263,7 +263,7 @@ class UnbindDetails:
 
 
 class UnbindSpec:
-    def __init__(self, is_async: bool, operation: str = None):
+    def __init__(self, is_async: bool, operation: Optional[str] = None):
         self.is_async = is_async
         self.operation = operation
 
@@ -275,7 +275,7 @@ class OperationState(Enum):
 
 
 class LastOperation:
-    def __init__(self, state: OperationState, description: str = None):
+    def __init__(self, state: OperationState, description: Optional[str] = None):
         self.state = state
         self.description = description
 
@@ -288,10 +288,10 @@ class Service:
         description: str,
         bindable: bool,
         plans: List[ServicePlan],
-        tags: List[str] = None,
-        requires: List[str] = None,
-        metadata: ServiceMetadata = None,
-        dashboard_client: ServiceDashboardClient = None,
+        tags: Optional[List[str]] = None,
+        requires: Optional[List[str]] = None,
+        metadata: Optional[ServiceMetadata] = None,
+        dashboard_client: Optional[ServiceDashboardClient] = None,
         plan_updateable: bool = False,
         instances_retrievable: bool = False,
         bindings_retrievable: bool = False,
