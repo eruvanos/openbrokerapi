@@ -1,6 +1,10 @@
 Changelog
 =============
 
+**4.5**
+  - Drop Python 3.7 support
+  - Update dependencies
+
 **v4.4**
   - Provide an option to provide a custom authentication implementing `openbrokerapi.auth.Authenticator`
 
