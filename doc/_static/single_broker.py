@@ -37,11 +37,7 @@ class MyServiceBroker(ServiceBroker):
         return ProvisionedServiceSpec()
 
     def deprovision(
-        self,
-        instance_id: str,
-        details: DeprovisionDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool, **kwargs
     ) -> DeprovisionServiceSpec:
         # Delete service instance
         # ...

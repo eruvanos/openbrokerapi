@@ -19,16 +19,12 @@ class ErrInstanceLimitMet(ServiceException):
 
 class ErrPlanQuotaExceeded(ServiceException):
     def __init__(self):
-        super().__init__(
-            "The quota for this service plan has been exceeded. Please contact your Operator for help."
-        )
+        super().__init__("The quota for this service plan has been exceeded. Please contact your Operator for help.")
 
 
 class ErrServiceQuotaExceeded(ServiceException):
     def __init__(self):
-        super().__init__(
-            "The quota for this service has been exceeded. Please contact your Operator for help."
-        )
+        super().__init__("The quota for this service has been exceeded. Please contact your Operator for help.")
 
 
 class ErrBindingAlreadyExists(ServiceException):
@@ -48,9 +44,7 @@ class ErrInvalidParameters(ServiceException):
 
 class ErrAsyncRequired(ServiceException):
     def __init__(self):
-        super().__init__(
-            "This service plan requires client support for asynchronous service operations."
-        )
+        super().__init__("This service plan requires client support for asynchronous service operations.")
 
 
 class ErrPlanChangeNotSupported(ErrInvalidParameters):

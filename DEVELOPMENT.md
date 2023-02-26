@@ -12,8 +12,8 @@ To publish a release use bumpversion. This will update the `pyproject.toml` and 
 > To trigger the whole build process use `ship.sh`.
 
 ```bash
-./ship.sh patch|minor 
-``` 
+./ship.sh patch|minor
+```
 
 
 ## Manual steps

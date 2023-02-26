@@ -82,9 +82,7 @@ class CatalogTest(BrokerTestCase):
                 shareable=True,
                 custom_field1="custom_field1",
             ),
-            dashboard_client=ServiceDashboardClient(
-                id="id", secret="secret", redirect_uri="redirect_uri"
-            ),
+            dashboard_client=ServiceDashboardClient(id="id", secret="secret", redirect_uri="redirect_uri"),
             plan_updateable=True,
         )
 
@@ -100,49 +98,47 @@ class CatalogTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(
             response.json,
-            dict(
-                services=[
-                    dict(
-                        id="s1",
-                        name="service_name",
-                        description="service_description",
-                        instances_retrievable=False,
-                        bindings_retrievable=False,
-                        bindable=True,
-                        plans=[
-                            dict(
-                                id="p1",
-                                name="default",
-                                description="plan_description",
-                                metadata=dict(
-                                    displayName="displayName",
-                                    bullets=["bullet1"],
-                                    costs=[dict(amount={"requests": 1}, unit="unit")],
-                                    custom_field2="custom_field2",
-                                ),
-                                free=True,
-                                bindable=True,
-                            )
+            {
+                "services": [
+                    {
+                        "id": "s1",
+                        "name": "service_name",
+                        "description": "service_description",
+                        "instances_retrievable": False,
+                        "bindings_retrievable": False,
+                        "bindable": True,
+                        "plans": [
+                            {
+                                "id": "p1",
+                                "name": "default",
+                                "description": "plan_description",
+                                "metadata": {
+                                    "displayName": "displayName",
+                                    "bullets": ["bullet1"],
+                                    "costs": [{"amount": {"requests": 1}, "unit": "unit"}],
+                                    "custom_field2": "custom_field2",
+                                },
+                                "free": True,
+                                "bindable": True,
+                            }
                         ],
-                        tags=["tag1", "tag2"],
-                        requires=["something"],
-                        metadata=dict(
-                            displayName="displayName",
-                            imageUrl="imageUrl",
-                            longDescription="longDescription",
-                            providerDisplayName="providerDisplayName",
-                            documentationUrl="documentationUrl",
-                            supportUrl="supportUrl",
-                            shareable=True,
-                            custom_field1="custom_field1",
-                        ),
-                        dashboard_client=dict(
-                            id="id", secret="secret", redirect_uri="redirect_uri"
-                        ),
-                        plan_updateable=True,
-                    )
+                        "tags": ["tag1", "tag2"],
+                        "requires": ["something"],
+                        "metadata": {
+                            "displayName": "displayName",
+                            "imageUrl": "imageUrl",
+                            "longDescription": "longDescription",
+                            "providerDisplayName": "providerDisplayName",
+                            "documentationUrl": "documentationUrl",
+                            "supportUrl": "supportUrl",
+                            "shareable": True,
+                            "custom_field1": "custom_field1",
+                        },
+                        "dashboard_client": {"id": "id", "secret": "secret", "redirect_uri": "redirect_uri"},
+                        "plan_updateable": True,
+                    }
                 ]
-            ),
+            },
         )
 
     def test_catalog_returns_200_with_minimal_service_information(self):
@@ -162,24 +158,20 @@ class CatalogTest(BrokerTestCase):
         self.assertEqual(http.HTTPStatus.OK, response.status_code)
         self.assertEqual(
             response.json,
-            dict(
-                services=[
-                    dict(
-                        id="s1",
-                        name="service_name",
-                        description="service_description",
-                        instances_retrievable=False,
-                        bindings_retrievable=False,
-                        bindable=True,
-                        plan_updateable=False,
-                        plans=[
-                            dict(
-                                id="p1", name="default", description="plan_description"
-                            )
-                        ],
-                    )
+            {
+                "services": [
+                    {
+                        "id": "s1",
+                        "name": "service_name",
+                        "description": "service_description",
+                        "instances_retrievable": False,
+                        "bindings_retrievable": False,
+                        "bindable": True,
+                        "plan_updateable": False,
+                        "plans": [{"id": "p1", "name": "default", "description": "plan_description"}],
+                    }
                 ]
-            ),
+            },
         )
 
     def test_catalog_returns_500_if_error_raised(self):
@@ -195,9 +187,7 @@ class CatalogTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
-        self.assertEqual(
-            response.json, dict(description=constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)
-        )
+        self.assertEqual(response.json, {"description": constants.DEFAULT_EXCEPTION_ERROR_MESSAGE})
 
     def test_catalog_can_return_multiple_services(self):
         self.broker.catalog.return_value = [
@@ -206,22 +196,14 @@ class CatalogTest(BrokerTestCase):
                 name="service_name1",
                 description="service_description1",
                 bindable=True,
-                plans=[
-                    ServicePlan(
-                        id="p1", name="default1", description="plan_description1"
-                    )
-                ],
+                plans=[ServicePlan(id="p1", name="default1", description="plan_description1")],
             ),
             Service(
                 id="s2",
                 name="service_name2",
                 description="service_description2",
                 bindable=True,
-                plans=[
-                    ServicePlan(
-                        id="p2", name="default2", description="plan_description2"
-                    )
-                ],
+                plans=[ServicePlan(id="p2", name="default2", description="plan_description2")],
             ),
         ]
 
@@ -236,41 +218,41 @@ class CatalogTest(BrokerTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertDictEqual(
-            dict(
-                services=[
-                    dict(
-                        id="s1",
-                        name="service_name1",
-                        description="service_description1",
-                        bindable=True,
-                        instances_retrievable=False,
-                        bindings_retrievable=False,
-                        plan_updateable=False,
-                        plans=[
-                            dict(
-                                id="p1",
-                                name="default1",
-                                description="plan_description1",
-                            )
+            {
+                "services": [
+                    {
+                        "id": "s1",
+                        "name": "service_name1",
+                        "description": "service_description1",
+                        "bindable": True,
+                        "instances_retrievable": False,
+                        "bindings_retrievable": False,
+                        "plan_updateable": False,
+                        "plans": [
+                            {
+                                "id": "p1",
+                                "name": "default1",
+                                "description": "plan_description1",
+                            }
                         ],
-                    ),
-                    dict(
-                        id="s2",
-                        name="service_name2",
-                        description="service_description2",
-                        bindable=True,
-                        instances_retrievable=False,
-                        bindings_retrievable=False,
-                        plan_updateable=False,
-                        plans=[
-                            dict(
-                                id="p2",
-                                name="default2",
-                                description="plan_description2",
-                            )
+                    },
+                    {
+                        "id": "s2",
+                        "name": "service_name2",
+                        "description": "service_description2",
+                        "bindable": True,
+                        "instances_retrievable": False,
+                        "bindings_retrievable": False,
+                        "plan_updateable": False,
+                        "plans": [
+                            {
+                                "id": "p2",
+                                "name": "default2",
+                                "description": "plan_description2",
+                            }
                         ],
-                    ),
+                    },
                 ]
-            ),
+            },
             response.json,
         )

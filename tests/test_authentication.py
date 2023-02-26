@@ -15,6 +15,7 @@ class _CustomAuthenticator(Authenticator):
 
     def authenticate(self):
         from flask import request
+
         self.last_token = request.headers["Authorization"]
 
         return "Hit test", 401
@@ -27,12 +28,14 @@ class AuthenticationTest(TestCase):
         authenticator = _CustomAuthenticator()
         auth_token = str(uuid4())
 
-        app.register_blueprint(get_blueprint(
-            service_broker=InMemBroker(),
-            broker_credentials=None,
-            logger=logging.getLogger(__name__),
-            authenticator=authenticator
-        ))
+        app.register_blueprint(
+            get_blueprint(
+                service_broker=InMemBroker(),
+                broker_credentials=None,
+                logger=logging.getLogger(__name__),
+                authenticator=authenticator,
+            )
+        )
 
         with app.test_client() as client:
             client: FlaskClient

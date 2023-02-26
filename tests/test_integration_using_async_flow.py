@@ -73,9 +73,7 @@ class FullBrokerTestCase(TestCase):
         self.check_catalog(self.service_guid, self.plan_guid)
 
         # ASYNC PROVISION
-        operation = self.check_provision(
-            instance_guid, org_guid, space_guid, self.service_guid, self.plan_guid
-        )
+        operation = self.check_provision(instance_guid, org_guid, space_guid, self.service_guid, self.plan_guid)
         self.check_last_operation_after_provision(instance_guid, operation)
 
         # GET INSTANCE
@@ -87,9 +85,7 @@ class FullBrokerTestCase(TestCase):
 
         # GET BINDING
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(
-                instance_guid, binding_guid
-            ),
+            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
             **self.request_ads
         )
         self.assertEqual(HTTPStatus.OK, response.status_code)
@@ -108,8 +104,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_instance_retrievable(self, instance_guid):
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}".format(instance_guid),
-            **self.request_ads
+            "http://localhost:5003/v2/service_instances/{}".format(instance_guid), **self.request_ads
         )
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual(self.service_guid, response.json()["service_id"])
@@ -117,9 +112,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_unbind(self, binding_guid, instance_guid):
         response = requests.delete(
-            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(
-                instance_guid, binding_guid
-            ),
+            "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
             params={
                 "service_id": self.service_guid,
                 "plan_id": self.plan_guid,
@@ -167,9 +160,7 @@ class FullBrokerTestCase(TestCase):
             "http://localhost:5003/v2/service_instances/{}/service_bindings/{}?accepts_incomplete=true".format(
                 instance_guid, binding_guid
             ),
-            data=json.dumps(
-                {"service_id": self.service_guid, "plan_id": self.plan_guid}
-            ),
+            data=json.dumps({"service_id": self.service_guid, "plan_id": self.plan_guid}),
             **self.request_ads
         )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
@@ -206,9 +197,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_last_operation_after_deprovision(self, instance_guid, operation):
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}/last_operation".format(
-                instance_guid
-            ),
+            "http://localhost:5003/v2/service_instances/{}/last_operation".format(instance_guid),
             params={
                 "service_id": self.service_guid,
                 "plan_id": self.plan_guid,
@@ -221,9 +210,7 @@ class FullBrokerTestCase(TestCase):
 
     def check_last_operation_after_provision(self, instance_guid, operation):
         response = requests.get(
-            "http://localhost:5003/v2/service_instances/{}/last_operation".format(
-                instance_guid
-            ),
+            "http://localhost:5003/v2/service_instances/{}/last_operation".format(instance_guid),
             params={
                 "service_id": self.service_guid,
                 "plan_id": self.plan_guid,
@@ -234,13 +221,9 @@ class FullBrokerTestCase(TestCase):
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual("succeeded", response.json()["state"])
 
-    def check_provision(
-        self, instance_guid, org_guid, space_guid, service_guid, plan_guid
-    ):
+    def check_provision(self, instance_guid, org_guid, space_guid, service_guid, plan_guid):
         response = requests.put(
-            "http://localhost:5003/v2/service_instances/{}?accepts_incomplete=true".format(
-                instance_guid
-            ),
+            "http://localhost:5003/v2/service_instances/{}?accepts_incomplete=true".format(instance_guid),
             data=json.dumps(
                 {
                     "organization_guid": org_guid,
@@ -299,7 +282,7 @@ class InMemoryBroker(ServiceBroker):
         self.service_guid = service_guid
         self.plan_guid = plan_guid
 
-        self.service_instances = dict()
+        self.service_instances = {}
 
     def catalog(self) -> Union[Service, List[Service]]:
         return Service(
@@ -330,18 +313,9 @@ class InMemoryBroker(ServiceBroker):
             "state": self.CREATING,
         }
 
-        return ProvisionedServiceSpec(
-            state=ProvisionState.IS_ASYNC, operation="provision"
-        )
+        return ProvisionedServiceSpec(state=ProvisionState.IS_ASYNC, operation="provision")
 
-    def bind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: BindDetails,
-        async_allowed: bool,
-        **kwargs
-    ) -> Binding:
+    def bind(self, instance_id: str, binding_id: str, details: BindDetails, async_allowed: bool, **kwargs) -> Binding:
         if not async_allowed:
             raise errors.ErrAsyncRequired()
 
@@ -351,12 +325,7 @@ class InMemoryBroker(ServiceBroker):
             return Binding(BindState.IS_ASYNC, operation="bind")
 
     def unbind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: UnbindDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, binding_id: str, details: UnbindDetails, async_allowed: bool, **kwargs
     ) -> UnbindSpec:
         if not async_allowed:
             raise errors.ErrAsyncRequired()
@@ -367,11 +336,7 @@ class InMemoryBroker(ServiceBroker):
             return UnbindSpec(True, "unbind")
 
     def deprovision(
-        self,
-        instance_id: str,
-        details: DeprovisionDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool, **kwargs
     ) -> DeprovisionServiceSpec:
         if not async_allowed:
             raise errors.ErrAsyncRequired()
@@ -427,9 +392,7 @@ class InMemoryBroker(ServiceBroker):
 
         return GetInstanceDetailsSpec(self.service_guid, self.plan_guid)
 
-    def get_binding(
-        self, instance_id: str, binding_id: str, **kwargs
-    ) -> GetBindingSpec:
+    def get_binding(self, instance_id: str, binding_id: str, **kwargs) -> GetBindingSpec:
         instance = self.service_instances.get(instance_id)
         if instance is None:
             raise errors.ErrInstanceDoesNotExist()

@@ -58,9 +58,7 @@ class RouterTestCase(unittest.TestCase):
             operation=operation_str,
         )
 
-        provision = self.router.provision(
-            str(uuid4()), ProvisionDetails("s1", "p1", str(uuid4()), str(uuid4())), True
-        )
+        provision = self.router.provision(str(uuid4()), ProvisionDetails("s1", "p1", str(uuid4()), str(uuid4())), True)
 
         self.assertEqual("s1 " + operation_str, provision.operation)
         self.assertTrue(self.b1.provision.called)
@@ -73,15 +71,11 @@ class RouterTestCase(unittest.TestCase):
 
         _ = self.router.bind(instace_guid, binding_id, bind_details, True)
 
-        self.b1.bind.assert_called_once_with(
-            instace_guid, binding_id, bind_details, False
-        )
+        self.b1.bind.assert_called_once_with(instace_guid, binding_id, bind_details, False)
 
     def test_routes_update(self):
         operation_str = str(uuid4())
-        self.b1.update.return_value = UpdateServiceSpec(
-            is_async=True, operation=operation_str
-        )
+        self.b1.update.return_value = UpdateServiceSpec(is_async=True, operation=operation_str)
 
         update = self.router.update(str(uuid4()), UpdateDetails("s1", "p1"), True)
 
@@ -96,19 +90,13 @@ class RouterTestCase(unittest.TestCase):
 
         _ = self.router.unbind(instace_guid, binding_id, unbind_details, True)
 
-        self.b1.unbind.assert_called_once_with(
-            instace_guid, binding_id, unbind_details, False
-        )
+        self.b1.unbind.assert_called_once_with(instace_guid, binding_id, unbind_details, False)
 
     def test_routes_deprovision(self):
         operation_str = str(uuid4())
-        self.b1.deprovision.return_value = DeprovisionServiceSpec(
-            is_async=True, operation=operation_str
-        )
+        self.b1.deprovision.return_value = DeprovisionServiceSpec(is_async=True, operation=operation_str)
 
-        deprovision = self.router.deprovision(
-            str(uuid4()), DeprovisionDetails("s1", "p1"), True
-        )
+        deprovision = self.router.deprovision(str(uuid4()), DeprovisionDetails("s1", "p1"), True)
 
         self.assertEqual("s1 " + operation_str, deprovision.operation)
         self.assertTrue(self.b1.deprovision.called)
@@ -116,9 +104,7 @@ class RouterTestCase(unittest.TestCase):
     def test_routes_last_operation(self):
         instance_id = str(uuid4())
         operation_str = str(uuid4())
-        self.b1.last_operation.return_value = LastOperation(
-            state=OperationState.IN_PROGRESS
-        )
+        self.b1.last_operation.return_value = LastOperation(state=OperationState.IN_PROGRESS)
 
         _ = self.router.last_operation(instance_id, "s1 " + operation_str)
 

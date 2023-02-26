@@ -272,7 +272,6 @@ class InMemoryBroker(ServiceBroker):
         async_allowed: bool,
         **kwargs,
     ) -> DeprovisionServiceSpec:
-
         instance = self.service_instances.get(instance_id)
         if instance is None:
             raise errors.ErrInstanceDoesNotExist()

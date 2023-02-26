@@ -1,6 +1,5 @@
 import http
 import base64
-from unittest import skip
 
 from openbrokerapi import errors, constants
 from openbrokerapi.catalog import ServicePlan
@@ -49,14 +48,10 @@ class PrecheckTest(BrokerTestCase):
         )
 
         self.assertNotEqual(response.data, b"")
-        self.assertEqual(
-            response.json, dict(description="Service broker requires version 2.13+.")
-        )
+        self.assertEqual(response.json, {"description": "Service broker requires version 2.13+."})
 
     def test_returns_400_if_request_not_contains_version_header(self):
-        response = self.client.put(
-            "/v2/service_instances/abc", headers={"Authorization": self.auth_header}
-        )
+        response = self.client.put("/v2/service_instances/abc", headers={"Authorization": self.auth_header})
 
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
 
@@ -75,9 +70,9 @@ class PrecheckTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json,
-            dict(
-                description='Improper "X-Broker-API-Originating-Identity" header. not enough values to unpack (expected 2, got 1)'
-            ),
+            {
+                "description": 'Improper "X-Broker-API-Originating-Identity" header. not enough values to unpack (expected 2, got 1)'
+            },
         )
 
     def test_returns_400_if_request_contains_originating_identity_header_with_improper_base64_value(
@@ -114,9 +109,9 @@ class PrecheckTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json,
-            dict(
-                description='Improper "X-Broker-API-Originating-Identity" header. Unterminated string starting at: line 1 column 2 (char 1)'
-            ),
+            {
+                "description": 'Improper "X-Broker-API-Originating-Identity" header. Unterminated string starting at: line 1 column 2 (char 1)'
+            },
         )
 
     def test_returns_500_with_json_body_if_exception_was_raised(self):
@@ -131,9 +126,7 @@ class PrecheckTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
-        self.assertEqual(
-            response.json["description"], constants.DEFAULT_EXCEPTION_ERROR_MESSAGE
-        )
+        self.assertEqual(response.json["description"], constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)
 
     def test_returns_500_with_json_body_if_service_exception_was_raised(self):
         self.broker.deprovision.side_effect = errors.ServiceException("Boooom!")
@@ -147,9 +140,7 @@ class PrecheckTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.INTERNAL_SERVER_ERROR)
-        self.assertEqual(
-            response.json["description"], constants.DEFAULT_EXCEPTION_ERROR_MESSAGE
-        )
+        self.assertEqual(response.json["description"], constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)
 
     def test_returns_400_if_request_did_not_include_data(self):
         response = self.client.put(

@@ -71,7 +71,7 @@ class BindTest(BrokerTestCase):
         self.assertIsInstance(actual_details, BindDetails)
         self.assertEqual(actual_details.service_id, "service-guid-here")
         self.assertEqual(actual_details.plan_id, "plan-guid-here")
-        self.assertEqual(actual_details.parameters, dict(parameter1=1))
+        self.assertEqual(actual_details.parameters, {"parameter1": 1})
 
         self.assertIsInstance(actual_details.bind_resource, BindResource)
         self.assertEqual(actual_details.bind_resource.app_guid, "app-guid-here")
@@ -84,9 +84,7 @@ class BindTest(BrokerTestCase):
 
         self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
-            data=json.dumps(
-                {"service_id": "service-guid-here", "plan_id": "plan-guid-here"}
-            ),
+            data=json.dumps({"service_id": "service-guid-here", "plan_id": "plan-guid-here"}),
             headers={
                 "X-Broker-Api-Version": "2.13",
                 "Content-Type": "application/json",
@@ -172,12 +170,10 @@ class BindTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.CREATED)
-        self.assertEqual(response.json, dict(credentials=expected_credentials))
+        self.assertEqual(response.json, {"credentials": expected_credentials})
 
     def test_returns_202_for_async_binding(self):
-        self.broker.bind.return_value = Binding(
-            state=BindState.IS_ASYNC, operation="bind"
-        )
+        self.broker.bind.return_value = Binding(state=BindState.IS_ASYNC, operation="bind")
 
         response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id&accepts_incomplete=true",
@@ -206,7 +202,7 @@ class BindTest(BrokerTestCase):
                     container_dir="",
                     mode="",
                     device_type="",
-                    device=SharedDevice(volume_id="", mount_config=dict(config1="1")),
+                    device=SharedDevice(volume_id="", mount_config={"config1": "1"}),
                 )
             ]
         )
@@ -230,17 +226,17 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.CREATED)
         self.assertEqual(
             response.json,
-            dict(
-                volume_mounts=[
-                    dict(
-                        driver="",
-                        container_dir="",
-                        mode="",
-                        device_type="",
-                        device=dict(volume_id="", mount_config=dict(config1="1")),
-                    )
+            {
+                "volume_mounts": [
+                    {
+                        "driver": "",
+                        "container_dir": "",
+                        "mode": "",
+                        "device_type": "",
+                        "device": {"volume_id": "", "mount_config": {"config1": "1"}},
+                    }
                 ]
-            ),
+            },
         )
 
     def test_returns_409_if_binding_already_exists(self):
@@ -263,7 +259,7 @@ class BindTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.CONFLICT)
-        self.assertEqual(response.json, dict())
+        self.assertEqual(response.json, {})
 
     def test_returns_422_if_app_guid_is_required_but_not_given(self):
         self.broker.bind.side_effect = errors.ErrAppGuidNotProvided()
@@ -287,10 +283,10 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json,
-            dict(
-                error="RequiresApp",
-                description="This service supports generation of credentials through binding an application only.",
-            ),
+            {
+                "error": "RequiresApp",
+                "description": "This service supports generation of credentials through binding an application only.",
+            },
         )
 
     def test_returns_401_if_request_does_not_contain_auth_header(self):
@@ -315,9 +311,7 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json,
-            dict(
-                description='Improper Content-Type header. Expecting "application/json"'
-            ),
+            {"description": 'Improper Content-Type header. Expecting "application/json"'},
         )
 
     def test_returns_400_if_request_does_not_contain_valid_json_body(self):
@@ -334,15 +328,11 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json,
-            dict(
-                description='Improper Content-Type header. Expecting "application/json"'
-            ),
+            {"description": 'Improper Content-Type header. Expecting "application/json"'},
         )
 
     def test_returns_200_if_identical_binding_already_exists(self):
-        self.broker.bind.return_value = Binding(
-            state=BindState.IDENTICAL_ALREADY_EXISTS
-        )
+        self.broker.bind.return_value = Binding(state=BindState.IDENTICAL_ALREADY_EXISTS)
 
         response = self.client.put(
             "/v2/service_instances/here-instance_id/service_bindings/here-binding_id",
@@ -361,7 +351,7 @@ class BindTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        self.assertEqual(response.json, dict())
+        self.assertEqual(response.json, {})
 
     def test_returns_422_if_instance_is_in_use(self):
         self.broker.bind.side_effect = errors.ErrConcurrentInstanceAccess()
@@ -385,8 +375,8 @@ class BindTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json,
-            dict(
-                description="The Service Broker does not support concurrent requests that mutate the same resource.",
-                error="ConcurrencyError",
-            ),
+            {
+                "description": "The Service Broker does not support concurrent requests that mutate the same resource.",
+                "error": "ConcurrencyError",
+            },
         )

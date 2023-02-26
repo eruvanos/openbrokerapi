@@ -29,7 +29,7 @@ This package is available for Python 3.8+.
 
     # including gevent as server
     pip3 install openbrokerapi[gevent]
-    
+
     # recommended production setup
     pip3 install openbrokerapi[gunicorn]
 

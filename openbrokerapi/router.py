@@ -59,9 +59,7 @@ class Router(ServiceBroker):
 
         return result
 
-    def update(
-        self, instance_id: str, details: UpdateDetails, async_allowed: bool, **kwargs
-    ) -> UpdateServiceSpec:
+    def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool, **kwargs) -> UpdateServiceSpec:
         provider = self._get_provider_by_id(details.service_id)
         result = provider.update(instance_id, details, async_allowed, **kwargs)
         self.add_service_id_to_async_response(result, details.service_id)
@@ -69,11 +67,7 @@ class Router(ServiceBroker):
         return result
 
     def deprovision(
-        self,
-        instance_id: str,
-        details: DeprovisionDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool, **kwargs
     ) -> DeprovisionServiceSpec:
         provider = self._get_provider_by_id(details.service_id)
         result = provider.deprovision(instance_id, details, async_allowed, **kwargs)
@@ -81,27 +75,13 @@ class Router(ServiceBroker):
 
         return result
 
-    def bind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: BindDetails,
-        async_allowed: bool,
-        **kwargs
-    ) -> Binding:
+    def bind(self, instance_id: str, binding_id: str, details: BindDetails, async_allowed: bool, **kwargs) -> Binding:
         provider = self._get_provider_by_id(details.service_id)
         result = provider.bind(instance_id, binding_id, details, False, **kwargs)
 
         return result
 
-    def unbind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: UnbindDetails,
-        async_allowed: bool,
-        **kwargs
-    ):
+    def unbind(self, instance_id: str, binding_id: str, details: UnbindDetails, async_allowed: bool, **kwargs):
         provider = self._get_provider_by_id(details.service_id)
         result = provider.unbind(instance_id, binding_id, details, False, **kwargs)
 
@@ -125,6 +105,6 @@ class Router(ServiceBroker):
             provider = self._get_provider_by_id(service_id)
         except KeyError as e:
             logger.exception(e)
-            raise errors.ErrInvalidParameters("Invalid operation string")
+            raise errors.ErrInvalidParameters("Invalid operation string") from e
 
         return provider.last_operation(instance_id, operation_data, **kwargs)

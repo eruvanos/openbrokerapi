@@ -23,9 +23,7 @@ class DeprovisioningTest(BrokerTestCase):
         ]
 
     def test_deprovisioning_is_called_with_the_right_values(self):
-        self.broker.deprovision.return_value = DeprovisionServiceSpec(
-            False, "operation_str"
-        )
+        self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
         self.client.delete(
             "/v2/service_instances/here_instance_id?service_id=service-guid-here&plan_id=plan-guid-here&accepts_incomplete=true",
@@ -45,9 +43,7 @@ class DeprovisioningTest(BrokerTestCase):
         self.assertEqual(actual_async_allowed, True)
 
     def test_deprovisioning_called_just_with_required_fields(self):
-        self.broker.deprovision.return_value = DeprovisionServiceSpec(
-            False, "operation_str"
-        )
+        self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
         self.client.delete(
             "/v2/service_instances/here_instance_id?service_id=service-guid-here&plan_id=plan-guid-here",
@@ -67,9 +63,7 @@ class DeprovisioningTest(BrokerTestCase):
         self.assertEqual(actual_async_allowed, False)
 
     def test_returns_200_if_deleted(self):
-        self.broker.deprovision.return_value = DeprovisionServiceSpec(
-            False, "operation_str"
-        )
+        self.broker.deprovision.return_value = DeprovisionServiceSpec(False, "operation_str")
 
         response = self.client.delete(
             "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-guid-here",
@@ -77,12 +71,10 @@ class DeprovisioningTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        self.assertEqual(response.json, dict())
+        self.assertEqual(response.json, {})
 
     def test_returns_202_if_deletion_is_in_progress(self):
-        self.broker.deprovision.return_value = DeprovisionServiceSpec(
-            True, "operation_str"
-        )
+        self.broker.deprovision.return_value = DeprovisionServiceSpec(True, "operation_str")
 
         response = self.client.delete(
             "/v2/service_instances/abc?service_id=service-guid-here&plan_id=plan-guid-here",
@@ -90,7 +82,7 @@ class DeprovisioningTest(BrokerTestCase):
         )
 
         self.assertEqual(http.HTTPStatus.ACCEPTED, response.status_code)
-        self.assertEqual(response.json, dict(operation="operation_str"))
+        self.assertEqual(response.json, {"operation": "operation_str"})
 
     def test_returns_410_if_service_instance_already_gone(self):
         self.broker.deprovision.side_effect = errors.ErrInstanceDoesNotExist()
@@ -101,7 +93,7 @@ class DeprovisioningTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.GONE)
-        self.assertEqual(response.json, dict())
+        self.assertEqual(response.json, {})
 
     def test_returns_422_if_async_not_supported_but_required(self):
         self.broker.deprovision.side_effect = errors.ErrAsyncRequired()
@@ -114,10 +106,10 @@ class DeprovisioningTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json,
-            dict(
-                error="AsyncRequired",
-                description="This service plan requires client support for asynchronous service operations.",
-            ),
+            {
+                "error": "AsyncRequired",
+                "description": "This service plan requires client support for asynchronous service operations.",
+            },
         )
 
     def test_returns_422_if_instance_is_in_use(self):
@@ -131,15 +123,13 @@ class DeprovisioningTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json,
-            dict(
-                description="The Service Broker does not support concurrent requests that mutate the same resource.",
-                error="ConcurrencyError",
-            ),
+            {
+                "description": "The Service Broker does not support concurrent requests that mutate the same resource.",
+                "error": "ConcurrencyError",
+            },
         )
 
     def test_returns_401_if_request_not_contain_auth_header(self):
-        response = self.client.delete(
-            "/v2/service_instances/abc", headers={"X-Broker-Api-Version": "2.13"}
-        )
+        response = self.client.delete("/v2/service_instances/abc", headers={"X-Broker-Api-Version": "2.13"})
 
         self.assertEqual(response.status_code, http.HTTPStatus.UNAUTHORIZED)

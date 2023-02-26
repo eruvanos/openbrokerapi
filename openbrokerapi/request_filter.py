@@ -31,9 +31,7 @@ def check_originating_identity():
 
     if "X-Broker-API-Originating-Identity" in request.headers:
         try:
-            platform, value = request.headers[
-                "X-Broker-API-Originating-Identity"
-            ].split(None, 1)
+            platform, value = request.headers["X-Broker-API-Originating-Identity"].split(None, 1)
             request.originating_identity = {
                 "platform": platform,
                 "value": json.loads(base64.standard_b64decode(value)),
@@ -41,10 +39,7 @@ def check_originating_identity():
         except ValueError as e:
             return (
                 to_json_response(
-                    ErrorResponse(
-                        description='Improper "X-Broker-API-Originating-Identity" header. '
-                        + str(e)
-                    )
+                    ErrorResponse(description='Improper "X-Broker-API-Originating-Identity" header. ' + str(e))
                 ),
                 HTTPStatus.BAD_REQUEST,
             )
@@ -60,9 +55,7 @@ def requires_application_json(f):
         from flask import request
 
         if request.get_json(silent=True) is None:
-            er = ErrorResponse(
-                description='Improper Content-Type header. Expecting "application/json"'
-            )
+            er = ErrorResponse(description='Improper Content-Type header. Expecting "application/json"')
             return to_json_response(er), HTTPStatus.BAD_REQUEST
         else:
             return f(*args, **kwargs)
@@ -76,17 +69,11 @@ def check_version():
     version = request.headers.get("X-Broker-Api-Version", None)
     if not version:
         return (
-            to_json_response(
-                ErrorResponse(description="No X-Broker-Api-Version found.")
-            ),
+            to_json_response(ErrorResponse(description="No X-Broker-Api-Version found.")),
             HTTPStatus.BAD_REQUEST,
         )
     if MIN_VERSION > version_tuple(version):
         return (
-            to_json_response(
-                ErrorResponse(
-                    description="Service broker requires version %d.%d+." % MIN_VERSION
-                )
-            ),
+            to_json_response(ErrorResponse(description="Service broker requires version %d.%d+." % MIN_VERSION)),
             HTTPStatus.PRECONDITION_FAILED,
         )

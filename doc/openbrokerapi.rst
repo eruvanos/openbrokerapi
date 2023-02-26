@@ -59,4 +59,3 @@ Errors module
     :members:
     :undoc-members:
     :show-inheritance:
-

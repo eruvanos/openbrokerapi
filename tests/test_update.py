@@ -57,12 +57,10 @@ class UpdateTest(BrokerTestCase):
         self.assertIsInstance(actual_details.previous_values, PreviousValues)
         self.assertEqual(actual_details.service_id, "service-guid-here")
         self.assertEqual(actual_details.plan_id, "plan-guid-here")
-        self.assertEqual(actual_details.parameters, dict(parameter1=1))
+        self.assertEqual(actual_details.parameters, {"parameter1": 1})
         self.assertEqual(actual_details.previous_values.plan_id, "old-plan-guid-here")
         self.assertEqual(actual_details.previous_values.service_id, "service-guid-here")
-        self.assertEqual(
-            actual_details.previous_values.organization_id, "org-guid-here"
-        )
+        self.assertEqual(actual_details.previous_values.organization_id, "org-guid-here")
         self.assertEqual(actual_details.previous_values.space_id, "space-guid-here")
 
     def test_update_callable_including_only_required_fields(self):
@@ -113,7 +111,7 @@ class UpdateTest(BrokerTestCase):
             },
         )
 
-        self.assertEqual(dict(dashboard_url=new_dashboard_url), response.json)
+        self.assertEqual({"dashboard_url": new_dashboard_url}, response.json)
 
     def test_update_ignores_unknown_parameters(self):
         self.broker.update.return_value = UpdateServiceSpec(False, "operation")
@@ -150,12 +148,10 @@ class UpdateTest(BrokerTestCase):
         self.assertIsInstance(actual_details.previous_values, PreviousValues)
         self.assertEqual(actual_details.service_id, "service-guid-here")
         self.assertEqual(actual_details.plan_id, "plan-guid-here")
-        self.assertEqual(actual_details.parameters, dict(parameter1=1))
+        self.assertEqual(actual_details.parameters, {"parameter1": 1})
         self.assertEqual(actual_details.previous_values.plan_id, "old-plan-guid-here")
         self.assertEqual(actual_details.previous_values.service_id, "service-guid-here")
-        self.assertEqual(
-            actual_details.previous_values.organization_id, "org-guid-here"
-        )
+        self.assertEqual(actual_details.previous_values.organization_id, "org-guid-here")
         self.assertEqual(actual_details.previous_values.space_id, "space-guid-here")
 
     def test_returns_200_if_updated(self):
@@ -183,7 +179,7 @@ class UpdateTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        self.assertEqual(response.json, dict())
+        self.assertEqual(response.json, {})
 
     def test_returns_202_if_update_is_in_progress(self):
         self.broker.update.return_value = UpdateServiceSpec(True, "operation")
@@ -210,7 +206,7 @@ class UpdateTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.ACCEPTED)
-        self.assertEqual(response.json, dict(operation="operation"))
+        self.assertEqual(response.json, {"operation": "operation"})
 
     def test_returns_422_if_async_required_but_not_supported(self):
         self.broker.update.side_effect = errors.ErrAsyncRequired()
@@ -239,16 +235,14 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json,
-            dict(
-                error="AsyncRequired",
-                description="This service plan requires client support for asynchronous service operations.",
-            ),
+            {
+                "error": "AsyncRequired",
+                "description": "This service plan requires client support for asynchronous service operations.",
+            },
         )
 
     def test_returns_400_if_missing_mandatory_data(self):
-        self.broker.update.side_effect = errors.ErrInvalidParameters(
-            "Required parameters not provided."
-        )
+        self.broker.update.side_effect = errors.ErrInvalidParameters("Required parameters not provided.")
 
         response = self.client.patch(
             "/v2/service_instances/abc?accepts_incomplete=false",
@@ -274,10 +268,10 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json,
-            dict(
-                error="InvalidParameters",
-                description="Required parameters not provided.",
-            ),
+            {
+                "error": "InvalidParameters",
+                "description": "Required parameters not provided.",
+            },
         )
 
     def test_returns_401_if_request_does_not_contain_auth_header(self):
@@ -300,9 +294,7 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json,
-            dict(
-                description='Improper Content-Type header. Expecting "application/json"'
-            ),
+            {"description": 'Improper Content-Type header. Expecting "application/json"'},
         )
 
     def test_returns_400_if_request_does_not_contain_valid_json_body(self):
@@ -319,9 +311,7 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json,
-            dict(
-                description='Improper Content-Type header. Expecting "application/json"'
-            ),
+            {"description": 'Improper Content-Type header. Expecting "application/json"'},
         )
 
     def test_returns_422_if_instance_is_in_use(self):
@@ -345,8 +335,8 @@ class UpdateTest(BrokerTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json,
-            dict(
-                description="The Service Broker does not support concurrent requests that mutate the same resource.",
-                error="ConcurrencyError",
-            ),
+            {
+                "description": "The Service Broker does not support concurrent requests that mutate the same resource.",
+                "error": "ConcurrencyError",
+            },
         )

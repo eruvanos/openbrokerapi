@@ -18,17 +18,12 @@ class GetBindingTest(BrokerTestCase):
         )
 
         response = self.client.get(
-            "/v2/service_instances/{}/service_bindings/{}".format(
-                instance_guid, binding_guid
-            ),
+            "/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
             headers={"X-Broker-Api-Version": "2.14", "Authorization": self.auth_header},
         )
 
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.broker.get_binding.assert_called_once_with(
-            instance_id=instance_guid,
-            binding_id=binding_guid
-        )
+        self.broker.get_binding.assert_called_once_with(instance_id=instance_guid, binding_id=binding_guid)
 
         info = response.json
         self.assertDictEqual({"password": password}, info.get("credentials"))
@@ -41,9 +36,7 @@ class GetBindingTest(BrokerTestCase):
         self.broker.get_binding.side_effect = errors.ErrBindingDoesNotExist()
 
         response = self.client.get(
-            "/v2/service_instances/{}/service_bindings/{}".format(
-                instance_guid, binding_guid
-            ),
+            "/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
             headers={"X-Broker-Api-Version": "2.14", "Authorization": self.auth_header},
         )
 

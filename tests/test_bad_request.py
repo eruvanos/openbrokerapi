@@ -101,8 +101,7 @@ class BadRequest(BrokerTestCase):
 
         query = "service_id=service-guid-here&plan_id=plan-guid-here"
         response = self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={"X-Broker-Api-Version": "2.13", "Authorization": self.auth_header},
         )
 

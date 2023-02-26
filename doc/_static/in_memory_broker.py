@@ -31,7 +31,7 @@ class InMemoryBroker(ServiceBroker):
         self.service_guid = service_guid
         self.plan_guid = plan_guid
 
-        self.service_instances = dict()
+        self.service_instances = {}
 
     def catalog(self) -> Union[Service, List[Service]]:
         return Service(
@@ -60,30 +60,16 @@ class InMemoryBroker(ServiceBroker):
             "state": self.CREATING,
         }
 
-        return ProvisionedServiceSpec(
-            state=ProvisionState.IS_ASYNC, operation="provision"
-        )
+        return ProvisionedServiceSpec(state=ProvisionState.IS_ASYNC, operation="provision")
 
-    def bind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: BindDetails,
-        async_allowed: bool,
-        **kwargs
-    ) -> Binding:
+    def bind(self, instance_id: str, binding_id: str, details: BindDetails, async_allowed: bool, **kwargs) -> Binding:
         instance = self.service_instances.get(instance_id, {})
         if instance and instance.get("state") == self.CREATED:
             instance["state"] = self.BOUND
             return Binding(BindState.SUCCESSFUL_BOUND)
 
     def unbind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: UnbindDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, binding_id: str, details: UnbindDetails, async_allowed: bool, **kwargs
     ) -> UnbindSpec:
         instance = self.service_instances.get(instance_id, {})
         if instance and instance.get("state") == self.BOUND:
@@ -91,11 +77,7 @@ class InMemoryBroker(ServiceBroker):
             return UnbindSpec(False)
 
     def deprovision(
-        self,
-        instance_id: str,
-        details: DeprovisionDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool, **kwargs
     ) -> DeprovisionServiceSpec:
         instance = self.service_instances.get(instance_id)
         if instance is None:

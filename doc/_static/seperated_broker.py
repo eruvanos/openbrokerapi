@@ -28,17 +28,13 @@ class MyServiceBroker1(ServiceBroker):
             ],
         )
 
-    def provision(
-        self, instance_id: str, details: ProvisionDetails, async_allowed: bool
-    ) -> ProvisionedServiceSpec:
+    def provision(self, instance_id: str, details: ProvisionDetails, async_allowed: bool) -> ProvisionedServiceSpec:
         # Create service instance
         # ...
 
         return ProvisionedServiceSpec()
 
-    def deprovision(
-        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool
-    ) -> DeprovisionServiceSpec:
+    def deprovision(self, instance_id: str, details: DeprovisionDetails, async_allowed: bool) -> DeprovisionServiceSpec:
         # Delete service instance
         # ...
 
@@ -70,11 +66,7 @@ class MyServiceBroker2(ServiceBroker):
         return ProvisionedServiceSpec()
 
     def deprovision(
-        self,
-        instance_id: str,
-        details: DeprovisionDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool, **kwargs
     ) -> DeprovisionServiceSpec:
         # Delete service instance
         # ...

@@ -19,7 +19,7 @@ from openbrokerapi.service_broker import (
 
 
 class InMemBroker(ServiceBroker):
-    instances = dict()
+    instances = {}
 
     def __init__(self, service_guid="service-test-guid", plan_guid="plan-test-guid"):
         self.service_guid = service_guid
@@ -31,9 +31,7 @@ class InMemBroker(ServiceBroker):
             name="TestService",
             description="TestMe",
             bindable=False,
-            plans=[
-                ServicePlan(id=self.plan_guid, name="TestPlan", description="TestMe")
-            ],
+            plans=[ServicePlan(id=self.plan_guid, name="TestPlan", description="TestMe")],
         )
 
     def provision(
@@ -43,11 +41,7 @@ class InMemBroker(ServiceBroker):
         return ProvisionedServiceSpec()
 
     def deprovision(
-        self,
-        instance_id: str,
-        details: DeprovisionDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool, **kwargs
     ) -> DeprovisionServiceSpec:
         del self.instances[instance_id]
         return DeprovisionServiceSpec(is_async=False)
@@ -98,22 +92,20 @@ class ServeTest(TestCase):
         server.join()
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), dict(services=[]))
+        self.assertEqual(response.json(), {"services": []})
 
     def test_serve_starts_server_without_auth(self):
         server = Process(target=run_serve_starts_server_without_auth)
         server.start()
 
         time.sleep(2)
-        response = requests.get(
-            "http://localhost:5001/v2/catalog", headers={"X-Broker-Api-Version": "2.13"}
-        )
+        response = requests.get("http://localhost:5001/v2/catalog", headers={"X-Broker-Api-Version": "2.13"})
 
         server.kill()
         server.join()
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), dict(services=[]))
+        self.assertEqual(response.json(), {"services": []})
 
     def test_provision_without_auth(self):
         server = Process(target=run_serve_provision_without_auth)
@@ -158,8 +150,8 @@ class ServeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
             response.json(),
-            dict(
-                services=[
+            {
+                "services": [
                     {
                         "bindable": False,
                         "description": "description",
@@ -171,5 +163,5 @@ class ServeTest(TestCase):
                         "plans": [],
                     }
                 ]
-            ),
+            },
         )

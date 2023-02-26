@@ -61,8 +61,8 @@ class GetInstanceTest(BrokerTestCase):
         self.assertEqual(HTTPStatus.UNPROCESSABLE_ENTITY, response.status_code)
         self.assertEqual(
             response.json,
-            dict(
-                description="The Service Broker does not support concurrent requests that mutate the same resource.",
-                error="ConcurrencyError",
-            ),
+            {
+                "description": "The Service Broker does not support concurrent requests that mutate the same resource.",
+                "error": "ConcurrencyError",
+            },
         )

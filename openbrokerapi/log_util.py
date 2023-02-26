@@ -16,9 +16,7 @@ def basic_config(logger: logging.Logger = logging.root, level=logging.INFO):
         def filter(self, rec):
             return rec.levelno in (logging.DEBUG, logging.INFO)
 
-    formatter = logging.Formatter(
-        "%(asctime)s - %(levelname)s - %(name)s - %(message)s", "%d/%m/%Y %H:%M:%S"
-    )
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s", "%d/%m/%Y %H:%M:%S")
 
     std_out_handler = logging.StreamHandler(sys.stdout)
     std_out_handler.setLevel(logging.DEBUG)

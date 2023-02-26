@@ -25,7 +25,7 @@ class ServiceMetadata:
 
 
 class ServiceDashboardClient:
-    def __init__(self, *, id: str, secret: Optional[str] = None, redirect_uri: Optional[str]=None, **kwargs):
+    def __init__(self, *, id: str, secret: Optional[str] = None, redirect_uri: Optional[str] = None, **kwargs):
         self.id = id
         self.secret = secret
         self.redirect_uri = redirect_uri
@@ -57,9 +57,7 @@ class ServicePlanMetadata:
 
 
 class Schemas:
-    def __init__(
-        self, service_instance: Optional[Dict] = None, service_binding: Optional[Dict] = None, **kwargs
-    ):
+    def __init__(self, service_instance: Optional[Dict] = None, service_binding: Optional[Dict] = None, **kwargs):
         self.service_instance = service_instance
         self.service_binding = service_binding
 

@@ -29,13 +29,8 @@ class ProvisionDetails:
 
         # Usage context information
         if isinstance(context, dict) and "organization_guid" in context:
-            if (
-                organization_guid is not None
-                and context["organization_guid"] != organization_guid
-            ):
-                raise TypeError(
-                    "organization_guid does not match with context.organization_guid"
-                )
+            if organization_guid is not None and context["organization_guid"] != organization_guid:
+                raise TypeError("organization_guid does not match with context.organization_guid")
             self.organization_guid = context["organization_guid"]
         if isinstance(context, dict) and "space_guid" in context:
             if space_guid is not None and context["space_guid"] != space_guid:
@@ -49,9 +44,7 @@ class ProvisionDetails:
 
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
-        self.originating_identity = (
-            None  #: decoded X-Broker-Originating-Identity HTTP Header
-        )
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class ProvisionState(Enum):
@@ -96,9 +89,7 @@ class DeprovisionDetails:
         self.plan_id = plan_id
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
-        self.originating_identity = (
-            None  #: decoded X-Broker-Originating-Identity HTTP Header
-        )
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class DeprovisionServiceSpec:
@@ -135,15 +126,11 @@ class UpdateDetails:
         self.service_id = service_id
         self.plan_id = plan_id
         self.parameters = parameters
-        self.previous_values = (
-            PreviousValues(**previous_values) if previous_values else None
-        )
+        self.previous_values = PreviousValues(**previous_values) if previous_values else None
         self.context = context
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
-        self.originating_identity = (
-            None  #: decoded X-Broker-Originating-Identity HTTP Header
-        )
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class UpdateServiceSpec:
@@ -183,9 +170,7 @@ class BindDetails:
         self.context = context
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
-        self.originating_identity = (
-            None  #: decoded X-Broker-Originating-Identity HTTP Header
-        )
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class SharedDevice:
@@ -257,9 +242,7 @@ class UnbindDetails:
         self.service_id = service_id
         # HTTP contextual data
         self.authorization_username = None  #: username of HTTP Basic Auth
-        self.originating_identity = (
-            None  #: decoded X-Broker-Originating-Identity HTTP Header
-        )
+        self.originating_identity = None  #: decoded X-Broker-Originating-Identity HTTP Header
 
 
 class UnbindSpec:
@@ -345,9 +328,7 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def update(
-        self, instance_id: str, details: UpdateDetails, async_allowed: bool, **kwargs
-    ) -> UpdateServiceSpec:
+    def update(self, instance_id: str, details: UpdateDetails, async_allowed: bool, **kwargs) -> UpdateServiceSpec:
         """
         Further readings `CF Broker API#Update <https://docs.cloudfoundry.org/services/api.html#updating_service_instance>`_
 
@@ -361,11 +342,7 @@ class ServiceBroker:
         raise NotImplementedError()
 
     def deprovision(
-        self,
-        instance_id: str,
-        details: DeprovisionDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, details: DeprovisionDetails, async_allowed: bool, **kwargs
     ) -> DeprovisionServiceSpec:
         """
         Further readings `CF Broker API#Deprovisioning <https://docs.cloudfoundry.org/services/api.html#deprovisioning>`_
@@ -380,14 +357,7 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def bind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: BindDetails,
-        async_allowed: bool,
-        **kwargs
-    ) -> Binding:
+    def bind(self, instance_id: str, binding_id: str, details: BindDetails, async_allowed: bool, **kwargs) -> Binding:
         """
         Further readings `CF Broker API#Binding <https://docs.cloudfoundry.org/services/api.html#binding>`_
 
@@ -403,12 +373,7 @@ class ServiceBroker:
         raise NotImplementedError()
 
     def unbind(
-        self,
-        instance_id: str,
-        binding_id: str,
-        details: UnbindDetails,
-        async_allowed: bool,
-        **kwargs
+        self, instance_id: str, binding_id: str, details: UnbindDetails, async_allowed: bool, **kwargs
     ) -> UnbindSpec:
         """
         Further readings `CF Broker API#Unbinding <https://docs.cloudfoundry.org/services/api.html#unbinding>`_
@@ -436,9 +401,7 @@ class ServiceBroker:
         """
         raise NotImplementedError()
 
-    def get_binding(
-        self, instance_id: str, binding_id: str, **kwargs
-    ) -> GetBindingSpec:
+    def get_binding(self, instance_id: str, binding_id: str, **kwargs) -> GetBindingSpec:
         """
         Further readings `CF Broker API#FetchServiceBinding <https://github.com/openservicebrokerapi/servicebroker/blob/v2.14/spec.md#fetching-a-service-binding>`_
         Must be implemented if `"bindings_retrievable" :true` is declared for a service in `catalog`.

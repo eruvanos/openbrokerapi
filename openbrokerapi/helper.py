@@ -4,19 +4,17 @@ from typing import Union, Iterable, Any
 def _to_dict(obj):
     if isinstance(obj, dict):
         data = {}
-        for (k, v) in obj.items():
+        for k, v in obj.items():
             data[k] = _to_dict(v)
         return data
     elif hasattr(obj, "__iter__") and not isinstance(obj, str):
         return [_to_dict(v) for v in obj]
     elif hasattr(obj, "__dict__"):
-        data = dict(
-            [
-                (key, _to_dict(value))
-                for key, value in obj.__dict__.items()
-                if not callable(value) and not key.startswith("_") and value is not None
-            ]
-        )
+        data = {
+            key: _to_dict(value)
+            for key, value in obj.__dict__.items()
+            if not callable(value) and not key.startswith("_") and value is not None
+        }
         return data
     else:
         return obj

@@ -23,8 +23,7 @@ class UnbindTest(BrokerTestCase):
 
         query = "service_id=service-guid-here&plan_id=plan-guid-here"
         self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={"X-Broker-Api-Version": "2.13", "Authorization": self.auth_header},
         )
 
@@ -47,45 +46,41 @@ class UnbindTest(BrokerTestCase):
 
         query = "service_id=service-guid-here&plan_id=plan-guid-here"
         response = self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={"X-Broker-Api-Version": "2.13", "Authorization": self.auth_header},
         )
 
         self.assertEqual(http.HTTPStatus.OK, response.status_code)
-        self.assertEqual(response.json, dict())
+        self.assertEqual(response.json, {})
 
     def test_returns_202_for_async(self):
         self.broker.unbind.return_value = UnbindSpec(True, operation="unbind")
 
         query = "service_id=service-guid-here&plan_id=plan-guid-here&accepts_incomplete=true"
         response = self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={"X-Broker-Api-Version": "2.13", "Authorization": self.auth_header},
         )
 
         self.assertEqual(http.HTTPStatus.ACCEPTED, response.status_code)
-        self.assertEqual(response.json, dict(operation="unbind"))
+        self.assertEqual(response.json, {"operation": "unbind"})
 
     def test_returns_410_if_binding_does_not_exists(self):
         self.broker.unbind.side_effect = errors.ErrBindingDoesNotExist()
 
         query = "service_id=service-guid-here&plan_id=plan-guid-here"
         response = self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={"X-Broker-Api-Version": "2.13", "Authorization": self.auth_header},
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.GONE)
-        self.assertEqual(response.json, dict())
+        self.assertEqual(response.json, {})
 
     def test_returns_400_if_request_not_contain_auth_header(self):
         query = "service_id=service-guid-here&plan_id=plan-guid-here"
         response = self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={
                 "X-Broker-Api-Version": "2.13",
             },
@@ -98,16 +93,15 @@ class UnbindTest(BrokerTestCase):
 
         query = "service_id=service-guid-here&plan_id=plan-guid-here"
         response = self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={"X-Broker-Api-Version": "2.13", "Authorization": self.auth_header},
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json,
-            dict(
-                description="The Service Broker does not support concurrent requests that mutate the same resource.",
-                error="ConcurrencyError",
-            ),
+            {
+                "description": "The Service Broker does not support concurrent requests that mutate the same resource.",
+                "error": "ConcurrencyError",
+            },
         )

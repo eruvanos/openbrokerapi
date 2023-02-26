@@ -99,10 +99,10 @@ def get_blueprint(
     elif authenticator and broker_credentials:
         warnings.warn("Provided authenticator and broker_credential, only the authenticator is used")
     elif authenticator is None and broker_credentials is None:
-        logger.warning(f"No authentication set, endpoints are not secured!")
+        logger.warning("No authentication set, endpoints are not secured!")
         authenticator = NoneAuthenticator()
 
-    logger.debug(f"Apply authentication filter")
+    logger.debug("Apply authentication filter")
     openbroker.before_request(authenticator)
 
     def extract_authorization_username(request: Request):
@@ -115,9 +115,7 @@ def get_blueprint(
     def error_handler(e):
         logger.exception(e)
         return (
-            to_json_response(
-                ErrorResponse(description=constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)
-            ),
+            to_json_response(ErrorResponse(description=constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)),
             HTTPStatus.INTERNAL_SERVER_ERROR,
         )
 
@@ -125,11 +123,7 @@ def get_blueprint(
     def error_handler_not_implemented(e):
         logger.exception(e)
         return (
-            to_json_response(
-                ErrorResponse(
-                    description=constants.DEFAULT_NOT_IMPLEMENTED_ERROR_MESSAGE
-                )
-            ),
+            to_json_response(ErrorResponse(description=constants.DEFAULT_NOT_IMPLEMENTED_ERROR_MESSAGE)),
             HTTPStatus.NOT_IMPLEMENTED,
         )
 
@@ -137,9 +131,7 @@ def get_blueprint(
     def error_handler_bad_request(e):
         logger.exception(e)
         return (
-            to_json_response(
-                ErrorResponse(description=str(e))
-            ),
+            to_json_response(ErrorResponse(description=str(e))),
             HTTPStatus.BAD_REQUEST,
         )
 
@@ -155,15 +147,11 @@ def get_blueprint(
     @requires_application_json
     def provision(instance_id):
         try:
-            accepts_incomplete = "true" == request.args.get(
-                "accepts_incomplete", "false"
-            )
+            accepts_incomplete = "true" == request.args.get("accepts_incomplete", "false")
 
             provision_details = ProvisionDetails(**json.loads(request.data))
             provision_details.originating_identity = request.originating_identity
-            provision_details.authorization_username = extract_authorization_username(
-                request
-            )
+            provision_details.authorization_username = extract_authorization_username(request)
 
             if not _check_plan_id(service_broker, provision_details.plan_id):
                 raise TypeError("plan_id not found in this service.")
@@ -176,9 +164,7 @@ def get_blueprint(
 
         try:
             result = service_broker.provision(
-                instance_id=instance_id,
-                details=provision_details,
-                async_allowed=accepts_incomplete
+                instance_id=instance_id, details=provision_details, async_allowed=accepts_incomplete
             )
             if result is None:
                 warnings.warn("Provision has to return ProvisionedServiceSpec")
@@ -206,23 +192,17 @@ def get_blueprint(
 
         if result.state == ProvisionState.IS_ASYNC:
             return (
-                to_json_response(
-                    ProvisioningResponse(result.dashboard_url, result.operation)
-                ),
+                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)),
                 HTTPStatus.ACCEPTED,
             )
         elif result.state == ProvisionState.IDENTICAL_ALREADY_EXISTS:
             return (
-                to_json_response(
-                    ProvisioningResponse(result.dashboard_url, result.operation)
-                ),
+                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)),
                 HTTPStatus.OK,
             )
         elif result.state == ProvisionState.SUCCESSFUL_CREATED:
             return (
-                to_json_response(
-                    ProvisioningResponse(result.dashboard_url, result.operation)
-                ),
+                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)),
                 HTTPStatus.CREATED,
             )
         else:
@@ -232,15 +212,11 @@ def get_blueprint(
     @requires_application_json
     def update(instance_id):
         try:
-            accepts_incomplete = "true" == request.args.get(
-                "accepts_incomplete", "false"
-            )
+            accepts_incomplete = "true" == request.args.get("accepts_incomplete", "false")
 
             update_details = UpdateDetails(**json.loads(request.data))
             update_details.originating_identity = request.originating_identity
-            update_details.authorization_username = extract_authorization_username(
-                request
-            )
+            update_details.authorization_username = extract_authorization_username(request)
             plan_id = update_details.plan_id
             if plan_id and not _check_plan_id(service_broker, plan_id):
                 raise TypeError("plan_id not found in this service.")
@@ -253,9 +229,7 @@ def get_blueprint(
 
         try:
             result = service_broker.update(
-                instance_id=instance_id,
-                details=update_details,
-                async_allowed=accepts_incomplete
+                instance_id=instance_id, details=update_details, async_allowed=accepts_incomplete
             )
             if result is None:
                 warnings.warn("Update has to return UpdateServiceSpec")
@@ -286,9 +260,7 @@ def get_blueprint(
 
         if result.is_async:
             return (
-                to_json_response(
-                    UpdateResponse(result.operation, result.dashboard_url)
-                ),
+                to_json_response(UpdateResponse(result.operation, result.dashboard_url)),
                 HTTPStatus.ACCEPTED,
             )
         else:
@@ -304,15 +276,11 @@ def get_blueprint(
     @requires_application_json
     def bind(instance_id, binding_id):
         try:
-            accepts_incomplete = "true" == request.args.get(
-                "accepts_incomplete", "false"
-            )
+            accepts_incomplete = "true" == request.args.get("accepts_incomplete", "false")
 
             binding_details = BindDetails(**json.loads(request.data))
             binding_details.originating_identity = request.originating_identity
-            binding_details.authorization_username = extract_authorization_username(
-                request
-            )
+            binding_details.authorization_username = extract_authorization_username(request)
             if not _check_plan_id(service_broker, binding_details.plan_id):
                 raise TypeError("plan_id not found in this service.")
         except (TypeError, KeyError, JSONDecodeError) as e:
@@ -327,7 +295,7 @@ def get_blueprint(
                 instance_id=instance_id,
                 binding_id=binding_id,
                 details=binding_details,
-                async_allowed=accepts_incomplete
+                async_allowed=accepts_incomplete,
             )
             if result is None:
                 warnings.warn("Bind has to return a Binding")
@@ -378,18 +346,14 @@ def get_blueprint(
     )
     def unbind(instance_id, binding_id):
         try:
-            accepts_incomplete = "true" == request.args.get(
-                "accepts_incomplete", "false"
-            )
+            accepts_incomplete = "true" == request.args.get("accepts_incomplete", "false")
 
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
 
             unbind_details = UnbindDetails(service_id=service_id, plan_id=plan_id)
             unbind_details.originating_identity = request.originating_identity
-            unbind_details.authorization_username = extract_authorization_username(
-                request
-            )
+            unbind_details.authorization_username = extract_authorization_username(request)
             if not _check_plan_id(service_broker, unbind_details.plan_id):
                 raise TypeError("plan_id not found in this service.")
         except (TypeError, KeyError) as e:
@@ -401,10 +365,7 @@ def get_blueprint(
 
         try:
             result = service_broker.unbind(
-                instance_id=instance_id,
-                binding_id=binding_id,
-                details=unbind_details,
-                async_allowed=accepts_incomplete
+                instance_id=instance_id, binding_id=binding_id, details=unbind_details, async_allowed=accepts_incomplete
             )
             if result is None:
                 warnings.warn("Unbind has to return a UnbindSpec")
@@ -433,17 +394,11 @@ def get_blueprint(
         try:
             plan_id = request.args["plan_id"]
             service_id = request.args["service_id"]
-            accepts_incomplete = "true" == request.args.get(
-                "accepts_incomplete", "false"
-            )
+            accepts_incomplete = "true" == request.args.get("accepts_incomplete", "false")
 
-            deprovision_details = DeprovisionDetails(
-                service_id=service_id, plan_id=plan_id
-            )
+            deprovision_details = DeprovisionDetails(service_id=service_id, plan_id=plan_id)
             deprovision_details.originating_identity = request.originating_identity
-            deprovision_details.authorization_username = extract_authorization_username(
-                request
-            )
+            deprovision_details.authorization_username = extract_authorization_username(request)
             if not _check_plan_id(service_broker, deprovision_details.plan_id):
                 raise TypeError("plan_id not found in this service.")
         except (TypeError, KeyError) as e:
@@ -455,9 +410,7 @@ def get_blueprint(
 
         try:
             result = service_broker.deprovision(
-                instance_id=instance_id,
-                details=deprovision_details,
-                async_allowed=accepts_incomplete
+                instance_id=instance_id, details=deprovision_details, async_allowed=accepts_incomplete
             )
             if result is None:
                 warnings.warn("Deprovision has to return a DeprovisionServiceSpec")
@@ -492,9 +445,7 @@ def get_blueprint(
         else:
             return to_json_response(EmptyResponse()), HTTPStatus.OK
 
-    @openbroker.route(
-        "/v2/service_instances/<instance_id>/last_operation", methods=["GET"]
-    )
+    @openbroker.route("/v2/service_instances/<instance_id>/last_operation", methods=["GET"])
     def last_operation(instance_id):
         service_id = request.args.get("service_id", None)
         plan_id = request.args.get("plan_id", None)
@@ -503,17 +454,13 @@ def get_blueprint(
 
         try:
             result = service_broker.last_operation(
-                instance_id=instance_id,
-                operation_data=operation_data,
-                service_id=service_id, plan_id=plan_id
+                instance_id=instance_id, operation_data=operation_data, service_id=service_id, plan_id=plan_id
             )
             if result is None:
                 warnings.warn("Last Operation has to return a LastOperation")
                 raise errors.ServiceException("Internal broker error")
             return (
-                to_json_response(
-                    LastOperationResponse(result.state, result.description)
-                ),
+                to_json_response(LastOperationResponse(result.state, result.description)),
                 HTTPStatus.OK,
             )
         except errors.ErrInstanceDoesNotExist:
@@ -549,9 +496,7 @@ def get_blueprint(
     @openbroker.route("/v2/service_instances/<instance_id>", methods=["GET"])
     def get_instance(instance_id):
         try:
-            result = service_broker.get_instance(
-                instance_id=instance_id
-            )
+            result = service_broker.get_instance(instance_id=instance_id)
             if result is None:
                 warnings.warn("Get Instance has to return GetInstanceDetailsSpec")
                 raise errors.ServiceException("Internal broker error")
@@ -579,10 +524,7 @@ def get_blueprint(
     )
     def get_binding(instance_id, binding_id):
         try:
-            result = service_broker.get_binding(
-                instance_id=instance_id,
-                binding_id=binding_id
-            )
+            result = service_broker.get_binding(instance_id=instance_id, binding_id=binding_id)
             if result is None:
                 warnings.warn("Get Binding has to return a GetBindingSpec")
                 raise errors.ServiceException("Internal broker error")
@@ -648,10 +590,7 @@ def serve(
     app.debug = debug
 
     blueprint = get_blueprint(
-        service_broker=service_broker,
-        broker_credentials=credentials,
-        logger=logger,
-        authenticator=authenticator
+        service_broker=service_broker, broker_credentials=credentials, logger=logger, authenticator=authenticator
     )
 
     logger.debug("Register openbrokerapi blueprint")
@@ -664,7 +603,6 @@ def serve(
         http_server = WSGIServer((host, port), app)
         http_server.serve_forever()
     except ImportError:
-
         logger.info(f"Start Flask on {host}:{port}")
         logger.warning("Use a server like gevent or gunicorn for production!")
         app.run(host, port)

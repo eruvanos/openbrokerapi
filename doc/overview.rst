@@ -26,4 +26,3 @@ Most dynamic setup, a `Router` object forwards requests to seperate broker imple
 
 .. include:: ./_static/seperated_broker.py
     :code: python
-

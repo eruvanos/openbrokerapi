@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from http import HTTPStatus
 
 from openbrokerapi.helper import to_json_response
 from openbrokerapi.response import ErrorResponse
@@ -46,10 +45,7 @@ class BasicAuthenticator(Authenticator):
         auth = request.authorization
         if auth:
             for credential in self._credentials:
-                if (
-                    auth.username == credential.username
-                    and auth.password == credential.password
-                ):
+                if auth.username == credential.username and auth.password == credential.password:
                     return
         return (
             to_json_response(

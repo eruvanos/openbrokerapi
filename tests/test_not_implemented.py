@@ -19,11 +19,7 @@ class NotImplementedBrokerTest(BrokerTestCase):
         app = Flask(__name__)
         self.broker = ServiceBroker()
 
-        app.register_blueprint(
-            get_blueprint(
-                self.broker, BrokerCredentials("", ""), basic_config(level=logging.WARN)
-            )
-        )
+        app.register_blueprint(get_blueprint(self.broker, BrokerCredentials("", ""), basic_config(level=logging.WARN)))
         return app
 
     def test_catalog_called_with_the_right_values(self):
@@ -101,8 +97,7 @@ class NotImplementedBrokerTest(BrokerTestCase):
 
         query = "service_id=service-guid-here&plan_id=plan-id-here"
         response = self.client.delete(
-            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s"
-            % query,
+            "/v2/service_instances/here_instance_id/service_bindings/here_binding_id?%s" % query,
             headers={"X-Broker-Api-Version": "2.13", "Authorization": self.auth_header},
         )
 
