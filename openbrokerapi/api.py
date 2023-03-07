@@ -95,7 +95,8 @@ def get_blueprint(
         # setup BasicAuthenticator with broker_credentials
         broker_credentials = ensure_list(broker_credentials)
         logger.debug(f"Apply check_auth filter with {broker_credentials} credentials")
-        authenticator = BasicAuthenticator(*broker_credentials)
+        # TODO: remove type: ignore
+        authenticator = BasicAuthenticator(*broker_credentials)  # type: ignore
     elif authenticator and broker_credentials:
         warnings.warn("Provided authenticator and broker_credential, only the authenticator is used")
     elif authenticator is None and broker_credentials is None:
@@ -103,7 +104,8 @@ def get_blueprint(
         authenticator = NoneAuthenticator()
 
     logger.debug("Apply authentication filter")
-    openbroker.before_request(authenticator)
+    # TODO: remove type: ignore
+    openbroker.before_request(authenticator)  # type: ignore
 
     def extract_authorization_username(request: Request):
         if request.authorization is not None:
@@ -597,7 +599,8 @@ def serve(
     app.register_blueprint(blueprint)
 
     try:
-        from gevent.pywsgi import WSGIServer
+        # see: https://github.com/gevent/gevent/issues/1900
+        from gevent.pywsgi import WSGIServer  # type: ignore
 
         logger.info(f"Start Gevent server on {host}:{port}")
         http_server = WSGIServer((host, port), app)

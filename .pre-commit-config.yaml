@@ -15,9 +15,15 @@ repos:
     rev: 'v1.0.1'
     hooks:
       - id: mypy
+        additional_dependencies:
+        - types-requests
+        - Flask-Testing
+        # needs to be excluded from pre-commit in addition to mypy config in pyproject
+        # see: https://github.com/pre-commit/mirrors-mypy/issues/1#issuecomment-1011579690
+        exclude: "^(doc|tests)/.*"
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     # Ruff version.
-    rev: 'v0.0.252'
+    rev: 'v0.0.253'
     hooks:
     - id: ruff
