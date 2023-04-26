@@ -16,9 +16,9 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@57ded4d7d5e986d7296eab16560982c6dd7c923b # v4.6.0
         with:
           python-version: '3.8' # use the oldest supported Python version for publishing
 
@@ -29,7 +29,7 @@ jobs:
           poetry build
 
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@0bf742be3ebe032c25dd15117957dc15d0cfc38d # release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
 
