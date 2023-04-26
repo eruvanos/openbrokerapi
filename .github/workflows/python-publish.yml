@@ -4,11 +4,30 @@ on:
     tags:
       - "v*.*.*"
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
+
     steps:
       - uses: actions/checkout@v2
-      - name: Build and publish to pypi
-        uses: JRubics/poetry-publish@v1.10
+
+      - uses: actions/setup-python@v4
         with:
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
+          python-version: '3.8' # use the oldest supported Python version for publishing
+
+      - name: Build Package
+        run: | 
+          pip install poetry
+          poetry install
+          poetry build
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+
+
+
