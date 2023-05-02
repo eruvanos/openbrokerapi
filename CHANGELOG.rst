@@ -6,7 +6,7 @@ Changelog
   - Update pytest from 7.2.1 to 7.3.1 
   - Use trusted provider flow to publish to pypi 
 
-> Releases 4.5.1-4 were used to test the new github workflow and are only pushed to Test-PYPI
+> Releases 4.5.1-4 were used to test the new GitHub workflow and are only pushed to Test-PYPI
 
 **4.5**
   - Drop Python 3.7 support
