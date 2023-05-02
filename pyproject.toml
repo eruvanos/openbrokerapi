@@ -44,11 +44,11 @@ classifiers = [
         'Programming Language :: Python :: 3.11',
 ]
 
-[project.urls]
-homepage = "https://github.com/eruvanos/openbrokerapi"
-documentation = "https://openbrokerapi.readthedocs.io/"
-repository = "https://github.com/eruvanos/openbrokerapi"
-changelog = "https://github.com/eruvanos/openbrokerapi/blob/main/CHANGELOG.rst"
+
+
+[tool.poetry.urls]
+"Issue Tracker" = "https://github.com/eruvanos/openbrokerapi/issues"
+"Changelog" = "https://github.com/eruvanos/openbrokerapi/blob/main/CHANGELOG.rst"
 
 [tool.poetry.dependencies]
 python = "^3.8"
