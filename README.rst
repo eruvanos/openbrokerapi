@@ -1,4 +1,4 @@
-|Build Status| |Coverage Status| |Known Vulnerabilities| |PYUP|
+|Build Status| |Coverage Status| |Known Vulnerabilities| |PYUP| |OpenSSF Best Practices|
 
 Open Broker API
 ===============
@@ -163,8 +163,6 @@ So let us check how you can contribute:
     - Always add tests for your feature, if you are not familiar with writing tests, ask for help.
     - Hint: To update your fork with the newest changes, follow `these instructions <https://stackoverflow.com/a/7244456/2947505>`_.
 
-[ ~ Dependencies scanned by PyUp.io ~ ]
-
 .. _Github Issues: https://github.com/eruvanos/openbrokerapi/issues
 
 .. |Build Status| image:: https://github.com/eruvanos/openbrokerapi/actions/workflows/python-test.yml/badge.svg
@@ -175,3 +173,5 @@ So let us check how you can contribute:
    :target: https://github.com/eruvanos/openbrokerapi/actions/workflows/codeql.yml
 .. |PYUP| image:: https://pyup.io/repos/github/eruvanos/openbrokerapi/shield.svg
      :target: https://pyup.io/repos/github/eruvanos/openbrokerapi/
+.. |OpenSSF Best Practices| image:: https://bestpractices.coreinfrastructure.org/projects/7220/badge
+     :target: https://bestpractices.coreinfrastructure.org/projects/7220/badge)](https://bestpractices.coreinfrastructure.org/projects/7220

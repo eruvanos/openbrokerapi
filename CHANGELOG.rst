@@ -1,6 +1,13 @@
 Changelog
 =============
 
+**4.5.5**
+  - Update Flask to 2.3.2: [CVE-2023-30861](https://github.com/advisories/GHSA-m2qf-hxjv-5gpq)
+  - Update pytest from 7.2.1 to 7.3.1 
+  - Use trusted provider flow to publish to pypi 
+
+> Releases 4.5.1-4 were used to test the new GitHub workflow and are only pushed to Test-PYPI
+
 **4.5**
   - Drop Python 3.7 support
   - Update dependencies
