@@ -6,11 +6,11 @@ from flask import Flask
 from flask.testing import FlaskClient
 
 from openbrokerapi.api import get_blueprint
-from openbrokerapi.auth import Authenticator
+from openbrokerapi.auth import BrokerAuthenticator
 from tests.test_serve import InMemBroker
 
 
-class _CustomAuthenticator(Authenticator):
+class _CustomBrokerAuthenticator(BrokerAuthenticator):
     last_token = None
 
     def authenticate(self):
@@ -25,7 +25,7 @@ class AuthenticationTest(TestCase):
     def test_custom_authentication(self):
         app = Flask(__name__)
 
-        authenticator = _CustomAuthenticator()
+        authenticator = _CustomBrokerAuthenticator()
         auth_token = str(uuid4())
 
         app.register_blueprint(

@@ -15,7 +15,7 @@ from openbrokerapi.request_filter import (
     check_version,
     requires_application_json,
 )
-from openbrokerapi.auth import Authenticator, BasicAuthenticator, NoneAuthenticator, BrokerCredentials
+from openbrokerapi.auth import BrokerAuthenticator, BasicBrokerAuthenticator, NoneBrokerAuthenticator, BrokerCredentials
 from openbrokerapi.response import (
     BindResponse,
     CatalogResponse,
@@ -61,7 +61,7 @@ def get_blueprint(
     broker_credentials: Union[None, List[BrokerCredentials], BrokerCredentials],
     logger: logging.Logger,
     *,
-    authenticator: Optional[Authenticator] = None,
+    authenticator: Optional[BrokerAuthenticator] = None,
 ) -> Blueprint:
     """
     Returns the blueprint with service broker api.
@@ -96,12 +96,12 @@ def get_blueprint(
         broker_credentials = ensure_list(broker_credentials)
         logger.debug(f"Apply check_auth filter with {broker_credentials} credentials")
         # TODO: remove type: ignore
-        authenticator = BasicAuthenticator(*broker_credentials)  # type: ignore
+        authenticator = BasicBrokerAuthenticator(*broker_credentials)  # type: ignore
     elif authenticator and broker_credentials:
         warnings.warn("Provided authenticator and broker_credential, only the authenticator is used")
     elif authenticator is None and broker_credentials is None:
         logger.warning("No authentication set, endpoints are not secured!")
-        authenticator = NoneAuthenticator()
+        authenticator = NoneBrokerAuthenticator()
 
     logger.debug("Apply authentication filter")
     # TODO: remove type: ignore
@@ -568,7 +568,7 @@ def serve(
     service_broker: ServiceBroker,
     credentials: Union[List[BrokerCredentials], BrokerCredentials, None],
     logger: logging.Logger = logging.root,
-    authenticator: Optional[Authenticator] = None,
+    authenticator: Optional[BrokerAuthenticator] = None,
     host="0.0.0.0",
     port=5000,
     debug=False,
