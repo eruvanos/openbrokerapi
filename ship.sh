@@ -14,6 +14,9 @@ git pull -r
 echo "Run tests"
 pytest .
 
+echo "Ruff"
+ruff .
+
 echo "Bump version"
 
 #Bump version and create tag
