@@ -80,7 +80,8 @@ def get_blueprint(
 
     if DISABLE_VERSION_CHECK:
         logger.warning(
-            "Minimum API version is not checked, this can cause illegal contracts between service broker and platform!"
+            "Minimum API version is not checked, this can cause illegal contracts between service broker and platform!",
+            stacklevel=0
         )
     else:
         logger.debug("Apply check_version filter for version %s" % str(MIN_VERSION))
@@ -94,13 +95,13 @@ def get_blueprint(
     if authenticator is None and broker_credentials is not None:
         # setup BasicAuthenticator with broker_credentials
         broker_credentials = ensure_list(broker_credentials)
-        logger.debug(f"Apply check_auth filter with {broker_credentials} credentials")
+        logger.debug(f"Apply check_auth filter with {broker_credentials} credentials", stacklevel=0)
         # TODO: remove type: ignore
         authenticator = BasicBrokerAuthenticator(*broker_credentials)  # type: ignore
     elif authenticator and broker_credentials:
-        warnings.warn("Provided authenticator and broker_credential, only the authenticator is used")
+        warnings.warn("Provided authenticator and broker_credential, only the authenticator is used", stacklevel=0)
     elif authenticator is None and broker_credentials is None:
-        logger.warning("No authentication set, endpoints are not secured!")
+        logger.warning("No authentication set, endpoints are not secured!", stacklevel=0)
         authenticator = NoneBrokerAuthenticator()
 
     logger.debug("Apply authentication filter")
@@ -169,7 +170,7 @@ def get_blueprint(
                 instance_id=instance_id, details=provision_details, async_allowed=accepts_incomplete
             )
             if result is None:
-                warnings.warn("Provision has to return ProvisionedServiceSpec")
+                warnings.warn("Provision has to return ProvisionedServiceSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
 
         except errors.ErrInstanceAlreadyExists as e:
@@ -234,7 +235,7 @@ def get_blueprint(
                 instance_id=instance_id, details=update_details, async_allowed=accepts_incomplete
             )
             if result is None:
-                warnings.warn("Update has to return UpdateServiceSpec")
+                warnings.warn("Update has to return UpdateServiceSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
         except errors.ErrInvalidParameters as e:
             return (
@@ -300,7 +301,7 @@ def get_blueprint(
                 async_allowed=accepts_incomplete,
             )
             if result is None:
-                warnings.warn("Bind has to return a Binding")
+                warnings.warn("Bind has to return a Binding", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
         except errors.ErrBindingAlreadyExists as e:
             logger.exception(e)
@@ -370,7 +371,7 @@ def get_blueprint(
                 instance_id=instance_id, binding_id=binding_id, details=unbind_details, async_allowed=accepts_incomplete
             )
             if result is None:
-                warnings.warn("Unbind has to return a UnbindSpec")
+                warnings.warn("Unbind has to return a UnbindSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
         except errors.ErrBindingDoesNotExist as e:
             logger.exception(e)
@@ -415,7 +416,7 @@ def get_blueprint(
                 instance_id=instance_id, details=deprovision_details, async_allowed=accepts_incomplete
             )
             if result is None:
-                warnings.warn("Deprovision has to return a DeprovisionServiceSpec")
+                warnings.warn("Deprovision has to return a DeprovisionServiceSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
         except errors.ErrInstanceDoesNotExist as e:
             logger.exception(e)
@@ -459,7 +460,7 @@ def get_blueprint(
                 instance_id=instance_id, operation_data=operation_data, service_id=service_id, plan_id=plan_id
             )
             if result is None:
-                warnings.warn("Last Operation has to return a LastOperation")
+                warnings.warn("Last Operation has to return a LastOperation", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
             return (
                 to_json_response(LastOperationResponse(result.state, result.description)),
@@ -488,7 +489,7 @@ def get_blueprint(
             plan_id=plan_id,
         )
         if result is None:
-            warnings.warn("Last Binding Operation has to return a LastOperation")
+            warnings.warn("Last Binding Operation has to return a LastOperation", stacklevel=0)
             raise errors.ServiceException("Internal broker error")
         return (
             to_json_response(LastOperationResponse(result.state, result.description)),
@@ -500,7 +501,7 @@ def get_blueprint(
         try:
             result = service_broker.get_instance(instance_id=instance_id)
             if result is None:
-                warnings.warn("Get Instance has to return GetInstanceDetailsSpec")
+                warnings.warn("Get Instance has to return GetInstanceDetailsSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
 
             response = GetInstanceResponse(
@@ -528,7 +529,7 @@ def get_blueprint(
         try:
             result = service_broker.get_binding(instance_id=instance_id, binding_id=binding_id)
             if result is None:
-                warnings.warn("Get Binding has to return a GetBindingSpec")
+                warnings.warn("Get Binding has to return a GetBindingSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
 
             response = GetBindingResponse(
