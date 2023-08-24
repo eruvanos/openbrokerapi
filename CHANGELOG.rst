@@ -1,10 +1,19 @@
 Changelog
 =============
 
+**4.5.8**
+  - Update dependencies (Werkzeug=2.3.7, Flask=2.3.3, ...)
+
+**4.5.7**
+  - minor improvements
+
+**4.5.6**
+  - Improve documentation for Authenticator and rename to BrokerAuthenticator. Keep old names for now.
+
 **4.5.5**
   - Update Flask to 2.3.2: [CVE-2023-30861](https://github.com/advisories/GHSA-m2qf-hxjv-5gpq)
-  - Update pytest from 7.2.1 to 7.3.1 
-  - Use trusted provider flow to publish to pypi 
+  - Update pytest from 7.2.1 to 7.3.1
+  - Use trusted provider flow to publish to pypi
 
 > Releases 4.5.1-4 were used to test the new GitHub workflow and are only pushed to Test-PYPI
 
