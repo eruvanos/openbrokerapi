@@ -1,6 +1,30 @@
 Changelog
 =============
 
+**4.6.0**
+  - Update dependencies
+
+    - Removing types-urllib3 (1.26.25.14)
+    - Updating charset-normalizer (3.2.0 -> 3.3.0)
+    - Updating urllib3 (2.0.4 -> 2.0.6)
+    - Updating zipp (3.16.2 -> 3.17.0)
+    - Updating packaging (23.1 -> 23.2)
+    - Updating blinker (1.6.2 -> 1.6.3)
+    - Updating filelock (3.12.2 -> 3.12.4)
+    - Updating platformdirs (3.10.0 -> 3.11.0)
+    - Updating setuptools (68.1.2 -> 68.2.2)
+    - Updating werkzeug (2.3.7 -> 3.0.0)
+    - Updating identify (2.5.27 -> 2.5.30)
+    - Updating pluggy (1.2.0 -> 1.3.0)
+    - Updating typing-extensions (4.7.1 -> 4.8.0)
+    - Updating virtualenv (20.24.3 -> 20.24.5)
+    - Updating black (23.7.0 -> 23.9.1)
+    - Updating mypy (1.5.1 -> 1.6.0)
+    - Updating pre-commit (3.3.3 -> 3.5.0)
+    - Updating pytest (7.4.0 -> 7.4.2)
+    - Updating types-requests (2.31.0.2 -> 2.31.0.9)
+
+
 **4.5.8**
   - Update dependencies (Werkzeug=2.3.7, Flask=2.3.3, ...)
 
