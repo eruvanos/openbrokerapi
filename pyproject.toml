@@ -60,7 +60,7 @@ gunicorn = {version = ">=20.1,<22.0", optional = true}
 
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.4.3"
+pytest = "^7.4.4"
 Flask-Testing = "^0.8.1"
 requests = "^2.29.0"
 black = "^23.12.1"
