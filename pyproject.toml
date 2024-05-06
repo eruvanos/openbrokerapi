@@ -63,7 +63,7 @@ gunicorn = {version = ">=20.1,<23.0", optional = true}
 pytest = "^8.2.0"
 Flask-Testing = "^0.8.1"
 requests = "^2.29.0"
-black = "^24.4.0"
+black = "^24.4.2"
 pre-commit = "^3.2.2"
 
 [tool.poetry.extras]
