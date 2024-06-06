@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openbrokerapi"
-version = "4.6.0"
+version = "4.7.0"
 description = "A python package for the V2 CF Service Broker API and Open Broker API (version 2.13+)"
 authors = ["Maic Siemering <maic@siemering.tech>"]
 license = "MIT"
