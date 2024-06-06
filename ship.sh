@@ -15,7 +15,7 @@ echo "Run tests"
 pytest .
 
 echo "Ruff"
-ruff .
+ruff check .
 
 echo "Bump version"
 

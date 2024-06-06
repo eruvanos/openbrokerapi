@@ -1,5 +1,6 @@
 import time
 from multiprocessing import Process
+from typing import ClassVar
 from unittest import TestCase
 from unittest.mock import Mock
 
@@ -19,7 +20,7 @@ from openbrokerapi.service_broker import (
 
 
 class InMemBroker(ServiceBroker):
-    instances = {}
+    instances: ClassVar = {}
 
     def __init__(self, service_guid="service-test-guid", plan_guid="plan-test-guid"):
         self.service_guid = service_guid
