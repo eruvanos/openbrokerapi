@@ -1,6 +1,10 @@
 Changelog
 =============
 
+**4.7.0**
+  - Update to latest dependencies (incl Flask >=3)
+
+
 **4.6.0**
   - Update dependencies
 
