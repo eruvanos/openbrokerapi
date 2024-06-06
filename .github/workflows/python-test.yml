@@ -35,7 +35,7 @@ jobs:
         poetry run pip install ruff "coveralls[toml]" pytest-cov "coverage[toml]"
     - name: Lint with ruff
       run: |
-        poetry run ruff .
+        poetry run ruff check .
     - name: Test with pytest
       run: |
         poetry run pytest --cov=openbrokerapi
