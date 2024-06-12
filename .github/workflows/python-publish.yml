@@ -23,8 +23,8 @@ jobs:
           python-version: '3.8' # use the oldest supported Python version for publishing
 
       - name: Build Package
-        run: | 
-          pip install poetry
+        run: |
+          pip install -r .github/requirements.txt
           poetry install
           poetry build
 
@@ -35,6 +35,3 @@ jobs:
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450 # release/v1
-
-
-

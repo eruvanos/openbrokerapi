@@ -29,8 +29,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install poetry
+        python -m pip install -r .github/requirements.txt
         poetry install
         poetry run pip install ruff "coveralls[toml]" pytest-cov "coverage[toml]"
     - name: Lint with ruff

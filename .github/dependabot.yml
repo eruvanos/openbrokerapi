@@ -5,11 +5,14 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "pip" # update deps
+    directory: "/"
     schedule:
       interval: "weekly"
-
+  - package-ecosystem: "pip" # Update bootstrap requirements
+    directory: "/.github/"
+    schedule:
+      interval: "weekly"
 
   - package-ecosystem: github-actions
     directory: /
