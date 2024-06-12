@@ -1,5 +1,5 @@
 # Holds requiremenets to install project
 # so they can be pinned and updated via dependabot
 
-pip
+pip==24.0
 poetry==1.8.3
