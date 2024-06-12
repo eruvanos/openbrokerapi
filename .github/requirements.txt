@@ -2,4 +2,4 @@
 # so they can be pinned and updated via dependabot
 
 pip
-poetry
+poetry==1.8.3
