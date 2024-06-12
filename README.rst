@@ -174,6 +174,6 @@ So let us check how you can contribute:
 .. |PYUP| image:: https://pyup.io/repos/github/eruvanos/openbrokerapi/shield.svg
      :target: https://pyup.io/repos/github/eruvanos/openbrokerapi/
 .. |OpenSSF Best Practices| image:: https://bestpractices.coreinfrastructure.org/projects/7220/badge
-     :target: https://bestpractices.coreinfrastructure.org/projects/7220/badge)](https://bestpractices.coreinfrastructure.org/projects/7220
+     :target: https://www.bestpractices.dev/projects/7220
 .. |Scorecard| image:: https://api.scorecard.dev/projects/github.com/eruvanos/openbrokerapi/badge
      :target: https://scorecard.dev/viewer/?uri=github.com/eruvanos/openbrokerapi
