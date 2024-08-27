@@ -15,6 +15,10 @@ from tests import BrokerTestCase
 
 class ProvisioningTest(BrokerTestCase):
     def setUp(self):
+        # default config
+        import openbrokerapi.settings
+        openbrokerapi.settings.DISABLE_SPACE_ORG_GUID_CHECK = False
+
         self.broker.catalog.return_value = [
             Service(
                 id="service-guid-here",
@@ -333,7 +337,7 @@ class ProvisioningTest(BrokerTestCase):
     def test_returns_202_if_missing_org_and_space_guids_data_org_space_check_flag_true(
         self,
     ):
-        openbrokerapi.service_broker.DISABLE_SPACE_ORG_GUID_CHECK = True
+        openbrokerapi.settings.DISABLE_SPACE_ORG_GUID_CHECK = True
 
         self.broker.provision.return_value = self.broker.provision.return_value = ProvisionedServiceSpec(
             ProvisionState.IS_ASYNC, "dash_url", "operation_str"

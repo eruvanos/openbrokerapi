@@ -4,6 +4,9 @@ Changelog
 **4.7.1**
   - Update depenendcies
   - Read settings values during check, instead of import time
+    Use `import openbrokerapi.settings; openbrokerapi.settings.DISABLE_SPACE_ORG_GUID_CHECK = True`
+    to disable the check for space_guid and organization_guid, or use the environment variable
+    `DISABLE_SPACE_ORG_GUID_CHECK=True`
 
 **4.7.0**
   - Update to latest dependencies (incl Flask >=3)
