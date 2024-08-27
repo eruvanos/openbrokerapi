@@ -1,5 +1,9 @@
 Changelog
-=============
+=========
+
+**4.7.1**
+  - Update depenendcies
+  - Read settings values during check, instead of import time
 
 **4.7.0**
   - Update to latest dependencies (incl Flask >=3)

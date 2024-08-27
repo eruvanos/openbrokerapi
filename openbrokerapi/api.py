@@ -41,7 +41,7 @@ from openbrokerapi.service_broker import (
     ServiceBroker,
     OperationState,
 )
-from openbrokerapi.settings import MIN_VERSION, DISABLE_VERSION_CHECK
+import openbrokerapi.settings
 
 
 def _check_plan_id(broker: ServiceBroker, plan_id) -> bool:
@@ -78,13 +78,13 @@ def get_blueprint(
     logger.debug("Apply print_request filter for debugging")
     openbroker.before_request(print_request)
 
-    if DISABLE_VERSION_CHECK:
+    if openbrokerapi.settings.DISABLE_VERSION_CHECK:
         logger.warning(
             "Minimum API version is not checked, this can cause illegal contracts between service broker and platform!",
             stacklevel=0
         )
     else:
-        logger.debug("Apply check_version filter for version %s" % str(MIN_VERSION))
+        logger.debug("Apply check_version filter for version %s" % str(openbrokerapi.settings.MIN_VERSION))
         openbroker.before_request(check_version)
 
     # apply filter: global load X-Broker-API-Originating-Identity
