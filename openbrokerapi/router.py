@@ -93,7 +93,7 @@ class Router(ServiceBroker):
         operation_data: Optional[str],
         service_id: Optional[str] = None,
         plan_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> LastOperation:
         if operation_data is None:
             raise errors.ErrInvalidParameters("Invalid operation string")

@@ -81,7 +81,7 @@ def get_blueprint(
     if openbrokerapi.settings.DISABLE_VERSION_CHECK:
         logger.warning(
             "Minimum API version is not checked, this can cause illegal contracts between service broker and platform!",
-            stacklevel=0
+            stacklevel=0,
         )
     else:
         logger.debug("Apply check_version filter for version %s" % str(openbrokerapi.settings.MIN_VERSION))

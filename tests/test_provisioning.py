@@ -17,6 +17,7 @@ class ProvisioningTest(BrokerTestCase):
     def setUp(self):
         # default config
         import openbrokerapi.settings
+
         openbrokerapi.settings.DISABLE_SPACE_ORG_GUID_CHECK = False
 
         self.broker.catalog.return_value = [

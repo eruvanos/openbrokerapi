@@ -16,10 +16,7 @@ class BrokerAuthenticator:
         return self.authenticate()
 
     @abstractmethod
-    def authenticate(self) -> Union[
-        Optional[ResponseReturnValue],
-        Awaitable[Optional[ResponseReturnValue]]
-    ]:
+    def authenticate(self) -> Union[Optional[ResponseReturnValue], Awaitable[Optional[ResponseReturnValue]]]:
         """
         Implement an `flask.typing.BeforeRequestCallable`
 

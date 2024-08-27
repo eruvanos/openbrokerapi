@@ -1,17 +1,19 @@
+from __future__ import annotations
+
 from typing import List, Dict, Optional
 
 
 class ServiceMetadata:
     def __init__(
         self,
-        displayName: str,
-        imageUrl: str,
-        longDescription: str,
-        providerDisplayName: str,
-        documentationUrl: str,
-        supportUrl: str,
+        displayName: str | None = None,
+        imageUrl: str | None = None,
+        longDescription: str | None = None,
+        providerDisplayName: str | None = None,
+        documentationUrl: str | None = None,
+        supportUrl: str | None = None,
         shareable: Optional[bool] = None,
-        **kwargs
+        **kwargs,
     ):
         self.displayName = displayName
         self.imageUrl = imageUrl
@@ -47,7 +49,7 @@ class ServicePlanMetadata:
         displayName: Optional[str] = None,
         bullets: Optional[List[str]] = None,
         costs: Optional[List[ServicePlanCost]] = None,
-        **kwargs
+        **kwargs,
     ):
         self.displayName = displayName
         self.bullets = bullets
@@ -74,7 +76,7 @@ class ServicePlan:
         free: Optional[bool] = None,
         bindable: Optional[bool] = None,
         schemas: Optional[Schemas] = None,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.name = name

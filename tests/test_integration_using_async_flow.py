@@ -86,7 +86,7 @@ class FullBrokerTestCase(TestCase):
         # GET BINDING
         response = requests.get(
             "http://localhost:5003/v2/service_instances/{}/service_bindings/{}".format(instance_guid, binding_guid),
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertDictEqual({}, response.json())
@@ -118,7 +118,7 @@ class FullBrokerTestCase(TestCase):
                 "plan_id": self.plan_guid,
                 "accepts_incomplete": "true",
             },
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
         operation = response.json().get("operation")
@@ -135,7 +135,7 @@ class FullBrokerTestCase(TestCase):
                 "plan_id": self.plan_guid,
                 "operation": operation,
             },
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual("succeeded", response.json()["state"])
@@ -150,7 +150,7 @@ class FullBrokerTestCase(TestCase):
                 "plan_id": self.plan_guid,
                 "operation": operation,
             },
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual("succeeded", response.json()["state"])
@@ -161,7 +161,7 @@ class FullBrokerTestCase(TestCase):
                 instance_guid, binding_guid
             ),
             data=json.dumps({"service_id": self.service_guid, "plan_id": self.plan_guid}),
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
         operation = response.json().get("operation")
@@ -176,7 +176,7 @@ class FullBrokerTestCase(TestCase):
                 "plan_id": self.plan_guid,
                 "accepts_incomplete": "true",
             },
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.GONE, response.status_code)
 
@@ -188,7 +188,7 @@ class FullBrokerTestCase(TestCase):
                 "plan_id": self.plan_guid,
                 "accepts_incomplete": "true",
             },
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
         operation = response.json()["operation"]
@@ -203,7 +203,7 @@ class FullBrokerTestCase(TestCase):
                 "plan_id": self.plan_guid,
                 "operation": operation,
             },
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.GONE, response.status_code)
         self.assertEqual("succeeded", response.json()["state"])
@@ -216,7 +216,7 @@ class FullBrokerTestCase(TestCase):
                 "plan_id": self.plan_guid,
                 "operation": operation,
             },
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertEqual("succeeded", response.json()["state"])
@@ -236,7 +236,7 @@ class FullBrokerTestCase(TestCase):
                     # }
                 }
             ),
-            **self.request_ads
+            **self.request_ads,
         )
         self.assertEqual(HTTPStatus.ACCEPTED, response.status_code)
 
@@ -355,7 +355,7 @@ class InMemoryBroker(ServiceBroker):
         operation_data: Optional[str],
         service_id: Optional[str],
         plan_id: Optional[str],
-        **kwargs
+        **kwargs,
     ) -> LastOperation:
         instance = self.service_instances.get(instance_id)
         if instance is None:
@@ -375,7 +375,7 @@ class InMemoryBroker(ServiceBroker):
         operation_data: Optional[str],
         service_id: Optional[str],
         plan_id: Optional[str],
-        **kwargs
+        **kwargs,
     ) -> LastOperation:
         instance = self.service_instances.get(instance_id, {})
         if instance.get("state") == self.BINDING:
