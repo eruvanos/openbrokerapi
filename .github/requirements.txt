@@ -2,4 +2,4 @@
 # so they can be pinned and updated via dependabot
 
 pip==24.0
-poetry==1.8.3
+poetry==2.0.1
