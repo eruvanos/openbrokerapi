@@ -1,6 +1,9 @@
 Changelog
 =========
 
+**4.7.2**
+  - API `bind`` and `unbind`` methods with `AsyncRequired` error handling
+
 **4.7.1**
   - Update depenendcies
   - Read settings values during check, instead of import time
