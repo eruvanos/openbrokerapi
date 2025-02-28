@@ -380,3 +380,31 @@ class BindTest(BrokerTestCase):
                 "error": "ConcurrencyError",
             },
         )
+
+    def test_returns_422_if_async_required_but_not_supported(self):
+        self.broker.bind.side_effect = errors.ErrAsyncRequired()
+
+        response = self.client.put(
+            "/v2/service_instances/here-instance_id/service_bindings/here-binding_id?accepts_incomplete=true",
+            data=json.dumps(
+                {
+                    "service_id": "service-guid-here",
+                    "plan_id": "plan-guid-here",
+                    "bind_resource": {},
+                }
+            ),
+            headers={
+                "X-Broker-Api-Version": "2.13",
+                "Content-Type": "application/json",
+                "Authorization": self.auth_header,
+            },
+        )
+
+        self.assertEqual(response.status_code, http.HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.assertEqual(
+            response.json,
+            {
+                "description": "This service plan requires client support for asynchronous service operations.",
+                "error": "AsyncRequired",
+            },
+        )

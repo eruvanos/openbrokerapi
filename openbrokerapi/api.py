@@ -324,6 +324,13 @@ def get_blueprint(
                 description="The Service Broker does not support concurrent requests that mutate the same resource.",
             )
             return to_json_response(error_response), HTTPStatus.UNPROCESSABLE_ENTITY
+        except errors.ErrAsyncRequired as e:
+            logger.exception(e)
+            error_response = ErrorResponse(
+                error="AsyncRequired",
+                description="This service plan requires client support for asynchronous service operations.",
+            )
+            return to_json_response(error_response), HTTPStatus.UNPROCESSABLE_ENTITY
 
         response = BindResponse(
             credentials=result.credentials,
@@ -381,6 +388,13 @@ def get_blueprint(
             error_response = ErrorResponse(
                 error="ConcurrencyError",
                 description="The Service Broker does not support concurrent requests that mutate the same resource.",
+            )
+            return to_json_response(error_response), HTTPStatus.UNPROCESSABLE_ENTITY
+        except errors.ErrAsyncRequired as e:
+            logger.exception(e)
+            error_response = ErrorResponse(
+                error="AsyncRequired",
+                description="This service plan requires client support for asynchronous service operations.",
             )
             return to_json_response(error_response), HTTPStatus.UNPROCESSABLE_ENTITY
 
