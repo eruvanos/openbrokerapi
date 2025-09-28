@@ -4,11 +4,13 @@ on:
     tags:
       - "v*.*.*"
 
+  workflow_dispatch:
+
 permissions:
   contents: read
 
 jobs:
-  publish:
+  build-and-testpypi:
     runs-on: ubuntu-latest
     environment: release
     permissions:
@@ -18,24 +20,40 @@ jobs:
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
-        with:
-          python-version: '3.8' # use the oldest supported Python version for publishing
-
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          version: "latest"
+          version: '3.8' # use the oldest supported Python version for publishing
           enable-cache: true
 
       - name: Build Package
         run: |
           uv build
 
+      - name: Upload dist artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
       - name: Publish package distributions to Test-PyPI
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+    needs: build-and-testpypi
+
+    steps:
+      - name: Download dist artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # release/v1
