@@ -59,7 +59,6 @@ jobs:
       uses: astral-sh/setup-uv@v4
       with:
         version: "latest"
-        enable-cache: true
     - name: Finished
       run: |
         uv pip install --upgrade "coveralls[toml]"
