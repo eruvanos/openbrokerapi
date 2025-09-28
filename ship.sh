@@ -20,15 +20,15 @@ uv run ruff check .
 echo "Bump version"
 
 #Bump version and create tag
-bumpversion --tag --commit $args
+bumpversion --commit $args
 
 echo "Update lockfile"
 uv lock
 git add uv.lock
 git commit --amend --no-edit
 
-#seperate commit with version in comment
-#git commit -m "v$(cat .bumpversion.cfg|grep current_version|tr -d ' '|cut -f 2 -d '=')""
+# create tag with version from .bumpversion.cfg
+git tag -a "v$(uv version --short)" -m "v$(uv version --short)"
 
 echo "Push to git"
 git push --tag

@@ -1,6 +1,6 @@
 [project]
 name = "openbrokerapi"
-version = "4.7.2"
+version = "4.7.3"
 description = "A python package for the V2 CF Service Broker API and Open Broker API (version 2.13+)"
 authors = [
     { name = "Maic Siemering", email = "maic@siemering.tech" },
