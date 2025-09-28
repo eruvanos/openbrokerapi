@@ -23,23 +23,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+    - name: Install uv and set the Python version
+      uses: astral-sh/setup-uv@v6
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install -r .github/requirements.txt
-        poetry install
-        poetry run pip install ruff "coveralls[toml]" pytest-cov "coverage[toml]"
+        uv sync
+        uv pip install "coveralls[toml]" pytest-cov "coverage[toml]"
     - name: Lint with ruff
       run: |
-        poetry run ruff check .
+        uv run ruff check .
     - name: Test with pytest
       run: |
-        poetry run pytest --cov=openbrokerapi
+        uv run pytest --cov=openbrokerapi
     - name: Upload coverage data to coveralls.io
-      run: poetry run coveralls --service=github
+      run: uv run coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
