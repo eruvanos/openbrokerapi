@@ -35,7 +35,7 @@ jobs:
     - name: Install dependencies
       run: |
         uv sync
-        uv run pip install "coveralls[toml]" pytest-cov "coverage[toml]"
+        uv pip install "coveralls[toml]" pytest-cov "coverage[toml]"
     - name: Lint with ruff
       run: |
         uv run ruff check .
