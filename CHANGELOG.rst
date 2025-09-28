@@ -1,8 +1,13 @@
 Changelog
 =========
 
+**unreleased**
+  - nothing yet
+
 **4.7.2**
   - API `bind`` and `unbind`` methods with `AsyncRequired` error handling
+  - Update dependencies
+  - Migrate project setup to `uv`
 
 **4.7.1**
   - Update depenendcies
