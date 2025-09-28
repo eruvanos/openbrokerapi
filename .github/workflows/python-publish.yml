@@ -22,11 +22,15 @@ jobs:
         with:
           python-version: '3.8' # use the oldest supported Python version for publishing
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+
       - name: Build Package
         run: |
-          pip install -r .github/requirements.txt
-          poetry install
-          poetry build
+          uv build
 
       - name: Publish package distributions to Test-PyPI
         uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450 # release/v1
