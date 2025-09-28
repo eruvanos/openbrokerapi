@@ -1,5 +1,7 @@
-# Holds requiremenets to install project
+# Holds requirements to install project
 # so they can be pinned and updated via dependabot
 
-pip==24.0
-poetry==1.8.3
+# uv handles all dependency management now
+# This file is kept for reference but no longer used
+# pip==24.0
+# poetry==1.8.3

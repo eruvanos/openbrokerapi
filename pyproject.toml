@@ -95,6 +95,11 @@ relative_files = true
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[dependency-groups]
+dev = [
+    "twine>=6.1.0",
+]
+
 
 [tool.ruff]
 

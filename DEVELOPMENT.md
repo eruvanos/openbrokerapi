@@ -18,22 +18,27 @@ To publish a release use bumpversion. This will update the `pyproject.toml` and 
 
 ## Manual steps
 
+### Install dependencies
+```
+uv sync --extra dev
+```
+
 ### Test
 ```
-poetry run pytest .
+uv run pytest .
 ```
 
 ### Build
 ```
-poetry build
+uv build
 ```
 
 ### Upload
 ```
 # Test PyPI
-poetry publish --build -r testpypi
+uv publish --publish-url https://test.pypi.org/legacy/
 # PyPI
-poetry publish --build
+uv publish
 ```
 
 ### Install from testpypi
@@ -45,5 +50,5 @@ pip install -i https://testpypi.python.org/simple openbrokerapi
 
 ```
 cd doc
-sphinx-build -b html . _build
+uv run sphinx-build -b html . _build
 ```

@@ -12,10 +12,10 @@ echo "Pull changes"
 git pull -r
 
 echo "Run tests"
-pytest .
+uv run pytest .
 
 echo "Ruff"
-ruff check .
+uv run ruff check .
 
 echo "Bump version"
 
