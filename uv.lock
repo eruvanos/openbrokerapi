@@ -1100,8 +1100,8 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "flask", specifier = ">=3.0.3,<4.0.0" },
-    { name = "gevent", marker = "extra == 'gevent'", specifier = ">=22.10.2,<25.0.0" },
-    { name = "gunicorn", marker = "extra == 'gunicorn'", specifier = ">=20.1,<23.0" },
+    { name = "gevent", marker = "extra == 'gevent'", specifier = ">=22.10.2" },
+    { name = "gunicorn", marker = "extra == 'gunicorn'", specifier = ">=20.1" },
 ]
 provides-extras = ["gevent", "gunicorn"]
 
