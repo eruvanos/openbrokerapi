@@ -1151,6 +1151,15 @@ dependencies = [
     { name = "flask", version = "3.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
 
+[package.optional-dependencies]
+gevent = [
+    { name = "gevent", version = "24.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "gevent", version = "24.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+]
+gunicorn = [
+    { name = "gunicorn" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "black", version = "24.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -1174,16 +1183,14 @@ docs = [
     { name = "sphinx", version = "7.4.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "sphinx-rtd-theme" },
 ]
-gevent = [
-    { name = "gevent", version = "24.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "gevent", version = "24.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-]
-gunicorn = [
-    { name = "gunicorn" },
-]
 
 [package.metadata]
-requires-dist = [{ name = "flask", specifier = ">=3.0.3,<4.0.0" }]
+requires-dist = [
+    { name = "flask", specifier = ">=3.0.3,<4.0.0" },
+    { name = "gevent", marker = "extra == 'gevent'", specifier = ">=22.10.2,<25.0.0" },
+    { name = "gunicorn", marker = "extra == 'gunicorn'", specifier = ">=20.1,<23.0" },
+]
+provides-extras = ["gevent", "gunicorn"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1201,8 +1208,6 @@ docs = [
     { name = "sphinx", specifier = ">=6.1.3,<8.0.0" },
     { name = "sphinx-rtd-theme", specifier = ">=1.2,<3.0" },
 ]
-gevent = [{ name = "gevent", specifier = ">=22.10.2,<25.0.0" }]
-gunicorn = [{ name = "gunicorn", specifier = ">=20.1,<23.0" }]
 
 [[package]]
 name = "packaging"

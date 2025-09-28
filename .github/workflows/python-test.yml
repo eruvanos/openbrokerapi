@@ -34,7 +34,7 @@ jobs:
         enable-cache: true
     - name: Install dependencies
       run: |
-        uv sync --extra dev
+        uv sync
         uv run pip install "coveralls[toml]" pytest-cov "coverage[toml]"
     - name: Lint with ruff
       run: |
@@ -57,7 +57,7 @@ jobs:
     steps:
     - name: Finished
       run: |
-        pip3 install --upgrade "coveralls[toml]"
-        coveralls --service=github --finish
+        uv pip install --upgrade "coveralls[toml]"
+        uv run coveralls --service=github --finish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
