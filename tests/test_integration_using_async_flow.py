@@ -206,7 +206,7 @@ class FullBrokerTestCase(TestCase):
             **self.request_ads,
         )
         self.assertEqual(HTTPStatus.GONE, response.status_code)
-        self.assertEqual("succeeded", response.json()["state"])
+        self.assertDictEqual({}, response.json())
 
     def check_last_operation_after_provision(self, instance_guid, operation):
         response = requests.get(

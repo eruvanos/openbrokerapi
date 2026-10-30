@@ -12,6 +12,12 @@ Changelog
   - Router (`serve_multiple`): fix `last_operation` always failing, route `last_binding_operation`,
     `get_instance` and `get_binding`, and pass `async_allowed` through to bind/unbind
     (**behaviour change:** sub-brokers previously always received `async_allowed=False`)
+  - Instance `last_operation`: new `ErrInstanceNotFound` returns 404;
+    **behaviour change:** the 410 body for `ErrInstanceDoesNotExist` is now `{}` instead of
+    `{"state": "succeeded", "description": ""}`
+  - Add `MaintenanceInfo` model; `ProvisionDetails`, `UpdateDetails` and `PreviousValues` expose the request's
+    `maintenance_info` (`None` if not sent)
+  - New `ErrMaintenanceInfoConflict` returns 422 with error code `MaintenanceInfoConflict`
 
 **4.8.0**
   - Drop support for EOL Python 3.8, 3.9 and 3.10 (requires Python 3.11+)

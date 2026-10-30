@@ -68,4 +68,39 @@ class LastOperationTest(BrokerTestCase):
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.GONE)
-        self.assertEqual(response.json["state"], OperationState.SUCCEEDED.value)
+        self.assertEqual(response.json, {})
+
+
+class LastOperationStatusTest(BrokerTestCase):
+    def setUp(self):
+        self.broker.service_id.return_value = "service-guid-here"
+
+    def _poll(self):
+        return self.client.get(
+            "/v2/service_instances/here-instance_id/last_operation",
+            headers={"X-Broker-Api-Version": "2.15", "Authorization": self.auth_header},
+        )
+
+    def test_returns_404_with_empty_body_if_instance_not_found(self):
+        self.broker.last_operation.side_effect = errors.ErrInstanceNotFound()
+
+        response = self._poll()
+
+        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.json, {})
+
+    def test_returns_410_with_empty_body_if_instance_does_not_exist(self):
+        self.broker.last_operation.side_effect = errors.ErrInstanceDoesNotExist()
+
+        response = self._poll()
+
+        self.assertEqual(response.status_code, http.HTTPStatus.GONE)
+        self.assertEqual(response.json, {})
+
+    def test_returns_400_on_invalid_parameters(self):
+        self.broker.last_operation.side_effect = errors.ErrInvalidParameters("bad operation")
+
+        response = self._poll()
+
+        self.assertEqual(response.status_code, http.HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.json, {"error": "InvalidParameters", "description": "bad operation"})

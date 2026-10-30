@@ -12,6 +12,20 @@ class ErrInstanceDoesNotExist(ServiceException):
         super().__init__("Instance does not exist")
 
 
+class ErrInstanceNotFound(ServiceException):
+    """
+    Raise if the instance is unknown to the broker (HTTP 404).
+
+    Use it in `last_operation` when the polled instance does not exist,
+    e.g. while a provision is still in progress.
+    Contrast with `ErrInstanceDoesNotExist` (HTTP 410), which means the instance
+    is gone, e.g. an asynchronous deprovision has completed.
+    """
+
+    def __init__(self):
+        super().__init__("Instance not found")
+
+
 class ErrInstanceLimitMet(ServiceException):
     def __init__(self):
         super().__init__("Instance limit for this service has been reached")
@@ -82,4 +96,14 @@ class ErrBadRequest(ServiceException):
     """
 
     def __init__(self, msg="Malformed or missing data"):
+        super().__init__(msg)
+
+
+class ErrMaintenanceInfoConflict(ServiceException):
+    """
+    Raise if `maintenance_info.version` of the request does not match the
+    version in the catalog (HTTP 422, error code "MaintenanceInfoConflict").
+    """
+
+    def __init__(self, msg="The maintenance information for the requested Service Plan has changed."):
         super().__init__(msg)

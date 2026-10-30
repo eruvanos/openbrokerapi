@@ -66,6 +66,14 @@ class Schemas:
         self.__dict__.update(kwargs)
 
 
+class MaintenanceInfo:
+    def __init__(self, version: str, description: Optional[str] = None, **kwargs):
+        self.version = version
+        self.description = description
+
+        self.__dict__.update(kwargs)
+
+
 class ServicePlan:
     def __init__(
         self,

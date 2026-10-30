@@ -39,7 +39,6 @@ from openbrokerapi.service_broker import (
     UnbindDetails,
     UpdateDetails,
     ServiceBroker,
-    OperationState,
 )
 import openbrokerapi.settings
 
@@ -161,6 +160,14 @@ def get_blueprint(
         logger.exception(e)
         return (
             to_json_response(ErrorResponse(description=str(e))),
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+        )
+
+    @openbroker.errorhandler(errors.ErrMaintenanceInfoConflict)
+    def error_handler_maintenance_info_conflict(e):
+        logger.exception(e)
+        return (
+            to_json_response(ErrorResponse("MaintenanceInfoConflict", str(e))),
             HTTPStatus.UNPROCESSABLE_ENTITY,
         )
 
@@ -492,11 +499,12 @@ def get_blueprint(
                 to_json_response(LastOperationResponse(result.state, result.description)),
                 HTTPStatus.OK,
             )
-        except errors.ErrInstanceDoesNotExist:
-            return (
-                to_json_response(LastOperationResponse(OperationState.SUCCEEDED, "")),
-                HTTPStatus.GONE,
-            )
+        except errors.ErrInstanceNotFound as e:
+            logger.exception(e)
+            return to_json_response(EmptyResponse()), HTTPStatus.NOT_FOUND
+        except errors.ErrInstanceDoesNotExist as e:
+            logger.exception(e)
+            return to_json_response(EmptyResponse()), HTTPStatus.GONE
 
     @openbroker.route(
         "/v2/service_instances/<instance_id>/service_bindings/<binding_id>/last_operation",

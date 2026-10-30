@@ -2,11 +2,18 @@ from enum import Enum
 from typing import List, Optional, Union
 
 from openbrokerapi.catalog import (
+    MaintenanceInfo,
     ServiceDashboardClient,
     ServiceMetadata,
     ServicePlan,
 )
 import openbrokerapi.settings
+
+
+def _parse_maintenance_info(maintenance_info) -> Optional[MaintenanceInfo]:
+    if isinstance(maintenance_info, dict):
+        return MaintenanceInfo(**maintenance_info)
+    return maintenance_info
 
 
 class ProvisionDetails:
@@ -18,10 +25,12 @@ class ProvisionDetails:
         space_guid: Optional[str] = None,
         parameters: Optional[dict] = None,
         context: Optional[dict] = None,
+        maintenance_info: Optional[dict] = None,
         **kwargs,
     ):
         self.service_id = service_id
         self.plan_id = plan_id
+        self.maintenance_info = _parse_maintenance_info(maintenance_info)
         self.organization_guid = organization_guid
         self.space_guid = space_guid
         self.parameters = parameters
@@ -105,8 +114,10 @@ class PreviousValues:
         service_id: Optional[str] = None,
         organization_id: Optional[str] = None,
         space_id: Optional[str] = None,
+        maintenance_info: Optional[dict] = None,
         **kwargs,
     ):
+        self.maintenance_info = _parse_maintenance_info(maintenance_info)
         self.plan_id = plan_id
         self.service_id = service_id
         self.organization_id = organization_id
@@ -121,10 +132,12 @@ class UpdateDetails:
         parameters: Optional[dict] = None,
         previous_values: Optional[dict] = None,
         context: Optional[dict] = None,
+        maintenance_info: Optional[dict] = None,
         **kwargs,
     ):
         self.service_id = service_id
         self.plan_id = plan_id
+        self.maintenance_info = _parse_maintenance_info(maintenance_info)
         self.parameters = parameters
         self.previous_values = PreviousValues(**previous_values) if previous_values else None
         self.context = context
