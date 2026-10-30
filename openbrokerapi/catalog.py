@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 
 
 class ServiceMetadata:
@@ -84,8 +84,18 @@ class ServicePlan:
         free: Optional[bool] = None,
         bindable: Optional[bool] = None,
         schemas: Optional[Schemas] = None,
+        plan_updateable: Optional[bool] = None,
+        maximum_polling_duration: Optional[int] = None,
+        maintenance_info: Optional[Union[MaintenanceInfo, Dict]] = None,
         **kwargs,
     ):
+        """
+        Optional fields default to None and are omitted from the catalog when unset.
+
+        :param plan_updateable: Overrides the service's ``plan_updateable`` for this plan
+        :param maximum_polling_duration: Seconds the platform SHOULD use as maximum polling duration (OSB 2.15+)
+        :param maintenance_info: ``MaintenanceInfo`` or dict with at least ``version``
+        """
         self.id = id
         self.name = name
         self.description = description
@@ -93,5 +103,8 @@ class ServicePlan:
         self.free = free
         self.bindable = bindable
         self.schemas = schemas
+        self.plan_updateable = plan_updateable
+        self.maximum_polling_duration = maximum_polling_duration
+        self.maintenance_info = maintenance_info
 
         self.__dict__.update(kwargs)

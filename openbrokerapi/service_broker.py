@@ -296,7 +296,7 @@ class LastOperation:
     ):
         self.state = state
         self.description = description
-        # OSB 2.17: only meaningful for a failed update/deprovision (update_repeatable: update only)
+        # OSB 2.16+: only meaningful for a failed update/deprovision (update_repeatable: update only)
         self.instance_usable = instance_usable
         self.update_repeatable = update_repeatable
 
@@ -316,10 +316,13 @@ class Service:
         plan_updateable: bool = False,
         instances_retrievable: bool = False,
         bindings_retrievable: bool = False,
+        allow_context_updates: Optional[bool] = None,
         **kwargs,
     ):
         """
         :param requires:  syslog_drain, route_forwarding or volume_mount
+        :param allow_context_updates: Whether instances support Update requests when platform context changes
+            (OSB API 2.15+; only emitted when set)
         """
         self.id = id
         self.name = name
@@ -333,6 +336,7 @@ class Service:
         self.plan_updateable = plan_updateable
         self.instances_retrievable = instances_retrievable
         self.bindings_retrievable = bindings_retrievable
+        self.allow_context_updates = allow_context_updates
 
         self.__dict__.update(kwargs)
 

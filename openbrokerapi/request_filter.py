@@ -47,6 +47,19 @@ def check_originating_identity():
         request.originating_identity = None
 
 
+REQUEST_IDENTITY_HEADER = "X-Broker-API-Request-Identity"
+
+
+def echo_request_identity(response):
+    """after_request hook: echo the request identity header, if the request sent one"""
+    from flask import request
+
+    identity = request.headers.get(REQUEST_IDENTITY_HEADER)
+    if identity is not None:
+        response.headers[REQUEST_IDENTITY_HEADER] = identity
+    return response
+
+
 def requires_application_json(f):
     """Decorator for enforcing application/json Content-Type"""
 
@@ -69,10 +82,17 @@ def check_version():
     version = request.headers.get("X-Broker-Api-Version", None)
     if not version:
         return (
-            to_json_response(ErrorResponse(description="No X-Broker-Api-Version found.")),
+            to_json_response(ErrorResponse(description="No X-Broker-API-Version found.")),
             HTTPStatus.BAD_REQUEST,
         )
-    if MIN_VERSION > version_tuple(version):
+    try:
+        parsed_version = version_tuple(version)
+    except ValueError:
+        return (
+            to_json_response(ErrorResponse(description="Invalid X-Broker-API-Version header")),
+            HTTPStatus.BAD_REQUEST,
+        )
+    if MIN_VERSION > parsed_version:
         return (
             to_json_response(ErrorResponse(description="Service broker requires version %d.%d+." % MIN_VERSION)),
             HTTPStatus.PRECONDITION_FAILED,

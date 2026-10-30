@@ -60,18 +60,20 @@ class Router(ServiceBroker):
 
     def _find_resource(self, method_name: str, not_found_error: Type[errors.ServiceException], *args, **kwargs):
         """
-        Calls `method_name` on the provider of the `service_id` hint if given.
+        Calls `method_name` on the provider of the `service_id` hint if it names a known provider.
         Otherwise asks each provider in turn; providers raising `not_found_error`
         or `NotImplementedError` are treated as "not mine".
+        The `service_id`/`plan_id` hints are only used for routing and not passed on to the providers.
         """
-        service_id = kwargs.get("service_id")
-        if service_id is not None:
+        service_id = kwargs.pop("service_id", None)
+        kwargs.pop("plan_id", None)
+        if service_id:
             try:
                 provider = self._get_provider_by_id(service_id)
-            except KeyError as e:
-                logger.exception(e)
-                raise not_found_error() from e
-            return getattr(provider, method_name)(*args, **kwargs)
+            except KeyError:
+                logger.warning("Unknown service_id hint %s, asking each provider", service_id)
+            else:
+                return getattr(provider, method_name)(*args, **kwargs)
 
         any_implemented = False
         for provider in self._service_brokers:

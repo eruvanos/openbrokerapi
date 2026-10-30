@@ -181,12 +181,18 @@ class RouterTestCase(unittest.TestCase):
         result = self.router.get_instance("i1", service_id="s2", plan_id="p2")
 
         self.assertIs(spec, result)
-        self.b2.get_instance.assert_called_once_with("i1", service_id="s2", plan_id="p2")
+        self.b2.get_instance.assert_called_once_with("i1")
         self.assertFalse(self.b1.get_instance.called)
 
-    def test_get_instance_with_unknown_service_id_hint_does_not_exist(self):
-        with self.assertRaises(errors.ErrInstanceDoesNotExist):
-            self.router.get_instance("i1", service_id="unknown")
+    def test_get_instance_with_unknown_service_id_hint_asks_each_provider(self):
+        spec = GetInstanceDetailsSpec("s2", "p2")
+        self.b1.get_instance.side_effect = errors.ErrInstanceDoesNotExist()
+        self.b2.get_instance.return_value = spec
+
+        result = self.router.get_instance("i1", service_id="unknown")
+
+        self.assertIs(spec, result)
+        self.b2.get_instance.assert_called_once_with("i1")
 
     def test_get_instance_tries_each_provider(self):
         spec = GetInstanceDetailsSpec("s2", "p2")
@@ -234,7 +240,7 @@ class RouterTestCase(unittest.TestCase):
         result = self.router.get_binding("i1", "b1", service_id="s1")
 
         self.assertIs(spec, result)
-        self.b1.get_binding.assert_called_once_with("i1", "b1", service_id="s1")
+        self.b1.get_binding.assert_called_once_with("i1", "b1")
         self.assertFalse(self.b2.get_binding.called)
 
     def test_get_binding_tries_each_provider(self):

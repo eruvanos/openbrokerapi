@@ -13,6 +13,7 @@ from openbrokerapi.request_filter import (
     print_request,
     check_originating_identity,
     check_version,
+    echo_request_identity,
     requires_application_json,
 )
 from openbrokerapi.auth import BrokerAuthenticator, BasicBrokerAuthenticator, NoneBrokerAuthenticator, BrokerCredentials
@@ -69,6 +70,16 @@ def _error_response(e: Exception, error: Optional[str] = None, description: Opti
     return ErrorResponse(error, description, instance_usable=instance_usable, update_repeatable=update_repeatable)
 
 
+def _fetch_hints(service_broker: ServiceBroker) -> dict:
+    """
+    Optional `service_id`/`plan_id` query hints of Fetch Instance and Fetch Binding (OSB spec).
+    Only the Router uses them, so other brokers' `get_instance`/`get_binding` signatures stay unaffected.
+    """
+    if not isinstance(service_broker, Router):
+        return {}
+    return {name: request.args[name] for name in ("service_id", "plan_id") if name in request.args}
+
+
 def get_blueprint(
     service_broker: ServiceBroker,
     broker_credentials: Union[List[BrokerCredentials], BrokerCredentials, None],
@@ -90,6 +101,9 @@ def get_blueprint(
     # Apply filters
     logger.debug("Apply print_request filter for debugging")
     openbroker.before_request(print_request)
+
+    # read X-Broker-API-Request-Identity and echo it on every response, including error responses
+    openbroker.after_request(echo_request_identity)
 
     if openbrokerapi.settings.DISABLE_VERSION_CHECK:
         logger.warning(
@@ -565,7 +579,7 @@ def get_blueprint(
     @openbroker.route("/v2/service_instances/<instance_id>", methods=["GET"])
     def get_instance(instance_id):
         try:
-            result = service_broker.get_instance(instance_id=instance_id)
+            result = service_broker.get_instance(instance_id=instance_id, **_fetch_hints(service_broker))
             if result is None:
                 warnings.warn("Get Instance has to return GetInstanceDetailsSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
@@ -595,7 +609,9 @@ def get_blueprint(
     )
     def get_binding(instance_id, binding_id):
         try:
-            result = service_broker.get_binding(instance_id=instance_id, binding_id=binding_id)
+            result = service_broker.get_binding(
+                instance_id=instance_id, binding_id=binding_id, **_fetch_hints(service_broker)
+            )
             if result is None:
                 warnings.warn("Get Binding has to return a GetBindingSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")

@@ -23,6 +23,11 @@ Changelog
   - `instance_usable` and `update_repeatable` can be set on `LastOperation`, and as keyword arguments on
     `ServiceException` and its subclasses; error bodies only include them for update (both) and deprovision
     (`instance_usable`)
+  - Echo the `X-Broker-API-Request-Identity` header on all broker API responses when the platform sends it
+  - A non-numeric `X-Broker-API-Version` header returns 400 instead of 500
+  - `serve_multiple` uses the optional `service_id` query hint of fetch instance/binding to pick the broker directly
+  - Explicit catalog parameters: `Service.allow_context_updates` and `ServicePlan.plan_updateable`,
+    `maximum_polling_duration` and `maintenance_info` (previously only via `**kwargs`)
 
 **4.8.0**
   - Drop support for EOL Python 3.8, 3.9 and 3.10 (requires Python 3.11+)
