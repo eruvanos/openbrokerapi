@@ -2,6 +2,8 @@ Changelog
 =========
 
 **unreleased**
+
+**4.8.0**
   - Drop support for EOL Python 3.8, 3.9 and 3.10 (requires Python 3.11+)
   - Add support for Python 3.14
   - Update dependencies
