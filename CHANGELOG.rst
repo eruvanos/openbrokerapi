@@ -2,7 +2,10 @@ Changelog
 =========
 
 **unreleased**
-  - nothing yet
+  - Drop support for EOL Python 3.8, 3.9 and 3.10 (requires Python 3.11+)
+  - Add support for Python 3.14
+  - Update dependencies
+  - Replace black with ruff format
 
 **4.7.3**
   - API `bind`` and `unbind`` methods with `AsyncRequired` error handling

@@ -21,7 +21,7 @@ To find out more about Platform Compatibility for OSBAPI versions, check out
 Installation
 ------------
 
-This package is available for Python 3.8+.
+This package is available for Python 3.11+.
 
 .. code:: bash
 

@@ -24,7 +24,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           version: 'latest'
-          python-version: '3.8'  # use the oldest supported Python version for publishing
+          python-version: '3.11'  # use the oldest supported Python version for publishing
           enable-cache: true
 
       - name: Build Package
@@ -38,23 +38,29 @@ jobs:
           path: dist/*
 
       - name: Publish package distributions to Test-PyPI
-        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
+        run: |
+          uv publish --trusted-publishing always --publish-url https://test.pypi.org/legacy/
 
   publish-pypi:
     runs-on: ubuntu-latest
     environment: release
     permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
     needs: build-and-testpypi
 
     steps:
       - name: Download dist artefact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: dist
           path: dist
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: 'latest'
+
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
+        run: |
+          uv publish --trusted-publishing always

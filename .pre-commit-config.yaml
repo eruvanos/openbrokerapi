@@ -1,18 +1,13 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-ast
 
-  - repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-      - id: black
-
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.0.1'
+    rev: 'v2.4.1'
     hooks:
       - id: mypy
         additional_dependencies:
@@ -22,8 +17,9 @@ repos:
         # see: https://github.com/pre-commit/mirrors-mypy/issues/1#issuecomment-1011579690
         exclude: "^(doc|tests)/.*"
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
+  - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: 'v0.4.8'
+    rev: 'v0.17.3'
     hooks:
-    - id: ruff
+    - id: ruff-check
+    - id: ruff-format

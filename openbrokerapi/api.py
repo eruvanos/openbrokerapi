@@ -58,7 +58,7 @@ def _check_plan_id(broker: ServiceBroker, plan_id) -> bool:
 
 def get_blueprint(
     service_broker: ServiceBroker,
-    broker_credentials: Union[None, List[BrokerCredentials], BrokerCredentials],
+    broker_credentials: Union[List[BrokerCredentials], BrokerCredentials, None],
     logger: logging.Logger,
     *,
     authenticator: Optional[BrokerAuthenticator] = None,

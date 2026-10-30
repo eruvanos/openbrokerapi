@@ -2,12 +2,12 @@
 
 ## Contributing
 
-Use black to format your code!
+Use ruff to format your code (`uv run ruff format .`)!
 
 ## Build pipeline
 
 To publish a release use bumpversion. This will update the `pyproject.toml` and tag the commit.
-#TODO a Github action will pick up the new tag and publish a new version on pypi
+The `python-publish.yml` GitHub Action picks up the new tag, builds with `uv build` and publishes to Test-PyPI and PyPI with `uv publish` via trusted publishing.
 
 > To trigger the whole build process use `ship.sh`.
 
