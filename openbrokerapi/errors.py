@@ -1,5 +1,25 @@
+from typing import Optional
+
+
 class ServiceException(Exception):
-    pass
+    """
+    Base class of all broker errors.
+
+    Optional keyword arguments (OSB API 2.17, "Service Broker Errors"):
+
+    :param instance_usable: whether the service instance is still usable after a failed
+        update or deprovision.
+    :param update_repeatable: whether a failed update can be repeated.
+
+    They are only added to the error body of update (PATCH) and deprovision (DELETE)
+    requests (`update_repeatable` for update only); on every other endpoint they are ignored.
+    Unset (`None`) means the field is omitted, which the spec defines as `true`.
+    """
+
+    def __init__(self, *args, instance_usable: Optional[bool] = None, update_repeatable: Optional[bool] = None):
+        super().__init__(*args)
+        self.instance_usable = instance_usable
+        self.update_repeatable = update_repeatable
 
 
 class ErrInstanceAlreadyExists(ServiceException):
@@ -66,18 +86,18 @@ class ErrBindingNotFound(ServiceException):
 
 
 class ErrInvalidParameters(ServiceException):
-    def __init__(self, msg):
-        super().__init__(msg)
+    def __init__(self, msg, **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class ErrAsyncRequired(ServiceException):
-    def __init__(self):
-        super().__init__("This service plan requires client support for asynchronous service operations.")
+    def __init__(self, **kwargs):
+        super().__init__("This service plan requires client support for asynchronous service operations.", **kwargs)
 
 
 class ErrPlanChangeNotSupported(ErrInvalidParameters):
-    def __init__(self):
-        super().__init__("The requested plan migration cannot be performed")
+    def __init__(self, **kwargs):
+        super().__init__("The requested plan migration cannot be performed", **kwargs)
 
 
 class ErrAppGuidNotProvided(ServiceException):
@@ -86,8 +106,8 @@ class ErrAppGuidNotProvided(ServiceException):
 
 
 class ErrConcurrentInstanceAccess(ServiceException):
-    def __init__(self):
-        super().__init__("ConcurrencyError")
+    def __init__(self, **kwargs):
+        super().__init__("ConcurrencyError", **kwargs)
 
 
 class ErrBadRequest(ServiceException):
@@ -95,8 +115,8 @@ class ErrBadRequest(ServiceException):
     Raise if malformed or missing mandatory data
     """
 
-    def __init__(self, msg="Malformed or missing data"):
-        super().__init__(msg)
+    def __init__(self, msg="Malformed or missing data", **kwargs):
+        super().__init__(msg, **kwargs)
 
 
 class ErrMaintenanceInfoConflict(ServiceException):

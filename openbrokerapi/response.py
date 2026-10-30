@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from openbrokerapi.service_broker import OperationState, VolumeMount, Service
+from openbrokerapi.catalog import MaintenanceInfo
+from openbrokerapi.service_broker import OperationState, ServiceInstanceMetadata, VolumeMount, Service
 
 
 class EmptyResponse:
@@ -8,9 +9,17 @@ class EmptyResponse:
 
 
 class ErrorResponse:
-    def __init__(self, error: Optional[str] = None, description: Optional[str] = None):
+    def __init__(
+        self,
+        error: Optional[str] = None,
+        description: Optional[str] = None,
+        instance_usable: Optional[bool] = None,
+        update_repeatable: Optional[bool] = None,
+    ):
         self.error = error
         self.description = description
+        self.instance_usable = instance_usable
+        self.update_repeatable = update_repeatable
 
 
 class AsyncResponse:
@@ -23,9 +32,10 @@ class CatalogResponse:
 
 
 class ProvisioningResponse(AsyncResponse):
-    def __init__(self, dashboard_url: str, operation: str):
+    def __init__(self, dashboard_url: str, operation: str, metadata: Optional[ServiceInstanceMetadata] = None):
         self.dashboard_url = dashboard_url
         self.operation = operation
+        self.metadata = metadata
 
 
 class GetInstanceResponse:
@@ -35,11 +45,15 @@ class GetInstanceResponse:
         plan_id: str,
         dashboard_url: Optional[str] = None,
         parameters: Optional[dict] = None,
+        metadata: Optional[ServiceInstanceMetadata] = None,
+        maintenance_info: Optional[MaintenanceInfo] = None,
     ):
         self.service_id = service_id
         self.plan_id = plan_id
         self.dashboard_url = dashboard_url
         self.parameters = parameters
+        self.metadata = metadata
+        self.maintenance_info = maintenance_info
 
 
 class BindResponse:
@@ -80,9 +94,15 @@ class UnbindResponse(AsyncResponse):
 
 
 class UpdateResponse(AsyncResponse):
-    def __init__(self, operation: Optional[str], dashboard_url: Optional[str]):
+    def __init__(
+        self,
+        operation: Optional[str],
+        dashboard_url: Optional[str],
+        metadata: Optional[ServiceInstanceMetadata] = None,
+    ):
         self.operation = operation
         self.dashboard_url = dashboard_url
+        self.metadata = metadata
 
 
 class DeprovisionResponse(AsyncResponse):
@@ -91,6 +111,14 @@ class DeprovisionResponse(AsyncResponse):
 
 
 class LastOperationResponse:
-    def __init__(self, state: OperationState, description: str):
+    def __init__(
+        self,
+        state: OperationState,
+        description: str,
+        instance_usable: Optional[bool] = None,
+        update_repeatable: Optional[bool] = None,
+    ):
         self.state = state.value
         self.description = description
+        self.instance_usable = instance_usable
+        self.update_repeatable = update_repeatable

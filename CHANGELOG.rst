@@ -18,6 +18,11 @@ Changelog
   - Add `MaintenanceInfo` model; `ProvisionDetails`, `UpdateDetails` and `PreviousValues` expose the request's
     `maintenance_info` (`None` if not sent)
   - New `ErrMaintenanceInfoConflict` returns 422 with error code `MaintenanceInfoConflict`
+  - Add `ServiceInstanceMetadata` (`labels`, `attributes`); provision, update and get-instance responses include
+    `metadata` when set, and get-instance also includes `maintenance_info`
+  - `instance_usable` and `update_repeatable` can be set on `LastOperation`, and as keyword arguments on
+    `ServiceException` and its subclasses; error bodies only include them for update (both) and deprovision
+    (`instance_usable`)
 
 **4.8.0**
   - Drop support for EOL Python 3.8, 3.9 and 3.10 (requires Python 3.11+)

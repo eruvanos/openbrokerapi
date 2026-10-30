@@ -55,6 +55,20 @@ def _check_plan_id(broker: ServiceBroker, plan_id) -> bool:
     return False
 
 
+def _error_response(e: Exception, error: Optional[str] = None, description: Optional[str] = None) -> ErrorResponse:
+    """
+    Build an ErrorResponse; add `instance_usable`/`update_repeatable` carried by the exception
+    only for update and deprovision (OSB 2.17: MUST NOT be present for errors of other operations).
+    """
+    endpoint = (request.endpoint or "").rsplit(".", 1)[-1]
+    instance_usable = update_repeatable = None
+    if endpoint in ("update", "deprovision"):
+        instance_usable = getattr(e, "instance_usable", None)
+    if endpoint == "update":
+        update_repeatable = getattr(e, "update_repeatable", None)
+    return ErrorResponse(error, description, instance_usable=instance_usable, update_repeatable=update_repeatable)
+
+
 def get_blueprint(
     service_broker: ServiceBroker,
     broker_credentials: Union[List[BrokerCredentials], BrokerCredentials, None],
@@ -117,7 +131,7 @@ def get_blueprint(
     def error_handler(e):
         logger.exception(e)
         return (
-            to_json_response(ErrorResponse(description=constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)),
+            to_json_response(_error_response(e, description=constants.DEFAULT_EXCEPTION_ERROR_MESSAGE)),
             HTTPStatus.INTERNAL_SERVER_ERROR,
         )
 
@@ -125,7 +139,7 @@ def get_blueprint(
     def error_handler_not_implemented(e):
         logger.exception(e)
         return (
-            to_json_response(ErrorResponse(description=constants.DEFAULT_NOT_IMPLEMENTED_ERROR_MESSAGE)),
+            to_json_response(_error_response(e, description=constants.DEFAULT_NOT_IMPLEMENTED_ERROR_MESSAGE)),
             HTTPStatus.NOT_IMPLEMENTED,
         )
 
@@ -133,14 +147,14 @@ def get_blueprint(
     def error_handler_bad_request(e):
         logger.exception(e)
         return (
-            to_json_response(ErrorResponse(description=str(e))),
+            to_json_response(_error_response(e, description=str(e))),
             HTTPStatus.BAD_REQUEST,
         )
 
     @openbroker.errorhandler(errors.ErrInvalidParameters)
     def error_handler_invalid_parameters(e):
         return (
-            to_json_response(ErrorResponse("InvalidParameters", str(e))),
+            to_json_response(_error_response(e, "InvalidParameters", str(e))),
             HTTPStatus.BAD_REQUEST,
         )
 
@@ -149,7 +163,7 @@ def get_blueprint(
         # Subclass of ErrInvalidParameters; the more specific handler wins
         logger.exception(e)
         return (
-            to_json_response(ErrorResponse(description=str(e))),
+            to_json_response(_error_response(e, description=str(e))),
             HTTPStatus.UNPROCESSABLE_ENTITY,
         )
 
@@ -159,7 +173,7 @@ def get_blueprint(
     def error_handler_quota_exceeded(e):
         logger.exception(e)
         return (
-            to_json_response(ErrorResponse(description=str(e))),
+            to_json_response(_error_response(e, description=str(e))),
             HTTPStatus.UNPROCESSABLE_ENTITY,
         )
 
@@ -167,7 +181,7 @@ def get_blueprint(
     def error_handler_maintenance_info_conflict(e):
         logger.exception(e)
         return (
-            to_json_response(ErrorResponse("MaintenanceInfoConflict", str(e))),
+            to_json_response(_error_response(e, "MaintenanceInfoConflict", str(e))),
             HTTPStatus.UNPROCESSABLE_ENTITY,
         )
 
@@ -223,17 +237,17 @@ def get_blueprint(
 
         if result.state == ProvisionState.IS_ASYNC:
             return (
-                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)),
+                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation, result.metadata)),
                 HTTPStatus.ACCEPTED,
             )
         elif result.state == ProvisionState.IDENTICAL_ALREADY_EXISTS:
             return (
-                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)),
+                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation, result.metadata)),
                 HTTPStatus.OK,
             )
         elif result.state == ProvisionState.SUCCESSFUL_CREATED:
             return (
-                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation)),
+                to_json_response(ProvisioningResponse(result.dashboard_url, result.operation, result.metadata)),
                 HTTPStatus.CREATED,
             )
         else:
@@ -269,7 +283,8 @@ def get_blueprint(
             logger.exception(e)
             return (
                 to_json_response(
-                    ErrorResponse(
+                    _error_response(
+                        e,
                         error="AsyncRequired",
                         description="This service plan requires client support for asynchronous service operations.",
                     )
@@ -278,7 +293,8 @@ def get_blueprint(
             )
         except errors.ErrConcurrentInstanceAccess as e:
             logger.exception(e)
-            error_response = ErrorResponse(
+            error_response = _error_response(
+                e,
                 error="ConcurrencyError",
                 description="The Service Broker does not support concurrent requests that mutate the same resource.",
             )
@@ -286,12 +302,12 @@ def get_blueprint(
 
         if result.is_async:
             return (
-                to_json_response(UpdateResponse(result.operation, result.dashboard_url)),
+                to_json_response(UpdateResponse(result.operation, result.dashboard_url, result.metadata)),
                 HTTPStatus.ACCEPTED,
             )
         else:
             return (
-                to_json_response(UpdateResponse(None, result.dashboard_url)),
+                to_json_response(UpdateResponse(None, result.dashboard_url, result.metadata)),
                 HTTPStatus.OK,
             )
 
@@ -458,7 +474,8 @@ def get_blueprint(
             logger.exception(e)
             return (
                 to_json_response(
-                    ErrorResponse(
+                    _error_response(
+                        e,
                         error="AsyncRequired",
                         description="This service plan requires client support for asynchronous service operations.",
                     )
@@ -467,7 +484,8 @@ def get_blueprint(
             )
         except errors.ErrConcurrentInstanceAccess as e:
             logger.exception(e)
-            error_response = ErrorResponse(
+            error_response = _error_response(
+                e,
                 error="ConcurrencyError",
                 description="The Service Broker does not support concurrent requests that mutate the same resource.",
             )
@@ -496,7 +514,14 @@ def get_blueprint(
                 warnings.warn("Last Operation has to return a LastOperation", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
             return (
-                to_json_response(LastOperationResponse(result.state, result.description)),
+                to_json_response(
+                    LastOperationResponse(
+                        result.state,
+                        result.description,
+                        instance_usable=result.instance_usable,
+                        update_repeatable=result.update_repeatable,
+                    )
+                ),
                 HTTPStatus.OK,
             )
         except errors.ErrInstanceNotFound as e:
@@ -550,6 +575,8 @@ def get_blueprint(
                 plan_id=result.plan_id,
                 dashboard_url=result.dashboard_url,
                 parameters=result.parameters,
+                metadata=result.metadata,
+                maintenance_info=result.maintenance_info,
             )
             return to_json_response(response), HTTPStatus.OK
 

@@ -62,16 +62,26 @@ class ProvisionState(Enum):
     IDENTICAL_ALREADY_EXISTS = "exists with identical config"
 
 
+class ServiceInstanceMetadata:
+    def __init__(self, labels: Optional[dict] = None, attributes: Optional[dict] = None, **kwargs):
+        self.labels = labels
+        self.attributes = attributes
+
+        self.__dict__.update(kwargs)
+
+
 class ProvisionedServiceSpec:
     def __init__(
         self,
         state: ProvisionState = ProvisionState.SUCCESSFUL_CREATED,
         dashboard_url: Optional[str] = None,
         operation: Optional[str] = None,
+        metadata: Optional[ServiceInstanceMetadata] = None,
     ):
         self.state = state
         self.dashboard_url = dashboard_url
         self.operation = operation
+        self.metadata = metadata
 
     @property
     def is_async(self):
@@ -85,11 +95,15 @@ class GetInstanceDetailsSpec:
         plan_id: str,
         dashboard_url: Optional[str] = None,
         parameters: Optional[dict] = None,
+        metadata: Optional[ServiceInstanceMetadata] = None,
+        maintenance_info: Optional[MaintenanceInfo] = None,
     ):
         self.service_id = service_id
         self.plan_id = plan_id
         self.dashboard_url = dashboard_url
         self.parameters = parameters
+        self.metadata = metadata
+        self.maintenance_info = maintenance_info
 
 
 class DeprovisionDetails:
@@ -152,10 +166,12 @@ class UpdateServiceSpec:
         is_async: bool,
         operation: Optional[str] = None,
         dashboard_url: Optional[str] = None,
+        metadata: Optional[ServiceInstanceMetadata] = None,
     ):
         self.is_async = is_async
         self.operation = operation
         self.dashboard_url = dashboard_url
+        self.metadata = metadata
 
 
 class BindResource:
@@ -271,9 +287,18 @@ class OperationState(Enum):
 
 
 class LastOperation:
-    def __init__(self, state: OperationState, description: Optional[str] = None):
+    def __init__(
+        self,
+        state: OperationState,
+        description: Optional[str] = None,
+        instance_usable: Optional[bool] = None,
+        update_repeatable: Optional[bool] = None,
+    ):
         self.state = state
         self.description = description
+        # OSB 2.17: only meaningful for a failed update/deprovision (update_repeatable: update only)
+        self.instance_usable = instance_usable
+        self.update_repeatable = update_repeatable
 
 
 class Service:
