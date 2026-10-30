@@ -37,6 +37,20 @@ class ErrBindingDoesNotExist(ServiceException):
         super().__init__("Binding does not exist")
 
 
+class ErrBindingNotFound(ServiceException):
+    """
+    Raise if the binding is unknown to the broker (HTTP 404).
+
+    Use it in `last_binding_operation` when the polled binding does not exist,
+    e.g. while a bind is still in progress.
+    Contrast with `ErrBindingDoesNotExist` (HTTP 410), which means the binding
+    is gone, e.g. an asynchronous unbind has completed.
+    """
+
+    def __init__(self):
+        super().__init__("Binding not found")
+
+
 class ErrInvalidParameters(ServiceException):
     def __init__(self, msg):
         super().__init__(msg)

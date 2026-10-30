@@ -138,6 +138,32 @@ def get_blueprint(
             HTTPStatus.BAD_REQUEST,
         )
 
+    @openbroker.errorhandler(errors.ErrInvalidParameters)
+    def error_handler_invalid_parameters(e):
+        return (
+            to_json_response(ErrorResponse("InvalidParameters", str(e))),
+            HTTPStatus.BAD_REQUEST,
+        )
+
+    @openbroker.errorhandler(errors.ErrPlanChangeNotSupported)
+    def error_handler_plan_change_not_supported(e):
+        # Subclass of ErrInvalidParameters; the more specific handler wins
+        logger.exception(e)
+        return (
+            to_json_response(ErrorResponse(description=str(e))),
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+        )
+
+    @openbroker.errorhandler(errors.ErrPlanQuotaExceeded)
+    @openbroker.errorhandler(errors.ErrServiceQuotaExceeded)
+    @openbroker.errorhandler(errors.ErrInstanceLimitMet)
+    def error_handler_quota_exceeded(e):
+        logger.exception(e)
+        return (
+            to_json_response(ErrorResponse(description=str(e))),
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+        )
+
     @openbroker.route("/v2/catalog", methods=["GET"])
     def catalog():
         """
@@ -176,11 +202,6 @@ def get_blueprint(
         except errors.ErrInstanceAlreadyExists as e:
             logger.exception(e)
             return to_json_response(EmptyResponse()), HTTPStatus.CONFLICT
-        except errors.ErrInvalidParameters as e:
-            return (
-                to_json_response(ErrorResponse("InvalidParameters", str(e))),
-                HTTPStatus.BAD_REQUEST,
-            )
         except errors.ErrAsyncRequired as e:
             logger.exception(e)
             return (
@@ -237,11 +258,6 @@ def get_blueprint(
             if result is None:
                 warnings.warn("Update has to return UpdateServiceSpec", stacklevel=0)
                 raise errors.ServiceException("Internal broker error")
-        except errors.ErrInvalidParameters as e:
-            return (
-                to_json_response(ErrorResponse("InvalidParameters", str(e))),
-                HTTPStatus.BAD_REQUEST,
-            )
         except errors.ErrAsyncRequired as e:
             logger.exception(e)
             return (
@@ -364,8 +380,6 @@ def get_blueprint(
             unbind_details = UnbindDetails(service_id=service_id, plan_id=plan_id)
             unbind_details.originating_identity = request.originating_identity
             unbind_details.authorization_username = extract_authorization_username(request)
-            if not _check_plan_id(service_broker, unbind_details.plan_id):
-                raise TypeError("plan_id not found in this service.")
         except (TypeError, KeyError) as e:
             logger.exception(e)
             return (
@@ -416,8 +430,6 @@ def get_blueprint(
             deprovision_details = DeprovisionDetails(service_id=service_id, plan_id=plan_id)
             deprovision_details.originating_identity = request.originating_identity
             deprovision_details.authorization_username = extract_authorization_username(request)
-            if not _check_plan_id(service_broker, deprovision_details.plan_id):
-                raise TypeError("plan_id not found in this service.")
         except (TypeError, KeyError) as e:
             logger.exception(e)
             return (
@@ -495,13 +507,20 @@ def get_blueprint(
         plan_id = request.args.get("plan_id", None)
 
         operation_data = request.args.get("operation", None)
-        result = service_broker.last_binding_operation(
-            instance_id=instance_id,
-            binding_id=binding_id,
-            operation_data=operation_data,
-            service_id=service_id,
-            plan_id=plan_id,
-        )
+        try:
+            result = service_broker.last_binding_operation(
+                instance_id=instance_id,
+                binding_id=binding_id,
+                operation_data=operation_data,
+                service_id=service_id,
+                plan_id=plan_id,
+            )
+        except errors.ErrBindingNotFound as e:
+            logger.exception(e)
+            return to_json_response(EmptyResponse()), HTTPStatus.NOT_FOUND
+        except errors.ErrBindingDoesNotExist as e:
+            logger.exception(e)
+            return to_json_response(EmptyResponse()), HTTPStatus.GONE
         if result is None:
             warnings.warn("Last Binding Operation has to return a LastOperation", stacklevel=0)
             raise errors.ServiceException("Internal broker error")

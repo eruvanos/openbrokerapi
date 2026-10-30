@@ -2,6 +2,16 @@ Changelog
 =========
 
 **unreleased**
+  - Deprovision and unbind no longer reject a `plan_id` that is not (or no longer) in the catalog
+  - `ErrInvalidParameters` returns 400 on all endpoints (previously 500 on bind, unbind and deprovision)
+  - `ErrPlanQuotaExceeded`, `ErrServiceQuotaExceeded` and `ErrInstanceLimitMet` return 422 (previously 500)
+  - **Behaviour change:** `ErrPlanChangeNotSupported` returns 422 instead of 400, as required by the spec
+    (it still subclasses `ErrInvalidParameters`)
+  - Binding `last_operation`: `ErrBindingDoesNotExist` returns 410, new `ErrBindingNotFound` returns 404
+    (previously 500)
+  - Router (`serve_multiple`): fix `last_operation` always failing, route `last_binding_operation`,
+    `get_instance` and `get_binding`, and pass `async_allowed` through to bind/unbind
+    (**behaviour change:** sub-brokers previously always received `async_allowed=False`)
 
 **4.8.0**
   - Drop support for EOL Python 3.8, 3.9 and 3.10 (requires Python 3.11+)
